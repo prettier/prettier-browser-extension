@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "repository": "https://github.com/prettier/prettier-chrome-extension.git",
   "license": "MIT",
-  "devDependencies": {
-    "prettier": "1.18.2"
-  },
   "scripts": {
-    "format": "prettier \"**/*.{js,md,css,html,json}\" --write"
+    "format": "prettier \"**/*.{js,md,css,html,json}\" --write",
+    "lint": "eslint ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "1.18.2"
   }
 }
