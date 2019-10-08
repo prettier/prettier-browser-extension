@@ -10,3 +10,5 @@
 - [ ] Options
 - [ ] Husky hooks
 - [x] Prettier scripts
+- [ ] Other websites
+  - [ ] ...
