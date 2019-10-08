@@ -9,4 +9,4 @@
 - [ ] Icon
 - [ ] Options
 - [ ] Husky hooks
-- [ ] Prettier scripts
+- [x] Prettier scripts
