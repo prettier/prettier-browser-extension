@@ -1,0 +1,9 @@
+{
+  "name": "prettier-chrome-extension",
+  "version": "1.0.0",
+  "repository": "https://github.com/prettier/prettier-chrome-extension.git",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "1.18.2"
+  }
+}
