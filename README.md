@@ -2,7 +2,11 @@
 
 > Extension that adds support for prettifying input boxes that support Markdown or Code.
 
-### Example websites
+### Specs/ TODO
 
-- [Stack Overflow](https://stackoverflow.com)
-- [GitHub](https://github.com)
+- [ ] Add a `Format with Prettier` button when editing posts on [Stack Overflow](https://stackoverflow.com)
+- [ ] Add a `Format with Prettier` button when editing issues on [GitHub](https://github.com)
+- [ ] Icon
+- [ ] Options
+- [ ] Husky hooks
+- [ ] Prettier scripts
