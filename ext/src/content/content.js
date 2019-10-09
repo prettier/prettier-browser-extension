@@ -1,17 +1,20 @@
+"use strict";
+
 window.onload = function onload() {
   const GITHUB_URL = "https://github.com";
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
+  const POLLING_INTERVAL = 30;
   const PARSERS_LANG_MAP = {
+    css: "postcss",
+    flow: "flow",
+    html: "html",
     javascript: "babel",
     js: "babel",
     json: "babel",
-    flow: "flow",
-    ts: "typescript",
-    typescript: "typescript",
-    css: "postcss",
     less: "postcss",
     scss: "postcss",
-    html: "html",
+    ts: "typescript",
+    typescript: "typescript",
     yaml: "yaml"
   };
 
@@ -38,7 +41,11 @@ window.onload = function onload() {
       button.style[key] = value;
     }
 
-    append ? el.append(button) : el.prepend(button);
+    if (append) {
+      el.append(button);
+    } else {
+      el.prepend(button);
+    }
 
     return button;
   }
@@ -100,13 +107,13 @@ window.onload = function onload() {
       const buttonsRowEl = parentEl.querySelector(buttonsRowSelector);
       const style = isNewConversationComment ? { marginRight: "4px" } : {};
       const buttonEl = renderButton(buttonsRowEl, {
-        style,
+        append: !isNewConversationComment,
         classes: ["prettier-btn"],
-        append: !isNewConversationComment
+        style
       });
       activeButtons.set(target, buttonEl);
-      buttonEl.addEventListener("click", e => {
-        e.preventDefault();
+      buttonEl.addEventListener("click", event => {
+        event.preventDefault();
         target.value = window.prettier.format(target.value, {
           parser: "markdown",
           plugins: window.prettierPlugins
@@ -131,8 +138,8 @@ window.onload = function onload() {
         classes: ["s-btn", "s-btn__primary", "prettier-btn"],
         style: { margin: "6px" }
       });
-      buttonEl.addEventListener("click", e => {
-        e.preventDefault();
+      buttonEl.addEventListener("click", event => {
+        event.preventDefault();
 
         // https://stackoverflow.com/editing-help#code
         let isInBlock = false;
@@ -166,27 +173,27 @@ window.onload = function onload() {
           } else if (isInBlock) {
             lastGroup.push(line);
 
-          /*
-           * Code snippet using backicks:
-           *
-           * `const foo = 'bar';`
-           *
-           * ``const foo = `${bar}`;``
-           */
+            /*
+             * Code snippet using backicks:
+             *
+             * `const foo = 'bar';`
+             *
+             * ``const foo = `${bar}`;``
+             */
           } else if (codeSnippetRegex.test(line)) {
             groups.push(line);
 
-          /*
-           * Code blocks using indented lines:
-           *
-           *     const foo = 'bar';
-           *     console.log(typeof foo);
-           *
-           * <!-- language: lang-js -->
-           *
-           *     const foo = 'bar';
-           *     console.log(typeof foo);
-           */
+            /*
+             * Code blocks using indented lines:
+             *
+             *     const foo = 'bar';
+             *     console.log(typeof foo);
+             *
+             * <!-- language: lang-js -->
+             *
+             *     const foo = 'bar';
+             *     console.log(typeof foo);
+             */
           } else if (emptyLineRegex.test(line)) {
             if (
               lastGroup &&
@@ -234,7 +241,10 @@ window.onload = function onload() {
           }
 
           const isCodeBlock = codeBlockRegex.test(firstLine);
-          const codeLines = isCodeBlock ? lines.slice(1, -1) : lines.slice(2);
+          const indentedLineCodeBlockStartIdx = 2;
+          const codeLines = isCodeBlock
+            ? lines.slice(1, -1)
+            : lines.slice(indentedLineCodeBlockStartIdx);
           let formattedBlock = window.prettier.format(codeLines.join("\n"), {
             parser: PARSERS_LANG_MAP[lang],
             plugins: window.prettierPlugins
@@ -265,7 +275,7 @@ window.onload = function onload() {
         });
         inputEl.focus();
       });
-    }, 30);
+    }, POLLING_INTERVAL);
   }
 
   if (window.location.origin === GITHUB_URL) {
