@@ -1,8 +1,10 @@
 "use strict";
 
-window.onload = function onload() {
+function init() {
   const GITHUB_URL = "https://github.com";
+  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|issues\/\d+)/u;
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
+  const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
   const POLLING_INTERVAL = 30;
   const PARSERS_LANG_MAP = {
     css: "postcss",
@@ -84,7 +86,7 @@ window.onload = function onload() {
       let buttonsRowSelector;
       let isNewConversationComment = false;
 
-      if (!!document.querySelector(DIFF_VIEW_CONTAINER_CLASS)) {
+      if (document.querySelector(DIFF_VIEW_CONTAINER_CLASS)) {
         parentEl = getParentWithClass(target, "line-comments");
         buttonsRowSelector = ".form-actions";
       } else {
@@ -121,14 +123,14 @@ window.onload = function onload() {
       });
     }
 
-    const pageHasLoadedCheckInterval = setInterval(() => {
+    const pageHasLoadedCheckInterval = window.setInterval(() => {
       let containerEl;
       if (
         (containerEl =
           document.querySelector(DIFF_VIEW_CONTAINER_CLASS) ||
           document.querySelector(PR_VIEW_CONTAINER_CLASS))
       ) {
-        clearInterval(pageHasLoadedCheckInterval);
+        window.clearInterval(pageHasLoadedCheckInterval);
         containerEl.addEventListener("select", handleGitHubTextareaEvents);
         containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
       }
@@ -136,13 +138,9 @@ window.onload = function onload() {
   }
 
   function initStackOverflowButton() {
-    let buttonRowEl;
-    const buttonRowHasLoadedCheckInterval = setInterval(() => {
-      if ((buttonRowEl = document.querySelector(".wmd-button-row"))) {
-        clearInterval(buttonRowHasLoadedCheckInterval);
-      }
-
+    function renderStackOverflowButton() {
       const inputEl = document.querySelector("#wmd-input");
+      const buttonRowEl = document.querySelector(".wmd-button-row");
       const buttonEl = renderButton(buttonRowEl, {
         classes: ["s-btn", "s-btn__primary", "prettier-btn"],
         style: { margin: "6px" }
@@ -227,56 +225,59 @@ window.onload = function onload() {
           return groups;
         }, []);
 
-        if (!codeBlocks.length || isInBlock) {
+        // There is an unclosed code block.
+        if (isInBlock) {
           return;
         }
 
-        /*
-         * TODO: Add support for language-all: <!-- language-all: lang-* -->
-         * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
-         * https://stackoverflow.com/editing-help#syntax-highlighting
-         */
-        codeBlocks.forEach(lines => {
-          const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
-          const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
-          const [firstLine] = lines;
-          const [, lang = null] =
-            firstLine.match(codeBlockRegex) ||
-            firstLine.match(indentedCodeRegex) ||
-            [];
+        if (codeBlocks.length) {
+          /*
+           * TODO: Add support for language-all: <!-- language-all: lang-* -->
+           * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
+           * https://stackoverflow.com/editing-help#syntax-highlighting
+           */
+          codeBlocks.forEach(lines => {
+            const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
+            const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
+            const [firstLine] = lines;
+            const [, lang = null] =
+              firstLine.match(codeBlockRegex) ||
+              firstLine.match(indentedCodeRegex) ||
+              [];
 
-          if (!lang) {
-            return;
-          }
+            if (!lang) {
+              return;
+            }
 
-          const isCodeBlock = codeBlockRegex.test(firstLine);
-          const indentedLineCodeBlockStartIdx = 2;
-          const codeLines = isCodeBlock
-            ? lines.slice(1, -1)
-            : lines.slice(indentedLineCodeBlockStartIdx);
-          let formattedBlock = window.prettier.format(codeLines.join("\n"), {
-            parser: PARSERS_LANG_MAP[lang],
-            plugins: window.prettierPlugins
+            const isCodeBlock = codeBlockRegex.test(firstLine);
+            const indentedLineCodeBlockStartIdx = 2;
+            const codeLines = isCodeBlock
+              ? lines.slice(1, -1)
+              : lines.slice(indentedLineCodeBlockStartIdx);
+            let formattedBlock = window.prettier.format(codeLines.join("\n"), {
+              parser: PARSERS_LANG_MAP[lang],
+              plugins: window.prettierPlugins
+            });
+
+            // Prettier adds a trailing newline
+            if (codeLines.length !== formattedBlock.split("\n").length) {
+              formattedBlock = formattedBlock.replace(/\n$/u, "");
+            }
+
+            formattedBlock = isCodeBlock
+              ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
+              : `${firstLine}\n${lines[1]}\n    ${
+                  formattedBlock.split("\n").length > 1
+                    ? formattedBlock.split("\n").join("\n    ")
+                    : formattedBlock
+                }`;
+
+            inputEl.value = inputEl.value.replace(
+              lines.join("\n"),
+              formattedBlock
+            );
           });
-
-          // Prettier adds a trailing newline
-          if (codeLines.length !== formattedBlock.split("\n").length) {
-            formattedBlock = formattedBlock.replace(/\n$/u, "");
-          }
-
-          formattedBlock = isCodeBlock
-            ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
-            : `${firstLine}\n${lines[1]}\n    ${
-                formattedBlock.split("\n").length > 1
-                  ? formattedBlock.split("\n").join("\n    ")
-                  : formattedBlock
-              }`;
-
-          inputEl.value = inputEl.value.replace(
-            lines.join("\n"),
-            formattedBlock
-          );
-        });
+        }
 
         inputEl.value = window.prettier.format(inputEl.value, {
           parser: "markdown",
@@ -284,14 +285,29 @@ window.onload = function onload() {
         });
         inputEl.focus();
       });
+    }
+
+    const buttonRowHasLoadedCheckInterval = window.setInterval(() => {
+      if (document.querySelector(".wmd-button-row")) {
+        window.clearInterval(buttonRowHasLoadedCheckInterval);
+        renderStackOverflowButton();
+      }
     }, POLLING_INTERVAL);
   }
 
-  if (window.location.origin === GITHUB_URL) {
+  if (
+    window.location.origin === GITHUB_URL &&
+    GITHUB_VALID_PATHNAMES.test(window.location.pathname)
+  ) {
     initGitHubButton();
   }
 
-  if (window.location.origin === STACKOVERFLOW_URL) {
+  if (
+    window.location.origin === STACKOVERFLOW_URL &&
+    STACKOVERFLOW_VALID_PATHNAMES.test(window.location.pathname)
+  ) {
     initStackOverflowButton();
   }
-};
+}
+
+init();
