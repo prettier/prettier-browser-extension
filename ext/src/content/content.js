@@ -16,7 +16,7 @@ window.onload = function onload() {
     return parent;
   }
 
-  function renderButton(el, { classes = [], style = {}, append = true  } = {}) {
+  function renderButton(el, { classes = [], style = {}, append = true } = {}) {
     const button = document.createElement("button");
     button.textContent = "Prettify";
     button.classList.add("btn", ...classes);
@@ -25,18 +25,16 @@ window.onload = function onload() {
       button.style[key] = value;
     }
 
-    append
-      ? el.append(button)
-      : el.prepend(button);
+    append ? el.append(button) : el.prepend(button);
 
     return button;
   }
 
   function initGitHubBtn() {
     const diffViewEl = document.querySelector(".diff-view");
-    const containerEl = diffViewEl || document.querySelector(".pull-discussion-timeline");
-    const isDiffView = !!diffViewEl;
-    let buttonEl = null;
+    const containerEl =
+      diffViewEl || document.querySelector(".pull-discussion-timeline");
+    const activeButtons = new Map();
 
     function handleGitHubTextareaEvents({ target }) {
       if (!target.classList.contains("comment-form-textarea")) {
@@ -44,14 +42,15 @@ window.onload = function onload() {
       }
 
       if (!target.value.length) {
-        if (buttonEl) {
+        if (activeButtons.has(target)) {
+          const buttonEl = activeButtons.get(target);
           buttonEl.remove();
-          buttonEl = null;
+          activeButtons.delete(target);
         }
         return;
       }
 
-      if (buttonEl) {
+      if (activeButtons.has(target)) {
         return;
       }
 
@@ -59,25 +58,33 @@ window.onload = function onload() {
       let buttonsRowSelector;
       let isNewConversationComment = false;
 
-      if (isDiffView) {
+      if (!!diffViewEl) {
         parentEl = getParentWithClass(target, "line-comments");
         buttonsRowSelector = ".form-actions";
       } else {
-        const newConversationComment = getParentWithClass(target, "timeline-new-comment");
+        const newConversationComment = getParentWithClass(
+          target,
+          "timeline-new-comment"
+        );
         isNewConversationComment = !!newConversationComment;
 
         if (isNewConversationComment) {
           parentEl = newConversationComment;
           buttonsRowSelector = `#partial-new-comment-form-actions .d-flex`;
         } else {
-          parentEl = getParentWithClass(target, "previewable-comment-form")
+          parentEl = getParentWithClass(target, "previewable-comment-form");
           buttonsRowSelector = ".form-actions";
         }
       }
 
       const buttonsRowEl = parentEl.querySelector(buttonsRowSelector);
-      const style = isNewConversationComment ? { marginRight: '4px' } : {};
-      buttonEl = renderButton(buttonsRowEl, { style, classes: ["prettier-btn"], append: !isNewConversationComment });
+      const style = isNewConversationComment ? { marginRight: "4px" } : {};
+      const buttonEl = renderButton(buttonsRowEl, {
+        style,
+        classes: ["prettier-btn"],
+        append: !isNewConversationComment
+      });
+      activeButtons.set(target, buttonEl);
       buttonEl.addEventListener("click", e => {
         e.preventDefault();
         target.value = window.prettier.format(target.value, {
