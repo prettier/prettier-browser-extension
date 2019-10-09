@@ -4,13 +4,19 @@ window.onload = function onload() {
 
   function getParentWithClass(el, className) {
     let parent = el.parentElement;
+
     while (!parent.classList.contains(className)) {
       parent = parent.parentElement;
+
+      if (!parent) {
+        return null;
+      }
     }
+
     return parent;
   }
 
-  function renderButton(el, { classes = [], style = {} } = {}) {
+  function renderButton(el, { classes = [], style = {}, append = true  } = {}) {
     const button = document.createElement("button");
     button.textContent = "Prettify";
     button.classList.add("btn", ...classes);
@@ -19,11 +25,17 @@ window.onload = function onload() {
       button.style[key] = value;
     }
 
-    el.append(button);
+    append
+      ? el.append(button)
+      : el.prepend(button);
+
     return button;
   }
 
   function initGitHubBtn() {
+    const diffViewEl = document.querySelector(".diff-view");
+    const containerEl = diffViewEl || document.querySelector(".pull-discussion-timeline");
+    const isDiffView = !!diffViewEl;
     let buttonEl = null;
 
     function handleGitHubTextareaEvents({ target }) {
@@ -43,9 +55,29 @@ window.onload = function onload() {
         return;
       }
 
-      const parentEl = getParentWithClass(target, "line-comments");
-      const actionsEl = parentEl.querySelector(".form-actions");
-      buttonEl = renderButton(actionsEl, { classes: ["prettier-btn"] });
+      let parentEl;
+      let buttonsRowSelector;
+      let isNewConversationComment = false;
+
+      if (isDiffView) {
+        parentEl = getParentWithClass(target, "line-comments");
+        buttonsRowSelector = ".form-actions";
+      } else {
+        const newConversationComment = getParentWithClass(target, "timeline-new-comment");
+        isNewConversationComment = !!newConversationComment;
+
+        if (isNewConversationComment) {
+          parentEl = newConversationComment;
+          buttonsRowSelector = `#partial-new-comment-form-actions .d-flex`;
+        } else {
+          parentEl = getParentWithClass(target, "previewable-comment-form")
+          buttonsRowSelector = ".form-actions";
+        }
+      }
+
+      const buttonsRowEl = parentEl.querySelector(buttonsRowSelector);
+      const style = isNewConversationComment ? { marginRight: '4px' } : {};
+      buttonEl = renderButton(buttonsRowEl, { style, classes: ["prettier-btn"], append: !isNewConversationComment });
       buttonEl.addEventListener("click", e => {
         e.preventDefault();
         target.value = window.prettier.format(target.value, {
@@ -55,9 +87,9 @@ window.onload = function onload() {
         target.focus();
       });
     }
-    const diffTableEl = document.querySelector(".diff-table");
-    diffTableEl.addEventListener("select", handleGitHubTextareaEvents);
-    diffTableEl.addEventListener("keyup", handleGitHubTextareaEvents);
+
+    containerEl.addEventListener("select", handleGitHubTextareaEvents);
+    containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
   }
 
   function initStackOverflowBtn() {
