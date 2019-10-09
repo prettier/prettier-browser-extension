@@ -3,15 +3,37 @@
   "version": "1.0.0",
   "repository": "https://github.com/prettier/prettier-chrome-extension.git",
   "license": "MIT",
+  "lint-staged": {
+    "*.{js}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{md,css,html,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "scripts": {
-    "format": "prettier \"**/*.{js,md,css,html,json}\" --write",
-    "lint": "eslint ."
+    "fix:other": "yarn prettier --write",
+    "fix:js": "yarn test:js --fix",
+    "fix": "yarn fix:js && yarn fix:other",
+    "prettier": "prettier \"**/*.{md,css,html,json}\" --write",
+    "test:other": "yarn prettier --list-different",
+    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
+    "test": "yarn test:other && yarn test:js"
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^6.5.1",
-    "eslint-config-prettier": "^6.4.0",
-    "eslint-plugin-prettier": "^3.1.1",
+    "eslint": "6.5.1",
+    "eslint-config-prettier": "6.4.0",
+    "eslint-plugin-prettier": "3.1.1",
+    "husky": "3.0.8",
+    "lint-staged": "9.4.2",
     "prettier": "1.18.2"
   }
 }

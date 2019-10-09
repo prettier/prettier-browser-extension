@@ -1,5 +1,6 @@
-chrome.extension.sendMessage({}, function(response) {
-  var readyStateCheckInterval = setInterval(function() {
+chrome.extension.sendMessage({}, response => {
+  const delay = 10;
+  const readyStateCheckInterval = setInterval(() => {
     if (document.readyState === "complete") {
       clearInterval(readyStateCheckInterval);
       // ----------------------------------------------------------
@@ -7,5 +8,5 @@ chrome.extension.sendMessage({}, function(response) {
       console.log("Hello. This message was sent from scripts/inject.js");
       // ----------------------------------------------------------
     }
-  }, 10);
+  }, delay);
 });
