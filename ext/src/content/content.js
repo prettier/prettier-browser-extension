@@ -58,9 +58,8 @@ window.onload = function onload() {
    * 3. Issues (still needs to be implemented)
    */
   function initGitHubButton() {
-    const diffViewEl = document.querySelector(".diff-view");
-    const containerEl =
-      diffViewEl || document.querySelector(".pull-discussion-timeline");
+    const DIFF_VIEW_CONTAINER_CLASS = ".diff-view";
+    const PR_VIEW_CONTAINER_CLASS = ".pull-discussion-timeline";
     const activeButtons = new Map();
 
     function handleGitHubTextareaEvents({ target }) {
@@ -85,7 +84,7 @@ window.onload = function onload() {
       let buttonsRowSelector;
       let isNewConversationComment = false;
 
-      if (!!diffViewEl) {
+      if (!!document.querySelector(DIFF_VIEW_CONTAINER_CLASS)) {
         parentEl = getParentWithClass(target, "line-comments");
         buttonsRowSelector = ".form-actions";
       } else {
@@ -122,8 +121,18 @@ window.onload = function onload() {
       });
     }
 
-    containerEl.addEventListener("select", handleGitHubTextareaEvents);
-    containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
+    const pageHasLoadedCheckInterval = setInterval(() => {
+      let containerEl;
+      if (
+        (containerEl =
+          document.querySelector(DIFF_VIEW_CONTAINER_CLASS) ||
+          document.querySelector(PR_VIEW_CONTAINER_CLASS))
+      ) {
+        clearInterval(pageHasLoadedCheckInterval);
+        containerEl.addEventListener("select", handleGitHubTextareaEvents);
+        containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
+      }
+    }, POLLING_INTERVAL);
   }
 
   function initStackOverflowButton() {
