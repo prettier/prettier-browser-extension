@@ -11,19 +11,30 @@
   },
   "default_locale": "en",
   "background": {
-    "page": "src/bg/background.html",
+    "page": "src/background/background.html",
     "persistent": true
   },
   "options_page": "src/options/index.html",
   "permissions": ["contentSettings"],
   "content_scripts": [
     {
-      "matches": ["https://stackoverflow.com/*"],
-      "css": ["src/inject/inject.css"]
-    },
-    {
-      "matches": ["https://stackoverflow.com/*"],
-      "js": ["src/inject/inject.js"]
+      "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
+      "css": ["src/content/content.css"],
+      "js": [
+        "src/vendor/standalone.js",
+        "src/vendor/parser-angular.js",
+        "src/vendor/parser-babylon.js",
+        "src/vendor/parser-flow.js",
+        "src/vendor/parser-glimmer.js",
+        "src/vendor/parser-graphql.js",
+        "src/vendor/parser-html.js",
+        "src/vendor/parser-markdown.js",
+        "src/vendor/parser-postcss.js",
+        "src/vendor/parser-typescript.js",
+        "src/vendor/parser-yaml.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_end"
     }
   ]
 }
