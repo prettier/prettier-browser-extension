@@ -8,7 +8,7 @@
       "eslint --fix",
       "git add"
     ],
-    "*.{md,css,html,json}": [
+    "*.{md,css,html,json,yml}": [
       "prettier --write",
       "git add"
     ]
@@ -22,7 +22,7 @@
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
     "fix": "yarn fix:js && yarn fix:other",
-    "prettier": "prettier \"**/*.{md,css,html,json}\" --write",
+    "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
     "test": "yarn test:other && yarn test:js"
