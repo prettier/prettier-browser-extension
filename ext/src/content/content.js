@@ -18,7 +18,7 @@ window.onload = function onload() {
 
   function renderButton(el, { classes = [], style = {}, append = true } = {}) {
     const button = document.createElement("button");
-    button.textContent = "Prettify";
+    button.textContent = "Prettier";
     button.classList.add("btn", ...classes);
 
     for (const [key, value] of Object.entries(style)) {
