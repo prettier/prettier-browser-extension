@@ -1,6 +1,19 @@
 window.onload = function onload() {
   const GITHUB_URL = "https://github.com";
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
+  const PARSERS_LANG_MAP = {
+    javascript: "babel",
+    js: "babel",
+    json: "babel",
+    flow: "flow",
+    ts: "typescript",
+    typescript: "typescript",
+    css: "postcss",
+    less: "postcss",
+    scss: "postcss",
+    html: "html",
+    yaml: "yaml"
+  };
 
   function getParentWithClass(el, className) {
     let parent = el.parentElement;
@@ -30,7 +43,14 @@ window.onload = function onload() {
     return button;
   }
 
-  function initGitHubBtn() {
+  /*
+   * GitHub has three different views with editable comments:
+   *
+   * 1. Pull request conversation view
+   * 2. Pull request diff view
+   * 3. Issues (still needs to be implemented)
+   */
+  function initGitHubButton() {
     const diffViewEl = document.querySelector(".diff-view");
     const containerEl =
       diffViewEl || document.querySelector(".pull-discussion-timeline");
@@ -99,7 +119,7 @@ window.onload = function onload() {
     containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
   }
 
-  function initStackOverflowBtn() {
+  function initStackOverflowButton() {
     let buttonRowEl;
     const buttonRowHasLoadedCheckInterval = setInterval(() => {
       if ((buttonRowEl = document.querySelector(".wmd-button-row"))) {
@@ -114,17 +134,28 @@ window.onload = function onload() {
       buttonEl.addEventListener("click", e => {
         e.preventDefault();
 
+        // https://stackoverflow.com/editing-help#code
         let isInBlock = false;
         const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
           const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
           const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
           const emptyLineRegex = /^\s*$/u;
           const indentedCodeBlockRegex = /^\s{4}/u;
-          const codeSnippetRegex = /(`[^\n`]+`)/u;
+          const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
           const lastGroup = groups[groups.length - 1];
 
-          let match;
-          if (line.match(codeBlockRegex)) {
+          /*
+           * Code blocks using backicks or tildes:
+           *
+           * ```lang-js
+           * const foo = 'bar';
+           * ```
+           *
+           * ~~~lang-js
+           * const foo = 'bar';
+           * ~~~
+           */
+          if (codeBlockRegex.test(line)) {
             if (isInBlock) {
               lastGroup.push(line);
               isInBlock = false;
@@ -134,22 +165,42 @@ window.onload = function onload() {
             }
           } else if (isInBlock) {
             lastGroup.push(line);
-          } else if ((match = line.match(codeSnippetRegex))) {
-            groups.push([match[1]]);
-          } else if (line.match(emptyLineRegex)) {
+
+          /*
+           * Code snippet using backicks:
+           *
+           * `const foo = 'bar';`
+           *
+           * ``const foo = `${bar}`;``
+           */
+          } else if (codeSnippetRegex.test(line)) {
+            groups.push(line);
+
+          /*
+           * Code blocks using indented lines:
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           *
+           * <!-- language: lang-js -->
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           */
+          } else if (emptyLineRegex.test(line)) {
             if (
               lastGroup &&
-              lastGroup[lastGroup.length - 1].match(indentedCodeLangRegex)
+              indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
             ) {
               lastGroup.push(line);
             }
-          } else if (line.match(indentedCodeLangRegex)) {
+          } else if (indentedCodeLangRegex.test(line)) {
             groups.push([line]);
-          } else if (line.match(indentedCodeBlockRegex)) {
+          } else if (indentedCodeBlockRegex.test(line)) {
             if (
               lastGroup &&
-              (lastGroup[lastGroup.length - 1].match(indentedCodeBlockRegex) ||
-                lastGroup[lastGroup.length - 1].match(emptyLineRegex))
+              (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
+                emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
             ) {
               lastGroup.push(line);
             } else {
@@ -164,30 +215,19 @@ window.onload = function onload() {
           return;
         }
 
-        const parsers = {
-          javascript: "babel",
-          js: "babel",
-          json: "babel",
-          flow: "flow",
-          ts: "typescript",
-          typescript: "typescript",
-          css: "postcss",
-          less: "postcss",
-          scss: "postcss",
-          html: "html",
-          yaml: "yaml"
-        };
-
-        // TODO: Add support for language: <!-- language-all: lang-* -->
-        // https://stackoverflow.com/editing-help#syntax-highlighting
+        /*
+         * TODO: Add support for language-all: <!-- language-all: lang-* -->
+         * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
+         * https://stackoverflow.com/editing-help#syntax-highlighting
+         */
         codeBlocks.forEach(lines => {
           const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
           const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
           const [firstLine] = lines;
-          const match =
+          const [, lang = null] =
             firstLine.match(codeBlockRegex) ||
-            firstLine.match(indentedCodeRegex);
-          const [, lang = null] = match || [];
+            firstLine.match(indentedCodeRegex) ||
+            [];
 
           if (!lang) {
             return;
@@ -196,13 +236,19 @@ window.onload = function onload() {
           const isCodeBlock = codeBlockRegex.test(firstLine);
           const codeLines = isCodeBlock ? lines.slice(1, -1) : lines.slice(2);
           let formattedBlock = window.prettier.format(codeLines.join("\n"), {
-            parser: parsers[lang],
+            parser: PARSERS_LANG_MAP[lang],
             plugins: window.prettierPlugins
           });
+
+          // Prettier adds a trailing newline
+          if (codeLines.length !== formattedBlock.split("\n").length) {
+            formattedBlock = formattedBlock.replace(/\n$/u, "");
+          }
+
           formattedBlock = isCodeBlock
             ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
             : `${firstLine}\n${lines[1]}\n    ${
-                formattedBlock.length > 1
+                formattedBlock.split("\n").length > 1
                   ? formattedBlock.split("\n").join("\n    ")
                   : formattedBlock
               }`;
@@ -223,10 +269,10 @@ window.onload = function onload() {
   }
 
   if (window.location.origin === GITHUB_URL) {
-    initGitHubBtn();
+    initGitHubButton();
   }
 
   if (window.location.origin === STACKOVERFLOW_URL) {
-    initStackOverflowBtn();
+    initStackOverflowButton();
   }
 };
