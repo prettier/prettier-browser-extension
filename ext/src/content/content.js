@@ -3,7 +3,8 @@
 function init() {
   const GITHUB_URL = "https://github.com";
   const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
-  const GITHUB_POLLING_TIME_IN_SECONDS = 1;
+  const ONE_SECOND_IN_MILLISECONDS = 1000;
+  const GITHUB_POLLING_TIME_IN_SECONDS = 1 * ONE_SECOND_IN_MILLISECONDS;
   let isGithubListenerAdded = false;
 
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
@@ -22,7 +23,10 @@ function init() {
     yaml: "yaml"
   };
 
-  function renderButton(el, { classes = [], style = {}, append = true, refNode = null } = {}) {
+  function renderButton(
+    el,
+    { classes = [], style = {}, append = true, refNode = null } = {}
+  ) {
     const button = document.createElement("button");
     button.textContent = "Prettier";
     button.classList.add("btn", ...classes);
@@ -31,33 +35,47 @@ function init() {
       button.style[key] = value;
     }
 
-    if (refNode){
+    if (refNode) {
       el.insertBefore(button, refNode);
-    }else if(append){
+    } else if (append) {
       el.append(button);
-    }else{
+    } else {
       el.prepend(button);
     }
 
     return button;
   }
 
-  function discoverButtonsAndCreatePrettierButtons(){
-    const COMMENT = 'Comment';
-    const SUBMIT_PULL_REQUEST = 'Create pull request';
-    const SUBMIT_NEW_ISSUE = 'Submit new issue';
+  function discoverButtonsAndCreatePrettierButtons() {
+    const COMMENT = "Comment";
+    const REPLY = "Reply…";
+    const SUBMIT_PULL_REQUEST = "Create pull request";
+    const SUBMIT_NEW_ISSUE = "Submit new issue";
 
-    const BUTTONS_WITH_STYLING = [SUBMIT_PULL_REQUEST, SUBMIT_NEW_ISSUE]
-    const BUTTONS_TO_SEARCH_FOR = [COMMENT, SUBMIT_PULL_REQUEST, SUBMIT_NEW_ISSUE]
-    const buttons = document.getElementsByTagName('button');
-    
-    for(const button of buttons){
-      if(BUTTONS_TO_SEARCH_FOR.includes(button.innerText)){
-        if(button.parentNode.querySelector('.prettier-btn') === null){
-          const refNode = BUTTONS_WITH_STYLING.includes(button.innerText) ? button : null;
-          const style = BUTTONS_WITH_STYLING.includes(button.innerText) ? { 'margin-right': '5px', 'float': 'left' } : {};
+    const BUTTONS_WITH_STYLING = [SUBMIT_PULL_REQUEST, SUBMIT_NEW_ISSUE];
+    const BUTTONS_TO_SEARCH_FOR = [
+      COMMENT,
+      SUBMIT_PULL_REQUEST,
+      SUBMIT_NEW_ISSUE
+    ];
+    const buttons = document.getElementsByTagName("button");
 
-          const buttonElem = renderButton(button.parentNode, { classes: ['prettier-btn'], append: true, style, refNode });
+    for (const button of buttons) {
+      if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
+        if (button.parentNode.querySelector(".prettier-btn") === null) {
+          const refNode = BUTTONS_WITH_STYLING.includes(button.innerText)
+            ? button
+            : null;
+          const style = BUTTONS_WITH_STYLING.includes(button.innerText)
+            ? { float: "left", "margin-right": "5px" }
+            : {};
+
+          const buttonElem = renderButton(button.parentNode, {
+            append: true,
+            classes: ["prettier-btn"],
+            refNode,
+            style
+          });
           const textArea = findTextArea(buttonElem);
           buttonElem.addEventListener("click", event => {
             event.preventDefault();
@@ -69,25 +87,30 @@ function init() {
           });
         }
       }
-      if(button.innerText === 'Reply…'){
-        button.addEventListener('click', () => {
-          window.setTimeout(discoverButtonsAndCreatePrettierButtons, 100);
+      if (button.innerText === REPLY) {
+        button.addEventListener("click", () => {
+          window.setTimeout(
+            discoverButtonsAndCreatePrettierButtons,
+            ONE_SECOND_IN_MILLISECONDS
+          );
         });
       }
     }
   }
 
-  function findTextArea(buttonElement){
+  function findTextArea(buttonElement) {
     const alreadySeen = [];
     const alreadyAdded = [];
     const childrenNodes = [buttonElement];
 
-    while(childrenNodes.length > 0){
+    while (childrenNodes.length > 0) {
       const thisChild = childrenNodes.pop();
-      if(thisChild.tagName &&
-         thisChild.tagName !== 'TEXTAREA' &&
-         !alreadySeen.includes(thisChild)){
-        if(!alreadyAdded.includes(thisChild.parentNode)){
+      if (
+        thisChild.tagName &&
+        thisChild.tagName !== "TEXTAREA" &&
+        !alreadySeen.includes(thisChild)
+      ) {
+        if (!alreadyAdded.includes(thisChild.parentNode)) {
           childrenNodes.push(thisChild.parentNode);
           alreadyAdded.push(thisChild.parentNode);
         }
@@ -95,7 +118,7 @@ function init() {
         childrenNodes.push(...thisChild.childNodes);
       }
 
-      if(thisChild.tagName === 'TEXTAREA'){
+      if (thisChild.tagName === "TEXTAREA") {
         return thisChild;
       }
     }
@@ -111,7 +134,7 @@ function init() {
    * 3. Issues
    */
   function initGitHubButton() {
-    if(GITHUB_VALID_PATHNAMES.test(window.location.pathname)){
+    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
       discoverButtonsAndCreatePrettierButtons();
     }
   }
@@ -274,15 +297,15 @@ function init() {
     }, POLLING_INTERVAL);
   }
 
-  if(window.location.origin === GITHUB_URL){
+  if (window.location.origin === GITHUB_URL) {
     let currentPath = window.location.pathname;
-    if(!isGithubListenerAdded){
+    if (!isGithubListenerAdded) {
       window.setInterval(() => {
-        if(window.location.pathname !== currentPath){
-          currentPath = window.location.pathname
-          setTimeout(initGitHubButton, 1000);
+        if (window.location.pathname !== currentPath) {
+          currentPath = window.location.pathname;
+          setTimeout(initGitHubButton, ONE_SECOND_IN_MILLISECONDS);
         }
-      }, GITHUB_POLLING_TIME_IN_SECONDS * 1000);
+      }, GITHUB_POLLING_TIME_IN_SECONDS);
       isGithubListenerAdded = true;
     }
     initGitHubButton();
