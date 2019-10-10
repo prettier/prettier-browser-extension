@@ -2,10 +2,12 @@
 
 function init() {
   const GITHUB_URL = "https://github.com";
-  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|issues\/\d+)/u;
+  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|issues\/\d+|issues\/new)/u;
+  const GITHUB_POLLING_TIME_IN_SECONDS = 1;
+  let isGithubListenerAdded = false;
+
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
   const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
-  const POLLING_INTERVAL = 30;
   const PARSERS_LANG_MAP = {
     css: "postcss",
     flow: "flow",
@@ -20,21 +22,7 @@ function init() {
     yaml: "yaml"
   };
 
-  function getParentWithClass(el, className) {
-    let parent = el.parentElement;
-
-    while (!parent.classList.contains(className)) {
-      parent = parent.parentElement;
-
-      if (!parent) {
-        return null;
-      }
-    }
-
-    return parent;
-  }
-
-  function renderButton(el, { classes = [], style = {}, append = true } = {}) {
+  function renderButton(el, { classes = [], style = {}, append = true, refNode = null } = {}) {
     const button = document.createElement("button");
     button.textContent = "Prettier";
     button.classList.add("btn", ...classes);
@@ -45,11 +33,71 @@ function init() {
 
     if (append) {
       el.append(button);
-    } else {
-      el.prepend(button);
+    } 
+
+    if (refNode){
+      el.insertBefore(button, refNode);
     }
 
     return button;
+  }
+
+  function discoverButtonsAndCreatePrettierButtons(){
+    const COMMENT_BUTTON_TEXT = 'Comment';
+    const ISSUE_BUTTON_TEXT = 'Submit new issue';
+    const buttons = document.getElementsByTagName('button');
+    
+    for(const button of buttons){
+      if(button.innerText === COMMENT_BUTTON_TEXT ||
+         button.innerText === ISSUE_BUTTON_TEXT){
+        if(button.parentNode.querySelector('.prettier-btn') === null){
+          const refNode = button.innerText === ISSUE_BUTTON_TEXT ? button : null;
+          const style = button.innerText === ISSUE_BUTTON_TEXT ? { 'margin-right': '5px' } : {};
+
+          const buttonElem = renderButton(button.parentNode, { classes: ['prettier-btn'], append: true, style, refNode });
+          const textArea = findTextArea(buttonElem);
+          buttonElem.addEventListener("click", event => {
+            event.preventDefault();
+            textArea.value = window.prettier.format(textArea.value, {
+              parser: "markdown",
+              plugins: window.prettierPlugins
+            });
+            textArea.focus();
+          });
+        }
+      }
+      if(button.innerText === 'Reply…'){
+        button.addEventListener('click', () => {
+          window.setTimeout(discoverButtonsAndCreatePrettierButtons, 100);
+        });
+      }
+    }
+  }
+
+  function findTextArea(buttonElement){
+    const alreadySeen = [];
+    const alreadyAdded = [];
+    const childrenNodes = [buttonElement];
+
+    while(childrenNodes.length > 0){
+      const thisChild = childrenNodes.pop();
+      if(thisChild.tagName &&
+         thisChild.tagName !== 'TEXTAREA' &&
+         !alreadySeen.includes(thisChild)){
+        if(!alreadyAdded.includes(thisChild.parentNode)){
+          childrenNodes.push(thisChild.parentNode);
+          alreadyAdded.push(thisChild.parentNode);
+        }
+        alreadySeen.push(thisChild);
+        childrenNodes.push(...thisChild.childNodes);
+      }
+
+      if(thisChild.tagName === 'TEXTAREA'){
+        return thisChild;
+      }
+    }
+
+    return null;
   }
 
   /*
@@ -60,81 +108,9 @@ function init() {
    * 3. Issues (still needs to be implemented)
    */
   function initGitHubButton() {
-    const DIFF_VIEW_CONTAINER_CLASS = ".diff-view";
-    const PR_VIEW_CONTAINER_CLASS = ".pull-discussion-timeline";
-    const activeButtons = new Map();
-
-    function handleGitHubTextareaEvents({ target }) {
-      if (!target.classList.contains("comment-form-textarea")) {
-        return;
-      }
-
-      if (!target.value.length) {
-        if (activeButtons.has(target)) {
-          const buttonEl = activeButtons.get(target);
-          buttonEl.remove();
-          activeButtons.delete(target);
-        }
-        return;
-      }
-
-      if (activeButtons.has(target)) {
-        return;
-      }
-
-      let parentEl;
-      let buttonsRowSelector;
-      let isNewConversationComment = false;
-
-      if (document.querySelector(DIFF_VIEW_CONTAINER_CLASS)) {
-        parentEl = getParentWithClass(target, "line-comments");
-        buttonsRowSelector = ".form-actions";
-      } else {
-        const newConversationComment = getParentWithClass(
-          target,
-          "timeline-new-comment"
-        );
-        isNewConversationComment = !!newConversationComment;
-
-        if (isNewConversationComment) {
-          parentEl = newConversationComment;
-          buttonsRowSelector = `#partial-new-comment-form-actions .d-flex`;
-        } else {
-          parentEl = getParentWithClass(target, "previewable-comment-form");
-          buttonsRowSelector = ".form-actions";
-        }
-      }
-
-      const buttonsRowEl = parentEl.querySelector(buttonsRowSelector);
-      const style = isNewConversationComment ? { marginRight: "4px" } : {};
-      const buttonEl = renderButton(buttonsRowEl, {
-        append: !isNewConversationComment,
-        classes: ["prettier-btn"],
-        style
-      });
-      activeButtons.set(target, buttonEl);
-      buttonEl.addEventListener("click", event => {
-        event.preventDefault();
-        target.value = window.prettier.format(target.value, {
-          parser: "markdown",
-          plugins: window.prettierPlugins
-        });
-        target.focus();
-      });
+    if(GITHUB_VALID_PATHNAMES.test(window.location.pathname)){
+      discoverButtonsAndCreatePrettierButtons();
     }
-
-    const pageHasLoadedCheckInterval = window.setInterval(() => {
-      let containerEl;
-      if (
-        (containerEl =
-          document.querySelector(DIFF_VIEW_CONTAINER_CLASS) ||
-          document.querySelector(PR_VIEW_CONTAINER_CLASS))
-      ) {
-        window.clearInterval(pageHasLoadedCheckInterval);
-        containerEl.addEventListener("select", handleGitHubTextareaEvents);
-        containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
-      }
-    }, POLLING_INTERVAL);
   }
 
   function initStackOverflowButton() {
@@ -295,10 +271,17 @@ function init() {
     }, POLLING_INTERVAL);
   }
 
-  if (
-    window.location.origin === GITHUB_URL &&
-    GITHUB_VALID_PATHNAMES.test(window.location.pathname)
-  ) {
+  if(window.location.origin === GITHUB_URL){
+    let currentPath = window.location.pathname;
+    if(!isGithubListenerAdded){
+      window.setInterval(() => {
+        if(window.location.pathname !== currentPath){
+          currentPath = window.location.pathname
+          setTimeout(initGitHubButton, 1000);
+        }
+      }, GITHUB_POLLING_TIME_IN_SECONDS * 1000);
+      isGithubListenerAdded = true;
+    }
     initGitHubButton();
   }
 
