@@ -108,7 +108,7 @@ function init() {
    *
    * 1. Pull request conversation view
    * 2. Pull request diff view
-   * 3. Issues (still needs to be implemented)
+   * 3. Issues
    */
   function initGitHubButton() {
     if(GITHUB_VALID_PATHNAMES.test(window.location.pathname)){
