@@ -2,7 +2,7 @@
 
 function init() {
   const GITHUB_URL = "https://github.com";
-  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|issues\/\d+|issues\/new)/u;
+  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
   const GITHUB_POLLING_TIME_IN_SECONDS = 1;
   let isGithubListenerAdded = false;
 
@@ -31,28 +31,31 @@ function init() {
       button.style[key] = value;
     }
 
-    if (append) {
-      el.append(button);
-    } 
-
     if (refNode){
       el.insertBefore(button, refNode);
+    }else if(append){
+      el.append(button);
+    }else{
+      el.prepend(button);
     }
 
     return button;
   }
 
   function discoverButtonsAndCreatePrettierButtons(){
-    const COMMENT_BUTTON_TEXT = 'Comment';
-    const ISSUE_BUTTON_TEXT = 'Submit new issue';
+    const COMMENT = 'Comment';
+    const SUBMIT_PULL_REQUEST = 'Create pull request';
+    const SUBMIT_NEW_ISSUE = 'Submit new issue';
+
+    const BUTTONS_WITH_STYLING = [SUBMIT_PULL_REQUEST, SUBMIT_NEW_ISSUE]
+    const BUTTONS_TO_SEARCH_FOR = [COMMENT, SUBMIT_PULL_REQUEST, SUBMIT_NEW_ISSUE]
     const buttons = document.getElementsByTagName('button');
     
     for(const button of buttons){
-      if(button.innerText === COMMENT_BUTTON_TEXT ||
-         button.innerText === ISSUE_BUTTON_TEXT){
+      if(BUTTONS_TO_SEARCH_FOR.includes(button.innerText)){
         if(button.parentNode.querySelector('.prettier-btn') === null){
-          const refNode = button.innerText === ISSUE_BUTTON_TEXT ? button : null;
-          const style = button.innerText === ISSUE_BUTTON_TEXT ? { 'margin-right': '5px' } : {};
+          const refNode = BUTTONS_WITH_STYLING.includes(button.innerText) ? button : null;
+          const style = BUTTONS_WITH_STYLING.includes(button.innerText) ? { 'margin-right': '5px', 'float': 'left' } : {};
 
           const buttonElem = renderButton(button.parentNode, { classes: ['prettier-btn'], append: true, style, refNode });
           const textArea = findTextArea(buttonElem);
