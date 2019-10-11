@@ -55,6 +55,7 @@ function init() {
   }
 
   function searchAndAddListenerToButtons() {
+    const COMMENT = "Comment";
     const REPLY = "Reply…";
     const CANCEL = "Cancel";
     const CLOSE_ISSUE = " Close issue";
@@ -62,6 +63,7 @@ function init() {
     const SUBMIT_PULL_REQUEST = "Create pull request";
     const SUBMIT_NEW_ISSUE = "Submit new issue";
     const BUTTONS_TO_SEARCH_FOR = [
+      COMMENT,
       CANCEL,
       CLOSE_ISSUE,
       CLOSE_PULL_REQUEST,
@@ -73,6 +75,17 @@ function init() {
     const createList = [];
     for (const button of buttons) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
+        if (
+          button.innerText === COMMENT &&
+          (button.parentNode.parentNode.querySelector(
+            "button[name=comment_and_close]"
+          ) ||
+            button.parentNode.parentNode.querySelector(
+              "button[data-confirm-cancel-text]"
+            ))
+        ) {
+          continue;
+        }
         createList.push(button);
       }
       if (button.innerText === REPLY) {
