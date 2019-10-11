@@ -55,7 +55,6 @@ function init() {
   }
 
   function searchAndAddListenerToButtons() {
-    const COMMENT = "Comment";
     const REPLY = "Reply…";
     const CANCEL = "Cancel";
     const CLOSE_ISSUE = " Close issue";
