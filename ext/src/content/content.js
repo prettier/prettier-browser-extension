@@ -44,6 +44,16 @@ function init() {
     return button;
   }
 
+  function setupCommentObserver(observer) {
+    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
+      observer.observe(elem, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+
   function searchAndAddListenerToButtons() {
     const COMMENT = "Comment";
     const REPLY = "Reply…";
@@ -320,13 +330,19 @@ function init() {
   if (window.location.origin === GITHUB_URL) {
     let currentPath = window.location.pathname;
     if (!isGithubListenerAdded) {
-      const observer = new MutationObserver(() => {
+      const commentObserver = new MutationObserver(() => {
+        initGitHubButton();
+      });
+      const pageObserver = new MutationObserver(() => {
         if (window.location.pathname !== currentPath) {
           currentPath = window.location.pathname;
           initGitHubButton();
+          commentObserver.disconnect();
+          setupCommentObserver(commentObserver);
         }
       });
-      observer.observe(document.querySelector("body"), { childList: true });
+      pageObserver.observe(document.querySelector("body"), { childList: true });
+      setupCommentObserver(commentObserver);
       isGithubListenerAdded = true;
     }
     initGitHubButton();
