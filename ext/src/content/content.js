@@ -1,6 +1,29 @@
-"use strict";
+import parserAngular from "prettier/parser-angular";
+import parserBabylon from "prettier/parser-babylon";
+import parserFlow from "prettier/parser-flow";
+import parserGlimmer from "prettier/parser-glimmer";
+import parserGraphql from "prettier/parser-graphql";
+import parserHtml from "prettier/parser-html";
+import parserMarkdown from "prettier/parser-markdown";
+import parserPostcss from "prettier/parser-postcss";
+import parserTypescript from "prettier/parser-typescript";
+import parserYaml from "prettier/parser-yaml";
+import prettier from "prettier/standalone";
 
 function init() {
+  const prettierPlugins = [
+    parserAngular,
+    parserBabylon,
+    parserFlow,
+    parserGlimmer,
+    parserGraphql,
+    parserHtml,
+    parserMarkdown,
+    parserPostcss,
+    parserTypescript,
+    parserYaml
+  ];
+
   const GITHUB_URL = "https://github.com";
   const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
   let isGithubListenerAdded = false;
@@ -116,9 +139,9 @@ function init() {
         const textArea = findWithClass(buttonElem, "comment-form-textarea");
         buttonElem.addEventListener("click", event => {
           event.preventDefault();
-          textArea.value = window.prettier.format(textArea.value, {
+          textArea.value = prettier.format(textArea.value, {
             parser: "markdown",
-            plugins: window.prettierPlugins
+            plugins: prettierPlugins
           });
           textArea.focus();
         });
@@ -288,9 +311,9 @@ function init() {
             const codeLines = isCodeBlock
               ? lines.slice(1, -1)
               : lines.slice(indentedLineCodeBlockStartIdx);
-            let formattedBlock = window.prettier.format(codeLines.join("\n"), {
+            let formattedBlock = prettier.format(codeLines.join("\n"), {
               parser: PARSERS_LANG_MAP[lang],
-              plugins: window.prettierPlugins
+              plugins: prettierPlugins
             });
 
             // Prettier adds a trailing newline
@@ -313,9 +336,9 @@ function init() {
           });
         }
 
-        inputEl.value = window.prettier.format(inputEl.value, {
+        inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
-          plugins: window.prettierPlugins
+          plugins: prettierPlugins
         });
         inputEl.focus();
       });
