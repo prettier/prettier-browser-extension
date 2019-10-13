@@ -2,10 +2,11 @@
 
 function init() {
   const GITHUB_URL = "https://github.com";
-  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|issues\/\d+)/u;
+  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
+  let isGithubListenerAdded = false;
+
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
   const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
-  const POLLING_INTERVAL = 30;
   const PARSERS_LANG_MAP = {
     css: "postcss",
     flow: "flow",
@@ -20,21 +21,10 @@ function init() {
     yaml: "yaml"
   };
 
-  function getParentWithClass(el, className) {
-    let parent = el.parentElement;
-
-    while (!parent.classList.contains(className)) {
-      parent = parent.parentElement;
-
-      if (!parent) {
-        return null;
-      }
-    }
-
-    return parent;
-  }
-
-  function renderButton(el, { classes = [], style = {}, append = true } = {}) {
+  function renderButton(
+    el,
+    { classes = [], style = {}, append = true, refNode = null } = {}
+  ) {
     const button = document.createElement("button");
     button.textContent = "Prettier";
     button.classList.add("btn", ...classes);
@@ -43,7 +33,9 @@ function init() {
       button.style[key] = value;
     }
 
-    if (append) {
+    if (refNode) {
+      el.insertBefore(button, refNode);
+    } else if (append) {
       el.append(button);
     } else {
       el.prepend(button);
@@ -52,89 +44,131 @@ function init() {
     return button;
   }
 
+  function setupCommentObserver(observer) {
+    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
+      observer.observe(elem, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+
+  function searchAndAddListenerToButtons() {
+    const COMMENT = "Comment";
+    const REPLY = "Reply…";
+    const CANCEL = "Cancel";
+    const CLOSE_ISSUE = " Close issue";
+    const CLOSE_PULL_REQUEST = " Close pull request";
+    const SUBMIT_PULL_REQUEST = "Create pull request";
+    const SUBMIT_NEW_ISSUE = "Submit new issue";
+    const BUTTONS_TO_SEARCH_FOR = [
+      COMMENT,
+      CANCEL,
+      CLOSE_ISSUE,
+      CLOSE_PULL_REQUEST,
+      SUBMIT_PULL_REQUEST,
+      SUBMIT_NEW_ISSUE
+    ];
+
+    const buttons = document.getElementsByTagName("button");
+    const createList = [];
+    for (const button of buttons) {
+      if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
+        if (
+          button.innerText === COMMENT &&
+          (button.parentNode.parentNode.querySelector(
+            "button[name=comment_and_close]"
+          ) ||
+            button.parentNode.parentNode.querySelector(
+              "button[data-confirm-cancel-text]"
+            ))
+        ) {
+          continue;
+        }
+        createList.push(button);
+      }
+      if (button.innerText === REPLY) {
+        const observer = new MutationObserver(() => {
+          discoverButtonsAndCreatePrettierButtons();
+        });
+        observer.observe(
+          findWithClass(button, "inline-comment-form-container"),
+          { attributes: true }
+        );
+      }
+    }
+    return createList;
+  }
+
+  function discoverButtonsAndCreatePrettierButtons() {
+    const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
+    const createList = searchAndAddListenerToButtons();
+
+    for (const button of createList) {
+      if (button.parentNode.querySelector(".prettier-btn") === null) {
+        const buttonElem = renderButton(button.parentNode, {
+          append: true,
+          classes: ["prettier-btn"],
+          refNode: button,
+          style: BUTTON_STYLE
+        });
+        const textArea = findWithClass(buttonElem, "comment-form-textarea");
+        buttonElem.addEventListener("click", event => {
+          event.preventDefault();
+          textArea.value = window.prettier.format(textArea.value, {
+            parser: "markdown",
+            plugins: window.prettierPlugins
+          });
+          textArea.focus();
+        });
+      }
+    }
+  }
+
+  function findWithClass(buttonElement, classToFind) {
+    const alreadySeen = [];
+    const alreadyAdded = [];
+    const childrenNodes = [buttonElement];
+
+    while (childrenNodes.length > 0) {
+      const thisChild = childrenNodes.pop();
+      const classList = thisChild.classList
+        ? Array.from(thisChild.classList)
+        : [];
+
+      if (
+        thisChild.tagName &&
+        !classList.includes(classToFind) &&
+        !alreadySeen.includes(thisChild)
+      ) {
+        if (!alreadyAdded.includes(thisChild.parentNode)) {
+          childrenNodes.push(thisChild.parentNode);
+          alreadyAdded.push(thisChild.parentNode);
+        }
+        alreadySeen.push(thisChild);
+        childrenNodes.push(...thisChild.childNodes);
+      }
+
+      if (classList.includes(classToFind)) {
+        return thisChild;
+      }
+    }
+
+    return null;
+  }
+
   /*
    * GitHub has three different views with editable comments:
    *
    * 1. Pull request conversation view
    * 2. Pull request diff view
-   * 3. Issues (still needs to be implemented)
+   * 3. Issues
    */
   function initGitHubButton() {
-    const DIFF_VIEW_CONTAINER_CLASS = ".diff-view";
-    const PR_VIEW_CONTAINER_CLASS = ".pull-discussion-timeline";
-    const activeButtons = new Map();
-
-    function handleGitHubTextareaEvents({ target }) {
-      if (!target.classList.contains("comment-form-textarea")) {
-        return;
-      }
-
-      if (!target.value.length) {
-        if (activeButtons.has(target)) {
-          const buttonEl = activeButtons.get(target);
-          buttonEl.remove();
-          activeButtons.delete(target);
-        }
-        return;
-      }
-
-      if (activeButtons.has(target)) {
-        return;
-      }
-
-      let parentEl;
-      let buttonsRowSelector;
-      let isNewConversationComment = false;
-
-      if (document.querySelector(DIFF_VIEW_CONTAINER_CLASS)) {
-        parentEl = getParentWithClass(target, "line-comments");
-        buttonsRowSelector = ".form-actions";
-      } else {
-        const newConversationComment = getParentWithClass(
-          target,
-          "timeline-new-comment"
-        );
-        isNewConversationComment = !!newConversationComment;
-
-        if (isNewConversationComment) {
-          parentEl = newConversationComment;
-          buttonsRowSelector = `#partial-new-comment-form-actions .d-flex`;
-        } else {
-          parentEl = getParentWithClass(target, "previewable-comment-form");
-          buttonsRowSelector = ".form-actions";
-        }
-      }
-
-      const buttonsRowEl = parentEl.querySelector(buttonsRowSelector);
-      const style = isNewConversationComment ? { marginRight: "4px" } : {};
-      const buttonEl = renderButton(buttonsRowEl, {
-        append: !isNewConversationComment,
-        classes: ["prettier-btn"],
-        style
-      });
-      activeButtons.set(target, buttonEl);
-      buttonEl.addEventListener("click", event => {
-        event.preventDefault();
-        target.value = window.prettier.format(target.value, {
-          parser: "markdown",
-          plugins: window.prettierPlugins
-        });
-        target.focus();
-      });
+    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
+      discoverButtonsAndCreatePrettierButtons();
     }
-
-    const pageHasLoadedCheckInterval = window.setInterval(() => {
-      let containerEl;
-      if (
-        (containerEl =
-          document.querySelector(DIFF_VIEW_CONTAINER_CLASS) ||
-          document.querySelector(PR_VIEW_CONTAINER_CLASS))
-      ) {
-        window.clearInterval(pageHasLoadedCheckInterval);
-        containerEl.addEventListener("select", handleGitHubTextareaEvents);
-        containerEl.addEventListener("keyup", handleGitHubTextareaEvents);
-      }
-    }, POLLING_INTERVAL);
   }
 
   function initStackOverflowButton() {
@@ -295,10 +329,39 @@ function init() {
     }, POLLING_INTERVAL);
   }
 
-  if (
-    window.location.origin === GITHUB_URL &&
-    GITHUB_VALID_PATHNAMES.test(window.location.pathname)
-  ) {
+  if (window.location.origin === GITHUB_URL) {
+    let currentPath = window.location.pathname;
+    if (!isGithubListenerAdded) {
+      const commentObserver = new MutationObserver(() => {
+        initGitHubButton();
+      });
+      const newCommentObserver = new MutationObserver(() => {
+        commentObserver.disconnect();
+        setupCommentObserver(commentObserver);
+      });
+      const pageObserver = new MutationObserver(() => {
+        if (window.location.pathname !== currentPath) {
+          currentPath = window.location.pathname;
+          initGitHubButton();
+
+          commentObserver.disconnect();
+          setupCommentObserver(commentObserver);
+          const content = document.querySelector(".js-disscussion");
+          if (content) {
+            newCommentObserver.disconnect();
+            newCommentObserver.observe(content, { childList: true });
+          }
+        }
+      });
+      pageObserver.observe(document.querySelector("body"), {
+        childList: true
+      });
+      newCommentObserver.observe(document.querySelector(".js-discussion"), {
+        childList: true
+      });
+      setupCommentObserver(commentObserver);
+      isGithubListenerAdded = true;
+    }
     initGitHubButton();
   }
 
