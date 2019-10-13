@@ -116,11 +116,14 @@ function init() {
         const textArea = findWithClass(buttonElem, "comment-form-textarea");
         buttonElem.addEventListener("click", event => {
           event.preventDefault();
-          textArea.value = window.prettier.format(textArea.value, {
+          const formattedText = window.prettier.format(textArea.value, {
             parser: "markdown",
             plugins: window.prettierPlugins
           });
           textArea.focus();
+          textArea.select();
+          document.execCommand("delete", false, null);
+          document.execCommand("insertText", false, formattedText);
         });
       }
     }
@@ -356,9 +359,12 @@ function init() {
       pageObserver.observe(document.querySelector("body"), {
         childList: true
       });
-      newCommentObserver.observe(document.querySelector(".js-discussion"), {
-        childList: true
-      });
+      const jsDiscussion = document.querySelector(".js-discussion");
+      if (jsDiscussion) {
+        newCommentObserver.observe(jsDiscussion, {
+          childList: true
+        });
+      }
       setupCommentObserver(commentObserver);
       isGithubListenerAdded = true;
     }
