@@ -6,7 +6,7 @@ function init() {
   let isGithubListenerAdded = false;
 
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
-  const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
+  const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
   const PARSERS_LANG_MAP = {
     css: "postcss",
     flow: "flow",
@@ -20,6 +20,42 @@ function init() {
     typescript: "typescript",
     yaml: "yaml"
   };
+
+  // Pasting events are used to force stackoverflows WMD to save state.
+  // TODO: This solution is buggy and does not always work - more discussion needed on solution
+  function stackOverflowFormat(
+    event,
+    textAreaElem,
+    text = null,
+    parser = "markdown"
+  ) {
+    event.preventDefault();
+    textAreaElem.dispatchEvent(new Event("paste"));
+    textAreaElem.input = formatText(event, textAreaElem, text, parser);
+    textAreaElem.dispatchEvent(new Event("paste"));
+  }
+
+  function formatText(event, textAreaElem, text = null, parser = "markdown") {
+    if (event) {
+      event.preventDefault();
+    }
+    const textToFormat = text || textAreaElem.value;
+    let formattedText;
+    if (parser) {
+      formattedText = window.prettier.format(textToFormat, {
+        parser,
+        plugins: window.prettierPlugins
+      });
+    } else {
+      formattedText = textToFormat;
+    }
+
+    textAreaElem.focus();
+    textAreaElem.select();
+    document.execCommand("delete", false, null);
+    document.execCommand("insertText", false, `${formattedText}`);
+    return formattedText;
+  }
 
   function renderButton(
     el,
@@ -44,17 +80,7 @@ function init() {
     return button;
   }
 
-  function setupCommentObserver(observer) {
-    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
-      observer.observe(elem, {
-        attributes: true,
-        childList: true,
-        subtree: true
-      });
-    }
-  }
-
-  function searchAndAddListenerToButtons() {
+  function seachForGithubButtons() {
     const COMMENT = "Comment";
     const REPLY = "Reply…";
     const CANCEL = "Cancel";
@@ -90,7 +116,7 @@ function init() {
       }
       if (button.innerText === REPLY) {
         const observer = new MutationObserver(() => {
-          discoverButtonsAndCreatePrettierButtons();
+          createGithubPrettierButtons();
         });
         observer.observe(
           findWithClass(button, "inline-comment-form-container"),
@@ -101,9 +127,9 @@ function init() {
     return createList;
   }
 
-  function discoverButtonsAndCreatePrettierButtons() {
+  function createGithubPrettierButtons() {
     const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
-    const createList = searchAndAddListenerToButtons();
+    const createList = seachForGithubButtons();
 
     for (const button of createList) {
       if (button.parentNode.querySelector(".prettier-btn") === null) {
@@ -114,17 +140,9 @@ function init() {
           style: BUTTON_STYLE
         });
         const textArea = findWithClass(buttonElem, "comment-form-textarea");
-        buttonElem.addEventListener("click", event => {
-          event.preventDefault();
-          const formattedText = window.prettier.format(textArea.value, {
-            parser: "markdown",
-            plugins: window.prettierPlugins
-          });
-          textArea.focus();
-          textArea.select();
-          document.execCommand("delete", false, null);
-          document.execCommand("insertText", false, formattedText);
-        });
+        buttonElem.addEventListener("click", event =>
+          formatText(event, textArea)
+        );
       }
     }
   }
@@ -161,175 +179,28 @@ function init() {
     return null;
   }
 
-  /*
-   * GitHub has three different views with editable comments:
-   *
-   * 1. Pull request conversation view
-   * 2. Pull request diff view
-   * 3. Issues
-   */
   function initGitHubButton() {
     if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-      discoverButtonsAndCreatePrettierButtons();
+      createGithubPrettierButtons();
     }
   }
 
-  function initStackOverflowButton() {
-    function renderStackOverflowButton() {
-      const inputEl = document.querySelector("#wmd-input");
-      const buttonRowEl = document.querySelector(".wmd-button-row");
-      const buttonEl = renderButton(buttonRowEl, {
-        classes: ["s-btn", "s-btn__primary", "prettier-btn"],
-        style: { margin: "6px" }
-      });
-      buttonEl.addEventListener("click", event => {
-        event.preventDefault();
-
-        // https://stackoverflow.com/editing-help#code
-        let isInBlock = false;
-        const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
-          const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
-          const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
-          const emptyLineRegex = /^\s*$/u;
-          const indentedCodeBlockRegex = /^\s{4}/u;
-          const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
-          const lastGroup = groups[groups.length - 1];
-
-          /*
-           * Code blocks using backicks or tildes:
-           *
-           * ```lang-js
-           * const foo = 'bar';
-           * ```
-           *
-           * ~~~lang-js
-           * const foo = 'bar';
-           * ~~~
-           */
-          if (codeBlockRegex.test(line)) {
-            if (isInBlock) {
-              lastGroup.push(line);
-              isInBlock = false;
-            } else {
-              groups.push([line]);
-              isInBlock = true;
-            }
-          } else if (isInBlock) {
-            lastGroup.push(line);
-
-            /*
-             * Code snippet using backicks:
-             *
-             * `const foo = 'bar';`
-             *
-             * ``const foo = `${bar}`;``
-             */
-          } else if (codeSnippetRegex.test(line)) {
-            groups.push(line);
-
-            /*
-             * Code blocks using indented lines:
-             *
-             *     const foo = 'bar';
-             *     console.log(typeof foo);
-             *
-             * <!-- language: lang-js -->
-             *
-             *     const foo = 'bar';
-             *     console.log(typeof foo);
-             */
-          } else if (emptyLineRegex.test(line)) {
-            if (
-              lastGroup &&
-              indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
-            ) {
-              lastGroup.push(line);
-            }
-          } else if (indentedCodeLangRegex.test(line)) {
-            groups.push([line]);
-          } else if (indentedCodeBlockRegex.test(line)) {
-            if (
-              lastGroup &&
-              (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
-                emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
-            ) {
-              lastGroup.push(line);
-            } else {
-              groups.push([line]);
-            }
-          }
-
-          return groups;
-        }, []);
-
-        // There is an unclosed code block.
-        if (isInBlock) {
-          return;
-        }
-
-        if (codeBlocks.length) {
-          /*
-           * TODO: Add support for language-all: <!-- language-all: lang-* -->
-           * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
-           * https://stackoverflow.com/editing-help#syntax-highlighting
-           */
-          codeBlocks.forEach(lines => {
-            const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
-            const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
-            const [firstLine] = lines;
-            const [, lang = null] =
-              firstLine.match(codeBlockRegex) ||
-              firstLine.match(indentedCodeRegex) ||
-              [];
-
-            if (!lang) {
-              return;
-            }
-
-            const isCodeBlock = codeBlockRegex.test(firstLine);
-            const indentedLineCodeBlockStartIdx = 2;
-            const codeLines = isCodeBlock
-              ? lines.slice(1, -1)
-              : lines.slice(indentedLineCodeBlockStartIdx);
-            let formattedBlock = window.prettier.format(codeLines.join("\n"), {
-              parser: PARSERS_LANG_MAP[lang],
-              plugins: window.prettierPlugins
-            });
-
-            // Prettier adds a trailing newline
-            if (codeLines.length !== formattedBlock.split("\n").length) {
-              formattedBlock = formattedBlock.replace(/\n$/u, "");
-            }
-
-            formattedBlock = isCodeBlock
-              ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
-              : `${firstLine}\n${lines[1]}\n    ${
-                  formattedBlock.split("\n").length > 1
-                    ? formattedBlock.split("\n").join("\n    ")
-                    : formattedBlock
-                }`;
-
-            inputEl.value = inputEl.value.replace(
-              lines.join("\n"),
-              formattedBlock
-            );
-          });
-        }
-
-        inputEl.value = window.prettier.format(inputEl.value, {
-          parser: "markdown",
-          plugins: window.prettierPlugins
-        });
-        inputEl.focus();
+  function resetGithubCommentObserver(observer) {
+    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
+      observer.observe(elem, {
+        attributes: true,
+        childList: true,
+        subtree: true
       });
     }
+  }
 
-    const buttonRowHasLoadedCheckInterval = window.setInterval(() => {
-      if (document.querySelector(".wmd-button-row")) {
-        window.clearInterval(buttonRowHasLoadedCheckInterval);
-        renderStackOverflowButton();
-      }
-    }, POLLING_INTERVAL);
+  function resetGithubNewCommentObserver(observer) {
+    const content = document.querySelector(".js-disscussion");
+    if (content) {
+      observer.disconnect();
+      observer.observe(content, { childList: true });
+    }
   }
 
   if (window.location.origin === GITHUB_URL) {
@@ -340,7 +211,7 @@ function init() {
       });
       const newCommentObserver = new MutationObserver(() => {
         commentObserver.disconnect();
-        setupCommentObserver(commentObserver);
+        resetGithubCommentObserver(commentObserver);
       });
       const pageObserver = new MutationObserver(() => {
         if (window.location.pathname !== currentPath) {
@@ -348,27 +219,173 @@ function init() {
           initGitHubButton();
 
           commentObserver.disconnect();
-          setupCommentObserver(commentObserver);
-          const content = document.querySelector(".js-disscussion");
-          if (content) {
-            newCommentObserver.disconnect();
-            newCommentObserver.observe(content, { childList: true });
-          }
+          resetGithubCommentObserver(commentObserver);
+          resetGithubNewCommentObserver(newCommentObserver);
         }
       });
       pageObserver.observe(document.querySelector("body"), {
         childList: true
       });
-      const jsDiscussion = document.querySelector(".js-discussion");
-      if (jsDiscussion) {
-        newCommentObserver.observe(jsDiscussion, {
-          childList: true
-        });
-      }
-      setupCommentObserver(commentObserver);
+      resetGithubCommentObserver(commentObserver);
+      resetGithubNewCommentObserver(newCommentObserver);
       isGithubListenerAdded = true;
     }
     initGitHubButton();
+  }
+
+  function renderStackOverflowButton() {
+    const inputEl = document.querySelector(".wmd-input");
+    const buttonRowEl = document.querySelector(".wmd-button-row");
+
+    for (const childElem of buttonRowEl.childNodes) {
+      if (Array.from(childElem.classList).includes("prettier-btn")) {
+        return;
+      }
+    }
+
+    const buttonEl = renderButton(buttonRowEl, {
+      classes: ["s-btn", "s-btn__primary", "prettier-btn"],
+      style: { margin: "6px" }
+    });
+    buttonEl.addEventListener("click", event => {
+      // https://stackoverflow.com/editing-help#code
+      let isInBlock = false;
+      const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
+        const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
+        const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
+        const emptyLineRegex = /^\s*$/u;
+        const indentedCodeBlockRegex = /^\s{4}/u;
+        const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
+        const lastGroup = groups[groups.length - 1];
+
+        /*
+         * Code blocks using backicks or tildes:
+         *
+         * ```lang-js
+         * const foo = 'bar';
+         * ```
+         *
+         * ~~~lang-js
+         * const foo = 'bar';
+         * ~~~
+         */
+        if (codeBlockRegex.test(line)) {
+          if (isInBlock) {
+            lastGroup.push(line);
+            isInBlock = false;
+          } else {
+            groups.push([line]);
+            isInBlock = true;
+          }
+        } else if (isInBlock) {
+          lastGroup.push(line);
+
+          /*
+           * Code snippet using backicks:
+           *
+           * `const foo = 'bar';`
+           *
+           * ``const foo = `${bar}`;``
+           */
+        } else if (codeSnippetRegex.test(line)) {
+          groups.push(line);
+
+          /*
+           * Code blocks using indented lines:
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           *
+           * <!-- language: lang-js -->
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           */
+        } else if (emptyLineRegex.test(line)) {
+          if (
+            lastGroup &&
+            indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
+          ) {
+            lastGroup.push(line);
+          }
+        } else if (indentedCodeLangRegex.test(line)) {
+          groups.push([line]);
+        } else if (indentedCodeBlockRegex.test(line)) {
+          if (
+            lastGroup &&
+            (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
+              emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
+          ) {
+            lastGroup.push(line);
+          } else {
+            groups.push([line]);
+          }
+        }
+
+        return groups;
+      }, []);
+
+      // There is an unclosed code block.
+      if (isInBlock) {
+        return;
+      }
+
+      if (codeBlocks.length) {
+        /*
+         * TODO: Add support for language-all: <!-- language-all: lang-* -->
+         * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
+         * https://stackoverflow.com/editing-help#syntax-highlighting
+         */
+        codeBlocks.forEach(lines => {
+          const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
+          const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
+          const [firstLine] = lines;
+          const [, lang = null] =
+            firstLine.match(codeBlockRegex) ||
+            firstLine.match(indentedCodeRegex) ||
+            [];
+
+          if (!lang) {
+            return;
+          }
+
+          const isCodeBlock = codeBlockRegex.test(firstLine);
+          const indentedLineCodeBlockStartIdx = 2;
+          const codeLines = isCodeBlock
+            ? lines.slice(1, -1)
+            : lines.slice(indentedLineCodeBlockStartIdx);
+          let formattedBlock = window.prettier.format(codeLines.join("\n"), {
+            parser: PARSERS_LANG_MAP[lang],
+            plugins: window.prettierPlugins
+          });
+
+          // Prettier adds a trailing newline
+          if (codeLines.length !== formattedBlock.split("\n").length) {
+            formattedBlock = formattedBlock.replace(/\n$/u, "");
+          }
+
+          formattedBlock = isCodeBlock
+            ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
+            : `${firstLine}\n${lines[1]}\n    ${
+                formattedBlock.split("\n").length > 1
+                  ? formattedBlock.split("\n").join("\n    ")
+                  : formattedBlock
+              }`;
+
+          const value = inputEl.value.replace(lines.join("\n"), formattedBlock);
+          stackOverflowFormat(event, inputEl, value, null);
+        });
+      }
+
+      stackOverflowFormat(event, inputEl);
+    });
+  }
+
+  function initStackOverflowButton() {
+    const buttonRow = document.querySelector(".wmd-button-row");
+    if (buttonRow) {
+      renderStackOverflowButton();
+    }
   }
 
   if (
@@ -376,6 +393,18 @@ function init() {
     STACKOVERFLOW_VALID_PATHNAMES.test(window.location.pathname)
   ) {
     initStackOverflowButton();
+
+    const pageObserver = new MutationObserver(() => {
+      initStackOverflowButton();
+    });
+
+    const content = document.querySelector("#content");
+    if (content) {
+      pageObserver.observe(content, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 }
 
