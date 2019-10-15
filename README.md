@@ -10,7 +10,19 @@
 
 ## Development
 
-Format all the supported files:
+First time:
+
+```
+yarn
+```
+
+Build:
+
+```
+yarn build
+```
+
+Format files:
 
 ```
 yarn fix
