@@ -2,11 +2,9 @@
 
 > Extension that adds support for prettifying input boxes that support Markdown or Code.
 
-## Test
+## Chrome Web Store
 
-- Chrome Settings > More Tools > Extensions...
-- Turn on the Developer mode
-- Load unpacked > Select the `ext` directory
+[Install](https://chrome.google.com/webstore/detail/prettier/fbcfnmplppajblbmdehballiekfgdkhp) the extension from the store.
 
 ## Development
 
