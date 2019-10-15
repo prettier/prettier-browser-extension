@@ -23,6 +23,7 @@
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
     "fix": "yarn fix:js && yarn fix:other",
+    "install": "yarn build",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
