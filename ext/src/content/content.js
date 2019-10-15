@@ -3,6 +3,7 @@
 function init() {
   const GITHUB_URL = "https://github.com";
   const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
+  const POLLING_INTERVAL = 30;
   let isGithubListenerAdded = false;
 
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
@@ -190,6 +191,7 @@ function init() {
         const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
           const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
           const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
+          const langAllRegex = /^\s*<!-- language-all: lang-.+ -->/u;
           const emptyLineRegex = /^\s*$/u;
           const indentedCodeBlockRegex = /^\s{4}/u;
           const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
@@ -225,7 +227,7 @@ function init() {
              * ``const foo = `${bar}`;``
              */
           } else if (codeSnippetRegex.test(line)) {
-            groups.push(line);
+            groups.push([line]);
 
             /*
              * Code blocks using indented lines:
@@ -257,6 +259,13 @@ function init() {
             } else {
               groups.push([line]);
             }
+            /*
+             * language-all comments:
+             *
+             * <!-- language-all: lang-js -->
+             */
+          } else if (langAllRegex.test(line)) {
+            groups.push([line]);
           }
 
           return groups;
@@ -268,50 +277,95 @@ function init() {
         }
 
         if (codeBlocks.length) {
-          /*
-           * TODO: Add support for language-all: <!-- language-all: lang-* -->
-           * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
-           * https://stackoverflow.com/editing-help#syntax-highlighting
-           */
+          let langAll = null;
+
+          // https://stackoverflow.com/editing-help#syntax-highlighting
           codeBlocks.forEach(lines => {
-            const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
-            const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
+            const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*(?:lang-(.+))?/u;
+            const indentedCodeWithLangRegex = /^\s*<!-- language: lang-(.+) -->/u;
+            const langAllRegex = /^\s*<!-- language-all: lang-(.+) -->/u;
+            const codeSnippetRegex = /(`{1,2})([^\n`]+)(`{1,2})/gu;
             const [firstLine] = lines;
-            const [, lang = null] =
+
+            if (langAllRegex.test(firstLine)) {
+              [, langAll = null] = firstLine.match(langAllRegex);
+              return;
+            }
+
+            const [, lang = langAll] =
               firstLine.match(codeBlockRegex) ||
-              firstLine.match(indentedCodeRegex) ||
+              firstLine.match(indentedCodeWithLangRegex) ||
               [];
 
             if (!lang) {
               return;
             }
 
-            const isCodeBlock = codeBlockRegex.test(firstLine);
-            const indentedLineCodeBlockStartIdx = 2;
-            const codeLines = isCodeBlock
-              ? lines.slice(1, -1)
-              : lines.slice(indentedLineCodeBlockStartIdx);
-            let formattedBlock = window.prettier.format(codeLines.join("\n"), {
-              parser: PARSERS_LANG_MAP[lang],
-              plugins: window.prettierPlugins
-            });
+            let formattedText = lines.join("\n");
 
-            // Prettier adds a trailing newline
-            if (codeLines.length !== formattedBlock.split("\n").length) {
-              formattedBlock = formattedBlock.replace(/\n$/u, "");
-            }
+            // Code Snippets
+            if (codeSnippetRegex.test(firstLine)) {
+              formattedText = firstLine.replace(
+                codeSnippetRegex,
+                (match, openingBackticks, snippet, closingBackticks) => {
+                  let formattedSnippet = snippet;
 
-            formattedBlock = isCodeBlock
-              ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
-              : `${firstLine}\n${lines[1]}\n    ${
-                  formattedBlock.split("\n").length > 1
-                    ? formattedBlock.split("\n").join("\n    ")
-                    : formattedBlock
+                  try {
+                    formattedSnippet = window.prettier.format(snippet, {
+                      parser: PARSERS_LANG_MAP[lang],
+                      plugins: window.prettierPlugins
+                    });
+                  } catch {}
+
+                  return `${openingBackticks}${formattedSnippet}${closingBackticks}`;
+                }
+              );
+
+              // Code Blocks
+            } else {
+              const isCodeBlock = codeBlockRegex.test(firstLine);
+              const isIndentedBlockWithLang = indentedCodeWithLangRegex.test(
+                firstLine
+              );
+              let codeLines;
+
+              if (isCodeBlock) {
+                codeLines = codeLines.slice(1, -1);
+              } else {
+                const indentedLineCodeBlockStartIdx = 2;
+                codeLines = isIndentedBlockWithLang
+                  ? lines.slice(indentedLineCodeBlockStartIdx)
+                  : lines;
+              }
+
+              try {
+                formattedText = window.prettier.format(codeLines.join("\n"), {
+                  parser: PARSERS_LANG_MAP[lang],
+                  plugins: window.prettierPlugins
+                });
+              } catch {
+                return;
+              }
+
+              if (isCodeBlock) {
+                formattedText = `${firstLine}\n${formattedText}\n${
+                  lines[lines.length - 1]
                 }`;
+              } else {
+                const langComment = isIndentedBlockWithLang
+                  ? `${firstLine}\n${lines[1]}\n`
+                  : "";
+                formattedText = `${langComment}    ${
+                  formattedText.split("\n").length > 1
+                    ? formattedText.split("\n").join("\n    ")
+                    : formattedText
+                }`;
+              }
+            }
 
             inputEl.value = inputEl.value.replace(
               lines.join("\n"),
-              formattedBlock
+              formattedText
             );
           });
         }
