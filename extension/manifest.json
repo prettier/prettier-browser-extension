@@ -9,17 +9,12 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "background": {
-    "page": "src/background/background.html",
-    "persistent": true
-  },
-  "options_page": "src/options/index.html",
+  "options_page": "options.html",
   "permissions": ["contentSettings"],
   "content_scripts": [
     {
       "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
-      "css": ["src/content/content.css"],
-      "js": ["main.js"],
+      "js": ["dist/main.js"],
       "run_at": "document_end"
     }
   ]

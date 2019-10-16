@@ -8,7 +8,7 @@
 
 ## Development
 
-### First time
+### Install Dependencies
 
 ```
 yarn
@@ -16,8 +16,16 @@ yarn
 
 ### Build
 
+For a one-time build:
+
 ```
 yarn build
+```
+
+To watch files and rebuild when files change:
+
+```
+yarn start
 ```
 
 #### Test in Chrome locally
