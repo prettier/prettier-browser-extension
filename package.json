@@ -5,16 +5,16 @@
   "repository": "https://github.com/prettier/prettier-chrome-extension.git",
   "license": "MIT",
   "scripts": {
-    "start": "webpack --mode=development --watch ",
     "build": "webpack",
+    "fix": "yarn fix:js && yarn fix:other",
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
-    "fix": "yarn fix:js && yarn fix:other",
     "install": "yarn build",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
+    "start": "webpack --mode=development --watch ",
+    "test": "yarn test:other && yarn test:js",
     "test:other": "yarn prettier --list-different",
-    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
-    "test": "yarn test:other && yarn test:js"
+    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\""
   },
   "dependencies": {
     "prettier": "1.18.2"
