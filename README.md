@@ -31,8 +31,8 @@ yarn start
 #### Test in Chrome locally
 
 - Chrome Settings > More Tools > Extensions...
-- Turn on the Developer mode
-- Load unpacked > Select the `ext` directory
+- Turn on Developer mode
+- Load unpacked > Select the `extension` directory
 
 ### Format files
 
