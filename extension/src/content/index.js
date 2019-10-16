@@ -26,13 +26,14 @@ function init() {
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
   const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
   const PARSERS_LANG_MAP = {
-    css: "postcss",
+    css: "css",
     flow: "flow",
     html: "html",
     javascript: "babel",
     js: "babel",
     json: "babel",
     less: "postcss",
+    sass: "postcss",
     scss: "postcss",
     ts: "typescript",
     typescript: "typescript",
