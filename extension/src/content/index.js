@@ -1,8 +1,5 @@
-import parserAngular from "prettier/parser-angular";
 import parserBabylon from "prettier/parser-babylon";
 import parserFlow from "prettier/parser-flow";
-import parserGlimmer from "prettier/parser-glimmer";
-import parserGraphql from "prettier/parser-graphql";
 import parserHtml from "prettier/parser-html";
 import parserMarkdown from "prettier/parser-markdown";
 import parserPostcss from "prettier/parser-postcss";
@@ -12,11 +9,8 @@ import prettier from "prettier/standalone";
 
 function init() {
   const prettierPlugins = [
-    parserAngular,
     parserBabylon,
     parserFlow,
-    parserGlimmer,
-    parserGraphql,
     parserHtml,
     parserMarkdown,
     parserPostcss,
