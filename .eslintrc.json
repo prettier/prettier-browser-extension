@@ -56,7 +56,7 @@
   },
   "overrides": [
     {
-      "files": ["ext/**/*"],
+      "files": ["extension/**/*"],
       "env": {
         "browser": true
       }
