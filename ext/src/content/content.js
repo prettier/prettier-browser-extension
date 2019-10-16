@@ -1,6 +1,29 @@
-"use strict";
+import parserAngular from "prettier/parser-angular";
+import parserBabylon from "prettier/parser-babylon";
+import parserFlow from "prettier/parser-flow";
+import parserGlimmer from "prettier/parser-glimmer";
+import parserGraphql from "prettier/parser-graphql";
+import parserHtml from "prettier/parser-html";
+import parserMarkdown from "prettier/parser-markdown";
+import parserPostcss from "prettier/parser-postcss";
+import parserTypescript from "prettier/parser-typescript";
+import parserYaml from "prettier/parser-yaml";
+import prettier from "prettier/standalone";
 
 function init() {
+  const prettierPlugins = [
+    parserAngular,
+    parserBabylon,
+    parserFlow,
+    parserGlimmer,
+    parserGraphql,
+    parserHtml,
+    parserMarkdown,
+    parserPostcss,
+    parserTypescript,
+    parserYaml
+  ];
+
   const GITHUB_URL = "https://github.com";
   const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
   let isGithubListenerAdded = false;
@@ -15,25 +38,12 @@ function init() {
     js: "babel",
     json: "babel",
     less: "postcss",
+    markdown: "markdown",
     scss: "postcss",
     ts: "typescript",
     typescript: "typescript",
     yaml: "yaml"
   };
-
-  // Pasting events are used to force stackoverflows WMD to save state.
-  // TODO: This solution is buggy and does not always work - more discussion needed on solution
-  function stackOverflowFormat(
-    event,
-    textAreaElem,
-    text = null,
-    parser = "markdown"
-  ) {
-    event.preventDefault();
-    textAreaElem.dispatchEvent(new Event("paste"));
-    textAreaElem.input = formatText(event, textAreaElem, text, parser);
-    textAreaElem.dispatchEvent(new Event("paste"));
-  }
 
   function formatText(event, textAreaElem, text = null, parser = "markdown") {
     if (event) {
@@ -42,9 +52,9 @@ function init() {
     const textToFormat = text || textAreaElem.value;
     let formattedText;
     if (parser) {
-      formattedText = window.prettier.format(textToFormat, {
+      formattedText = prettier.format(textToFormat, {
         parser,
-        plugins: window.prettierPlugins
+        plugins: prettierPlugins
       });
     } else {
       formattedText = textToFormat;
@@ -233,6 +243,177 @@ function init() {
     initGitHubButton();
   }
 
+  // Pasting events are used to force stackoverflows WMD to save state.
+  // TODO: This solution is buggy and does not always work - more discussion needed on solution
+  function stackOverflowFormat(event, inputEl) {
+    event.preventDefault();
+    const codeBlocks = getCodeBlocksStackOverflow(inputEl);
+
+    let markdownText = inputEl.value;
+    const formattedText = [];
+    if (codeBlocks.length) {
+      /*
+       * TODO: Add support for language-all: <!-- language-all: lang-* -->
+       * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
+       * https://stackoverflow.com/editing-help#syntax-highlighting
+       */
+
+      codeBlocks.forEach(block => {
+        const arrToAdd = [];
+        if (block.content.length) {
+          arrToAdd.push(
+            prettier.format(block.content.join("\n"), {
+              parser: PARSERS_LANG_MAP[block.parser],
+              plugins: prettierPlugins
+            })
+          );
+        }
+        if (block.codeBlock) {
+          arrToAdd.unshift(block.firstLine);
+          if (block.lastLine) {
+            arrToAdd.push(block.lastLine);
+          }
+        }
+        formattedText.push(...arrToAdd);
+      });
+    } else {
+      markdownText = prettier.format(inputEl.value, {
+        parser: "markdown",
+        plugins: prettierPlugins
+      });
+    }
+    let textToUpdateTo = markdownText;
+    if (formattedText.length) {
+      textToUpdateTo = formattedText.join("\n");
+    }
+
+    inputEl.dispatchEvent(new Event("paste"));
+    inputEl.value = formatText(event, inputEl, textToUpdateTo, null);
+    inputEl.dispatchEvent(new Event("paste"));
+  }
+
+  function getCodeBlocksStackOverflow(inputEl) {
+    const lines = inputEl.value.split("\n");
+    const emptyStringRegex = /^\s*$/u;
+    const codeBlockRegex = /^\s{0,3}(?:```|~~~)lang-(.*)/u;
+    const codeBlockRegexClose = /^\s{0,3}(?:```|~~~)/u;
+    const indentedCodeLangRegex = /^\s*<!-- language: lang-(.*) -->/u;
+    const indentedCodeBlockRegex = /^\s{4}/u;
+
+    function getLangNameFromMatch(match) {
+      if (match !== null) {
+        const GROUP_INDEX_LANG_NAME = 1;
+        return match[GROUP_INDEX_LANG_NAME];
+      }
+      return null;
+    }
+
+    function getCodeBlock(line) {
+      const matchObj = line.match(codeBlockRegex);
+      return getLangNameFromMatch(matchObj);
+    }
+
+    function getIndentedCodeBlock(line) {
+      const matchObj = line.match(indentedCodeLangRegex);
+      return getLangNameFromMatch(matchObj);
+    }
+
+    let outsideOfBlocks = [];
+    let inCodeBlock = false;
+    let inIndentedBlock = false;
+    let currentLang = "markdown";
+    let currentBlock = [];
+    const allBlocks = [];
+
+    function clearCurrentBlock(outsideOfBlock = false, langOverride = null) {
+      const parser = langOverride || currentLang;
+      if (currentBlock.length) {
+        const firstLine = currentBlock[0];
+        let lastLine = null;
+        if (currentBlock.length > 1) {
+          lastLine = currentBlock[currentBlock.length - 1];
+        }
+        if (inCodeBlock || inIndentedBlock) {
+          currentBlock = currentBlock.slice(1, currentBlock.length - 1);
+        }
+
+        allBlocks.push({
+          codeBlock: inCodeBlock || inIndentedBlock,
+          content: currentBlock,
+          firstLine,
+          lastLine,
+          parser
+        });
+      }
+      currentBlock = [];
+      outsideOfBlocks = [];
+      if (outsideOfBlock) {
+        inCodeBlock = false;
+        inIndentedBlock = false;
+      }
+    }
+
+    for (let idx = 0; idx < lines.length; idx++) {
+      const line = lines[idx];
+
+      if (emptyStringRegex.test(line)) {
+        continue;
+      }
+
+      const langIndented = getIndentedCodeBlock(line);
+      const codeBlock = getCodeBlock(line);
+      const lang = codeBlock || langIndented;
+
+      if (lang) {
+        if (outsideOfBlocks.length) {
+          currentBlock = outsideOfBlocks;
+          clearCurrentBlock(false, "markdown");
+        }
+        if (inCodeBlock || inIndentedBlock) {
+          clearCurrentBlock();
+        }
+        currentLang = lang;
+
+        if (langIndented) {
+          inIndentedBlock = true;
+          inCodeBlock = false;
+        } else if (codeBlock) {
+          inCodeBlock = true;
+          inIndentedBlock = false;
+        }
+        currentBlock.push(line);
+      } else if (inCodeBlock || inIndentedBlock) {
+        if (inIndentedBlock) {
+          if (indentedCodeBlockRegex.test(line)) {
+            currentBlock.push(line);
+          } else {
+            clearCurrentBlock(true);
+            idx -= 1;
+          }
+        }
+
+        if (inCodeBlock) {
+          if (codeBlockRegexClose.test(line)) {
+            currentBlock.push(line);
+            clearCurrentBlock(true);
+          } else {
+            currentBlock.push(line);
+          }
+        }
+      } else {
+        outsideOfBlocks.push(line);
+      }
+    }
+
+    if (outsideOfBlocks.length) {
+      currentLang = "markdown";
+      currentBlock = outsideOfBlocks;
+    }
+    clearCurrentBlock(true);
+
+    return allBlocks;
+  }
+
   function renderStackOverflowButton() {
     const inputEl = document.querySelector(".wmd-input");
     const buttonRowEl = document.querySelector(".wmd-button-row");
@@ -247,138 +428,9 @@ function init() {
       classes: ["s-btn", "s-btn__primary", "prettier-btn"],
       style: { margin: "6px" }
     });
-    buttonEl.addEventListener("click", event => {
-      // https://stackoverflow.com/editing-help#code
-      let isInBlock = false;
-      const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
-        const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
-        const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
-        const emptyLineRegex = /^\s*$/u;
-        const indentedCodeBlockRegex = /^\s{4}/u;
-        const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
-        const lastGroup = groups[groups.length - 1];
-
-        /*
-         * Code blocks using backicks or tildes:
-         *
-         * ```lang-js
-         * const foo = 'bar';
-         * ```
-         *
-         * ~~~lang-js
-         * const foo = 'bar';
-         * ~~~
-         */
-        if (codeBlockRegex.test(line)) {
-          if (isInBlock) {
-            lastGroup.push(line);
-            isInBlock = false;
-          } else {
-            groups.push([line]);
-            isInBlock = true;
-          }
-        } else if (isInBlock) {
-          lastGroup.push(line);
-
-          /*
-           * Code snippet using backicks:
-           *
-           * `const foo = 'bar';`
-           *
-           * ``const foo = `${bar}`;``
-           */
-        } else if (codeSnippetRegex.test(line)) {
-          groups.push(line);
-
-          /*
-           * Code blocks using indented lines:
-           *
-           *     const foo = 'bar';
-           *     console.log(typeof foo);
-           *
-           * <!-- language: lang-js -->
-           *
-           *     const foo = 'bar';
-           *     console.log(typeof foo);
-           */
-        } else if (emptyLineRegex.test(line)) {
-          if (
-            lastGroup &&
-            indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
-          ) {
-            lastGroup.push(line);
-          }
-        } else if (indentedCodeLangRegex.test(line)) {
-          groups.push([line]);
-        } else if (indentedCodeBlockRegex.test(line)) {
-          if (
-            lastGroup &&
-            (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
-              emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
-          ) {
-            lastGroup.push(line);
-          } else {
-            groups.push([line]);
-          }
-        }
-
-        return groups;
-      }, []);
-
-      // There is an unclosed code block.
-      if (isInBlock) {
-        return;
-      }
-
-      if (codeBlocks.length) {
-        /*
-         * TODO: Add support for language-all: <!-- language-all: lang-* -->
-         * Once this support is added, we can format inline code snippets (i.e. `const foo = 'bar';`).
-         * https://stackoverflow.com/editing-help#syntax-highlighting
-         */
-        codeBlocks.forEach(lines => {
-          const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*lang-(.+)/u;
-          const indentedCodeRegex = /^\s*<!-- language: lang-(.+) -->/u;
-          const [firstLine] = lines;
-          const [, lang = null] =
-            firstLine.match(codeBlockRegex) ||
-            firstLine.match(indentedCodeRegex) ||
-            [];
-
-          if (!lang) {
-            return;
-          }
-
-          const isCodeBlock = codeBlockRegex.test(firstLine);
-          const indentedLineCodeBlockStartIdx = 2;
-          const codeLines = isCodeBlock
-            ? lines.slice(1, -1)
-            : lines.slice(indentedLineCodeBlockStartIdx);
-          let formattedBlock = window.prettier.format(codeLines.join("\n"), {
-            parser: PARSERS_LANG_MAP[lang],
-            plugins: window.prettierPlugins
-          });
-
-          // Prettier adds a trailing newline
-          if (codeLines.length !== formattedBlock.split("\n").length) {
-            formattedBlock = formattedBlock.replace(/\n$/u, "");
-          }
-
-          formattedBlock = isCodeBlock
-            ? `${firstLine}\n${formattedBlock}\n${lines[lines.length - 1]}`
-            : `${firstLine}\n${lines[1]}\n    ${
-                formattedBlock.split("\n").length > 1
-                  ? formattedBlock.split("\n").join("\n    ")
-                  : formattedBlock
-              }`;
-
-          const value = inputEl.value.replace(lines.join("\n"), formattedBlock);
-          stackOverflowFormat(event, inputEl, value, null);
-        });
-      }
-
-      stackOverflowFormat(event, inputEl);
-    });
+    buttonEl.addEventListener("click", event =>
+      stackOverflowFormat(event, inputEl)
+    );
   }
 
   function initStackOverflowButton() {
