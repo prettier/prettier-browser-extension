@@ -353,7 +353,7 @@ function init() {
               let codeLines;
 
               if (isCodeBlock) {
-                codeLines = codeLines.slice(1, -1);
+                codeLines = lines.slice(1, -1);
               } else {
                 const indentedLineCodeBlockStartIdx = 2;
                 codeLines = isIndentedBlockWithLang
