@@ -9,17 +9,19 @@
     "fix": "yarn fix:js && yarn fix:other",
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
-    "install": "yarn build",
+    "install": "yarn build && yarn zip",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
     "start": "webpack --mode=development --watch ",
     "test": "yarn test:other && yarn test:js",
     "test:other": "yarn prettier --list-different",
-    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\""
+    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
+    "zip": "cd extension && jszip-cli add . -i .DS_Store -o ../extension.zip -f"
   },
   "dependencies": {
     "prettier": "1.18.2"
   },
   "devDependencies": {
+    "@ffflorian/jszip-cli": "3.0.2",
     "eslint": "6.5.1",
     "eslint-config-prettier": "6.4.0",
     "eslint-plugin-prettier": "3.1.1",
