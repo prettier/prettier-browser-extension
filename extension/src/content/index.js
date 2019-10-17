@@ -52,6 +52,7 @@ function init() {
   ) {
     const button = document.createElement("button");
     button.textContent = "Prettier";
+    button.type = "button";
     button.classList.add("btn", ...classes);
 
     for (const [key, value] of Object.entries(style)) {
