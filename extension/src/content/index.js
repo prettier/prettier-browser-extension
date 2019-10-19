@@ -419,6 +419,7 @@ function init() {
       const newCommentObserver = new MutationObserver(() => {
         commentObserver.disconnect();
         setupCommentObserver(commentObserver);
+        initGitHubButton();
       });
       const pageObserver = new MutationObserver(() => {
         if (window.location.pathname !== currentPath) {
