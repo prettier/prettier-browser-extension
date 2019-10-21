@@ -52,6 +52,7 @@ function init() {
   ) {
     const button = document.createElement("button");
     button.textContent = "Prettier";
+    button.type = "button";
     button.classList.add("btn", ...classes);
 
     for (const [key, value] of Object.entries(style)) {
@@ -70,9 +71,21 @@ function init() {
   }
 
   function setupCommentObserver(observer) {
-    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
+    const JS_DIFF_CONTAINER_CLASS = ".js-diff-progressive-container";
+    const COMMENT_TIMELINE_GROUP_CLASS = ".timeline-comment-group";
+
+    for (const elem of document.querySelectorAll(
+      COMMENT_TIMELINE_GROUP_CLASS
+    )) {
       observer.observe(elem, {
         attributes: true,
+        childList: true,
+        subtree: true
+      });
+    }
+
+    for (const elem of document.querySelectorAll(JS_DIFF_CONTAINER_CLASS)) {
+      observer.observe(elem, {
         childList: true,
         subtree: true
       });
@@ -131,26 +144,28 @@ function init() {
     const createList = searchAndAddListenerToButtons();
 
     for (const button of createList) {
-      if (button.parentNode.querySelector(".prettier-btn") === null) {
-        const buttonElem = renderButton(button.parentNode, {
+      let prettierBtn = button.parentNode.querySelector(".prettier-btn");
+      if (prettierBtn === null) {
+        prettierBtn = renderButton(button.parentNode, {
           append: true,
           classes: ["prettier-btn"],
           refNode: button,
           style: BUTTON_STYLE
         });
-        const textArea = findWithClass(buttonElem, "comment-form-textarea");
-        buttonElem.addEventListener("click", event => {
-          event.preventDefault();
-          const formattedText = prettier.format(textArea.value, {
-            parser: "markdown",
-            plugins: prettierPlugins
-          });
-          textArea.focus();
-          textArea.select();
-          document.execCommand("delete", false, null);
-          document.execCommand("insertText", false, formattedText);
-        });
       }
+
+      const textArea = findWithClass(prettierBtn, "comment-form-textarea");
+      prettierBtn.addEventListener("click", event => {
+        event.preventDefault();
+        const formattedText = prettier.format(textArea.value, {
+          parser: "markdown",
+          plugins: prettierPlugins
+        });
+        textArea.focus();
+        textArea.select();
+        document.execCommand("delete", false, null);
+        document.execCommand("insertText", false, formattedText);
+      });
     }
   }
 
@@ -438,6 +453,7 @@ function init() {
       pageObserver.observe(document.querySelector("body"), {
         childList: true
       });
+
       const jsDiscussion = document.querySelector(".js-discussion");
       if (jsDiscussion) {
         newCommentObserver.observe(jsDiscussion, {
