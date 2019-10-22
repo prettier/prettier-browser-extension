@@ -1,13 +1,25 @@
 import { Field, Form, Formik } from "formik";
 import React from "react";
 
+const defaultOptions = {
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  semi: true,
+  singleQuote: false,
+  trailingComma: "none",
+  bracketSpacing: true,
+  jsxBracketSameLine: false,
+  arrowParens: "avoid"
+};
+
 function App() {
   return (
     <>
       <h1>
         <a href="https://prettier.io/docs/en/options.html">Prettier Options</a>
       </h1>
-      <Formik>
+      <Formik initialValues={defaultOptions}>
         <Form>
           <hr />
           <label>Print width</label>
