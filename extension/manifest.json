@@ -10,6 +10,7 @@
     "128": "icons/icon128.png"
   },
   "options_page": "options/build/index.html",
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
