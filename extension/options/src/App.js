@@ -1,5 +1,4 @@
-import { Field, Form, Formik, useFormikContext } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const defaultOptions = {
   printWidth: 80,
@@ -13,84 +12,121 @@ const defaultOptions = {
   arrowParens: "avoid"
 };
 
-function OptionsForm() {
-  const { setValues, values } = useFormikContext();
+function App() {
+  const [options, setOptions] = useState();
 
   useEffect(() => {
-    window.chrome.storage.sync.get(defaultOptions, setValues);
-  }, [setValues]);
+    window.chrome.storage.sync.get(defaultOptions, setOptions);
+  }, [setOptions]);
 
   useEffect(() => {
-    if (values) {
-      window.chrome.storage.sync.set(values);
+    if (options) {
+      window.chrome.storage.sync.set(options);
     }
-  }, [values]);
+  }, [options]);
 
-  return values ? (
+  function handleChange({ target: { checked, name, type, value } }) {
+    setOptions({ ...options, [name]: type === "checkbox" ? checked : value });
+  }
+
+  return options ? (
     <>
       <h1>
         <a href="https://prettier.io/docs/en/options.html">Prettier Options</a>
       </h1>
-      <Form>
-        <hr />
-        <label>Print width</label>
-        <Field type="number" name="printWidth" />
-        <p>Specify the line length that the printer will wrap on.</p>
-        <hr />
-        <label>Tab width</label>
-        <Field type="number" name="tabWidth" />
-        <p>Specify the number of spaces per indentation-level.</p>
-        <hr />
-        <label>Use tabs</label>
-        <Field type="checkbox" name="useTabs" />
-        <p>Indent lines with tabs instead of spaces.</p>
-        <hr />
-        <label>Semicolons</label>
-        <Field type="checkbox" name="semi" />
-        <p>Print semicolons at the ends of statements.</p>
-        <hr />
-        <label>Use single quotes</label>
-        <Field type="checkbox" name="singleQuote" />
-        <p>
-          Use {"'"}single{"'"} quotes instead of {'"'}double{'"'} quotes.
-        </p>
-        <hr />
-        <label>Trailing commas</label>
-        <Field as="select" name="trailingComma">
-          <option>none</option>
-          <option>es5</option>
-          <option>all</option>
-        </Field>
-        <p>Print trailing commas wherever possible.</p>
-        <hr />
-        <label>Bracket spacing</label>
-        <Field type="checkbox" name="bracketSpacing" />
-        <p>Print spaces between brackets in object literals.</p>
-        <hr />
-        <label>JSX Brackets</label>
-        <Field type="checkbox" name="jsxBracketSameLine" />
-        <p>
-          Put the `{">"}` of a multi-line JSX element at the end of the last
-          line instead of being alone on the next line.
-        </p>
-        <hr />
-        <label>Arrow Function Parentheses</label>
-        <Field as="select" name="arrowParens">
-          <option>avoid</option>
-          <option>always</option>
-        </Field>
-        <p>Include parentheses around a sole arrow function parameter.</p>
-      </Form>
+      <hr />
+      <label>Print width</label>
+      <input
+        type="number"
+        name="printWidth"
+        value={options.printWidth}
+        onChange={handleChange}
+      />
+      <p>Specify the line length that the printer will wrap on.</p>
+      <hr />
+      <label>Tab width</label>
+      <input
+        type="number"
+        name="tabWidth"
+        value={options.tabWidth}
+        onChange={handleChange}
+      />
+      <p>Specify the number of spaces per indentation-level.</p>
+      <hr />
+      <label>Use tabs</label>
+      <input
+        type="checkbox"
+        name="useTabs"
+        checked={options.useTabs}
+        onChange={handleChange}
+      />
+      <p>Indent lines with tabs instead of spaces.</p>
+      <hr />
+      <label>Semicolons</label>
+      <input
+        type="checkbox"
+        name="semi"
+        checked={options.semi}
+        onChange={handleChange}
+      />
+      <p>Print semicolons at the ends of statements.</p>
+      <hr />
+      <label>Use single quotes</label>
+      <input
+        type="checkbox"
+        name="singleQuote"
+        checked={options.singleQuote}
+        onChange={handleChange}
+      />
+      <p>
+        Use {"'"}single{"'"} quotes instead of {'"'}double{'"'} quotes.
+      </p>
+      <hr />
+      <label>Trailing commas</label>
+      <select
+        name="trailingComma"
+        value={options.trailingComma}
+        onChange={handleChange}
+      >
+        <option>none</option>
+        <option>es5</option>
+        <option>all</option>
+      </select>
+      <p>Print trailing commas wherever possible.</p>
+      <hr />
+      <label>Bracket spacing</label>
+      <input
+        type="checkbox"
+        name="bracketSpacing"
+        checked={options.bracketSpacing}
+        onChange={handleChange}
+      />
+      <p>Print spaces between brackets in object literals.</p>
+      <hr />
+      <label>JSX Brackets</label>
+      <input
+        type="checkbox"
+        name="jsxBracketSameLine"
+        checked={options.jsxBracketSameLine}
+        onChange={handleChange}
+      />
+      <p>
+        Put the `{">"}` of a multi-line JSX element at the end of the last line
+        instead of being alone on the next line.
+      </p>
+      <hr />
+      <label>Arrow Function Parentheses</label>
+      <select
+        name="arrowParens"
+        value={options.arrowParens}
+        onChange={handleChange}
+      >
+        <option>avoid</option>
+        <option>always</option>
+      </select>
+      <p>Include parentheses around a sole arrow function parameter.</p>
     </>
   ) : null;
-}
-
-function App() {
-  return (
-    <Formik>
-      <OptionsForm />
-    </Formik>
-  );
 }
 
 export default App;
