@@ -45,7 +45,7 @@ function App() {
           </p>
           <hr />
           <label>Trailing commas</label>
-          <Field component="select" name="trailingComma">
+          <Field as="select" name="trailingComma">
             <option>none</option>
             <option>es5</option>
             <option>all</option>
@@ -64,7 +64,7 @@ function App() {
           </p>
           <hr />
           <label>Arrow Function Parentheses</label>
-          <Field component="select" name="arrowParens">
+          <Field as="select" name="arrowParens">
             <option>avoid</option>
             <option>always</option>
           </Field>
