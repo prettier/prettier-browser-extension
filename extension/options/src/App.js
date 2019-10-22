@@ -26,7 +26,15 @@ function App() {
   }, [options]);
 
   function handleChange({ target: { checked, name, type, value } }) {
-    setOptions({ ...options, [name]: type === "checkbox" ? checked : value });
+    setOptions({
+      ...options,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "number"
+          ? parseInt(value)
+          : value
+    });
   }
 
   return options ? (
