@@ -2,7 +2,7 @@
   "env": {
     "node": true
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "react-hooks"],
   "extends": ["plugin:react/recommended", "prettier"],
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -49,7 +49,9 @@
       }
     ],
     "sort-vars": "error",
-    "strict": ["error", "global"]
+    "strict": ["error", "global"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "overrides": [
     {
