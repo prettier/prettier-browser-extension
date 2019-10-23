@@ -2,7 +2,7 @@
   "env": {
     "node": true
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "react"],
   "extends": ["prettier"],
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -52,7 +52,9 @@
       }
     ],
     "sort-vars": "error",
-    "strict": ["error", "global"]
+    "strict": ["error", "global"],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error"
   },
   "overrides": [
     {

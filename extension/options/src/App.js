@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 const defaultOptions = {
-  printWidth: 80,
-  tabWidth: 2,
-  useTabs: false,
-  semi: true,
-  singleQuote: false,
-  trailingComma: "none",
+  arrowParens: "avoid",
   bracketSpacing: true,
   jsxBracketSameLine: false,
-  arrowParens: "avoid"
+  printWidth: 80,
+  semi: true,
+  singleQuote: false,
+  tabWidth: 2,
+  trailingComma: "none",
+  useTabs: false
 };
 
 function App() {
