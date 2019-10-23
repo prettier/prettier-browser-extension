@@ -26,11 +26,10 @@ function init(options) {
 
   const GITHUB_URL = "https://github.com";
   const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
-  const POLLING_INTERVAL = 30;
   let isGithubListenerAdded = false;
 
   const STACKOVERFLOW_URL = "https://stackoverflow.com";
-  const STACKOVERFLOW_VALID_PATHNAMES = /^\/questions/u;
+  const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
   const PARSERS_LANG_MAP = {
     css: "css",
     flow: "flow",
@@ -70,29 +69,7 @@ function init(options) {
     return button;
   }
 
-  function setupCommentObserver(observer) {
-    const JS_DIFF_CONTAINER_CLASS = ".js-diff-progressive-container";
-    const COMMENT_TIMELINE_GROUP_CLASS = ".timeline-comment-group";
-
-    for (const elem of document.querySelectorAll(
-      COMMENT_TIMELINE_GROUP_CLASS
-    )) {
-      observer.observe(elem, {
-        attributes: true,
-        childList: true,
-        subtree: true
-      });
-    }
-
-    for (const elem of document.querySelectorAll(JS_DIFF_CONTAINER_CLASS)) {
-      observer.observe(elem, {
-        childList: true,
-        subtree: true
-      });
-    }
-  }
-
-  function searchAndAddListenerToButtons() {
+  function seachForGithubButtons() {
     const COMMENT = "Comment";
     const REPLY = "Reply…";
     const CANCEL = "Cancel";
@@ -128,7 +105,7 @@ function init(options) {
       }
       if (button.innerText === REPLY) {
         const observer = new MutationObserver(() => {
-          discoverButtonsAndCreatePrettierButtons();
+          createGithubPrettierButtons();
         });
         observer.observe(
           findWithClass(button, "inline-comment-form-container"),
@@ -139,9 +116,9 @@ function init(options) {
     return createList;
   }
 
-  function discoverButtonsAndCreatePrettierButtons() {
+  function createGithubPrettierButtons() {
     const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
-    const createList = searchAndAddListenerToButtons();
+    const createList = seachForGithubButtons();
 
     for (const button of createList) {
       let prettierBtn = button.parentNode.querySelector(".prettier-btn");
@@ -202,231 +179,40 @@ function init(options) {
     return null;
   }
 
-  /*
-   * GitHub has three different views with editable comments:
-   *
-   * 1. Pull request conversation view
-   * 2. Pull request diff view
-   * 3. Issues
-   */
   function initGitHubButton() {
     if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-      discoverButtonsAndCreatePrettierButtons();
+      createGithubPrettierButtons();
     }
   }
 
-  function initStackOverflowButton() {
-    function renderStackOverflowButton() {
-      const inputEl = document.querySelector("#wmd-input");
-      const buttonRowEl = document.querySelector(".wmd-button-row");
-      const buttonEl = renderButton(buttonRowEl, {
-        classes: ["s-btn", "s-btn__primary", "prettier-btn"],
-        style: { margin: "6px" }
-      });
-      buttonEl.addEventListener("click", event => {
-        event.preventDefault();
+  function resetGithubNewCommentObserver(observer) {
+    const content = document.querySelector(".js-discussion");
+    if (content) {
+      observer.disconnect();
+      observer.observe(content, { childList: true, subtree: true });
+    }
+  }
 
-        // https://stackoverflow.com/editing-help#code
-        let isInBlock = false;
-        const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
-          const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
-          const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
-          const langAllRegex = /^\s*<!-- language-all: lang-.+ -->/u;
-          const emptyLineRegex = /^\s*$/u;
-          const indentedCodeBlockRegex = /^\s{4}/u;
-          const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
-          const lastGroup = groups[groups.length - 1];
+  function resetGithubCommentObserver(observer) {
+    const JS_DIFF_CONTAINER_CLASS = ".js-diff-progressive-container";
+    const COMMENT_TIMELINE_GROUP_CLASS = ".timeline-comment-group";
 
-          /*
-           * Code blocks using backicks or tildes:
-           *
-           * ```lang-js
-           * const foo = 'bar';
-           * ```
-           *
-           * ~~~lang-js
-           * const foo = 'bar';
-           * ~~~
-           */
-          if (codeBlockRegex.test(line)) {
-            if (isInBlock) {
-              lastGroup.push(line);
-              isInBlock = false;
-            } else {
-              groups.push([line]);
-              isInBlock = true;
-            }
-          } else if (isInBlock) {
-            lastGroup.push(line);
-
-            /*
-             * Code snippet using backicks:
-             *
-             * `const foo = 'bar';`
-             *
-             * ``const foo = `${bar}`;``
-             */
-          } else if (codeSnippetRegex.test(line)) {
-            groups.push([line]);
-
-            /*
-             * Code blocks using indented lines:
-             *
-             *     const foo = 'bar';
-             *     console.log(typeof foo);
-             *
-             * <!-- language: lang-js -->
-             *
-             *     const foo = 'bar';
-             *     console.log(typeof foo);
-             */
-          } else if (emptyLineRegex.test(line)) {
-            if (
-              lastGroup &&
-              indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
-            ) {
-              lastGroup.push(line);
-            }
-          } else if (indentedCodeLangRegex.test(line)) {
-            groups.push([line]);
-          } else if (indentedCodeBlockRegex.test(line)) {
-            if (
-              lastGroup &&
-              (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
-                emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
-            ) {
-              lastGroup.push(line);
-            } else {
-              groups.push([line]);
-            }
-            /*
-             * language-all comments:
-             *
-             * <!-- language-all: lang-js -->
-             */
-          } else if (langAllRegex.test(line)) {
-            groups.push([line]);
-          }
-
-          return groups;
-        }, []);
-
-        // There is an unclosed code block.
-        if (isInBlock) {
-          return;
-        }
-
-        if (codeBlocks.length) {
-          let langAll = null;
-
-          // https://stackoverflow.com/editing-help#syntax-highlighting
-          codeBlocks.forEach(lines => {
-            const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*(?:lang-(.+))?/u;
-            const indentedCodeWithLangRegex = /^\s*<!-- language: lang-(.+) -->/u;
-            const langAllRegex = /^\s*<!-- language-all: lang-(.+) -->/u;
-            const codeSnippetRegex = /(`{1,2})([^\n`]+)(`{1,2})/gu;
-            const [firstLine] = lines;
-
-            if (langAllRegex.test(firstLine)) {
-              [, langAll = null] = firstLine.match(langAllRegex);
-              return;
-            }
-
-            const [, lang = langAll] =
-              firstLine.match(codeBlockRegex) ||
-              firstLine.match(indentedCodeWithLangRegex) ||
-              [];
-
-            if (!lang) {
-              return;
-            }
-
-            let formattedText = lines.join("\n");
-
-            // Code Snippets
-            if (codeSnippetRegex.test(firstLine)) {
-              formattedText = firstLine.replace(
-                codeSnippetRegex,
-                (match, openingBackticks, snippet, closingBackticks) => {
-                  let formattedSnippet = snippet;
-
-                  try {
-                    formattedSnippet = prettier.format(snippet, {
-                      parser: PARSERS_LANG_MAP[lang],
-                      plugins: prettierPlugins,
-                      ...options
-                    });
-                  } catch {}
-
-                  return `${openingBackticks}${formattedSnippet}${closingBackticks}`;
-                }
-              );
-
-              // Code Blocks
-            } else {
-              const isCodeBlock = codeBlockRegex.test(firstLine);
-              const isIndentedBlockWithLang = indentedCodeWithLangRegex.test(
-                firstLine
-              );
-              let codeLines;
-
-              if (isCodeBlock) {
-                codeLines = lines.slice(1, -1);
-              } else {
-                const indentedLineCodeBlockStartIdx = 2;
-                codeLines = isIndentedBlockWithLang
-                  ? lines.slice(indentedLineCodeBlockStartIdx)
-                  : lines;
-              }
-
-              try {
-                formattedText = prettier.format(codeLines.join("\n"), {
-                  parser: PARSERS_LANG_MAP[lang],
-                  plugins: prettierPlugins,
-                  ...options
-                });
-              } catch {
-                return;
-              }
-
-              if (isCodeBlock) {
-                formattedText = `${firstLine}\n${formattedText}\n${
-                  lines[lines.length - 1]
-                }`;
-              } else {
-                const langComment = isIndentedBlockWithLang
-                  ? `${firstLine}\n${lines[1]}\n`
-                  : "";
-                formattedText = `${langComment}    ${
-                  formattedText.split("\n").length > 1
-                    ? formattedText.split("\n").join("\n    ")
-                    : formattedText
-                }`;
-              }
-            }
-
-            inputEl.value = inputEl.value.replace(
-              lines.join("\n"),
-              formattedText
-            );
-          });
-        }
-
-        inputEl.value = prettier.format(inputEl.value, {
-          parser: "markdown",
-          plugins: prettierPlugins,
-          ...options
-        });
-        inputEl.focus();
+    for (const elem of document.querySelectorAll(
+      COMMENT_TIMELINE_GROUP_CLASS
+    )) {
+      observer.observe(elem, {
+        attributes: true,
+        childList: true,
+        subtree: true
       });
     }
 
-    const buttonRowHasLoadedCheckInterval = window.setInterval(() => {
-      if (document.querySelector(".wmd-button-row")) {
-        window.clearInterval(buttonRowHasLoadedCheckInterval);
-        renderStackOverflowButton();
-      }
-    }, POLLING_INTERVAL);
+    for (const elem of document.querySelectorAll(JS_DIFF_CONTAINER_CLASS)) {
+      observer.observe(elem, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
   if (window.location.origin === GITHUB_URL) {
@@ -437,7 +223,7 @@ function init(options) {
       });
       const newCommentObserver = new MutationObserver(() => {
         commentObserver.disconnect();
-        setupCommentObserver(commentObserver);
+        resetGithubCommentObserver(commentObserver);
         initGitHubButton();
       });
       const pageObserver = new MutationObserver(() => {
@@ -446,28 +232,238 @@ function init(options) {
           initGitHubButton();
 
           commentObserver.disconnect();
-          setupCommentObserver(commentObserver);
-          const content = document.querySelector(".js-disscussion");
-          if (content) {
-            newCommentObserver.disconnect();
-            newCommentObserver.observe(content, { childList: true });
-          }
+          resetGithubCommentObserver(commentObserver);
+          resetGithubNewCommentObserver(newCommentObserver);
         }
       });
       pageObserver.observe(document.querySelector("body"), {
         childList: true
       });
 
-      const jsDiscussion = document.querySelector(".js-discussion");
-      if (jsDiscussion) {
-        newCommentObserver.observe(jsDiscussion, {
-          childList: true
-        });
-      }
-      setupCommentObserver(commentObserver);
+      resetGithubCommentObserver(commentObserver);
+      resetGithubNewCommentObserver(newCommentObserver);
       isGithubListenerAdded = true;
     }
     initGitHubButton();
+  }
+
+  function renderStackOverflowButton() {
+    const inputEl = document.querySelector(".wmd-input");
+    const buttonRowEl = document.querySelector(".wmd-button-row");
+
+    for (const childElem of buttonRowEl.childNodes) {
+      if (Array.from(childElem.classList).includes("prettier-btn")) {
+        return;
+      }
+    }
+
+    const buttonEl = renderButton(buttonRowEl, {
+      classes: ["s-btn", "s-btn__primary", "prettier-btn"],
+      style: { margin: "6px" }
+    });
+    buttonEl.addEventListener("click", event => {
+      event.preventDefault();
+
+      // https://stackoverflow.com/editing-help#code
+      let isInBlock = false;
+      const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
+        const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
+        const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
+        const langAllRegex = /^\s*<!-- language-all: lang-.+ -->/u;
+        const emptyLineRegex = /^\s*$/u;
+        const indentedCodeBlockRegex = /^\s{4}/u;
+        const codeSnippetRegex = /`{1,2}[^\n`]+`{1,2}/u;
+        const lastGroup = groups[groups.length - 1];
+
+        /*
+         * Code blocks using backicks or tildes:
+         *
+         * ```lang-js
+         * const foo = 'bar';
+         * ```
+         *
+         * ~~~lang-js
+         * const foo = 'bar';
+         * ~~~
+         */
+        if (codeBlockRegex.test(line)) {
+          if (isInBlock) {
+            lastGroup.push(line);
+            isInBlock = false;
+          } else {
+            groups.push([line]);
+            isInBlock = true;
+          }
+        } else if (isInBlock) {
+          lastGroup.push(line);
+
+          /*
+           * Code snippet using backicks:
+           *
+           * `const foo = 'bar';`
+           *
+           * ``const foo = `${bar}`;``
+           */
+        } else if (codeSnippetRegex.test(line)) {
+          groups.push([line]);
+
+          /*
+           * Code blocks using indented lines:
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           *
+           * <!-- language: lang-js -->
+           *
+           *     const foo = 'bar';
+           *     console.log(typeof foo);
+           */
+        } else if (emptyLineRegex.test(line)) {
+          if (
+            lastGroup &&
+            indentedCodeLangRegex.test(lastGroup[lastGroup.length - 1])
+          ) {
+            lastGroup.push(line);
+          }
+        } else if (indentedCodeLangRegex.test(line)) {
+          groups.push([line]);
+        } else if (indentedCodeBlockRegex.test(line)) {
+          if (
+            lastGroup &&
+            (indentedCodeBlockRegex.test(lastGroup[lastGroup.length - 1]) ||
+              emptyLineRegex.test(lastGroup[lastGroup.length - 1]))
+          ) {
+            lastGroup.push(line);
+          } else {
+            groups.push([line]);
+          }
+          /*
+           * language-all comments:
+           *
+           * <!-- language-all: lang-js -->
+           */
+        } else if (langAllRegex.test(line)) {
+          groups.push([line]);
+        }
+
+        return groups;
+      }, []);
+
+      // There is an unclosed code block.
+      if (isInBlock) {
+        return;
+      }
+
+      if (codeBlocks.length) {
+        let langAll = null;
+
+        // https://stackoverflow.com/editing-help#syntax-highlighting
+        codeBlocks.forEach(lines => {
+          const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*(?:lang-(.+))?/u;
+          const indentedCodeWithLangRegex = /^\s*<!-- language: lang-(.+) -->/u;
+          const langAllRegex = /^\s*<!-- language-all: lang-(.+) -->/u;
+          const codeSnippetRegex = /(`{1,2})([^\n`]+)(`{1,2})/gu;
+          const [firstLine] = lines;
+
+          if (langAllRegex.test(firstLine)) {
+            [, langAll = null] = firstLine.match(langAllRegex);
+            return;
+          }
+
+          const [, lang = langAll] =
+            firstLine.match(codeBlockRegex) ||
+            firstLine.match(indentedCodeWithLangRegex) ||
+            [];
+
+          if (!lang) {
+            return;
+          }
+
+          let formattedText = lines.join("\n");
+
+          // Code Snippets
+          if (codeSnippetRegex.test(firstLine)) {
+            formattedText = firstLine.replace(
+              codeSnippetRegex,
+              (match, openingBackticks, snippet, closingBackticks) => {
+                let formattedSnippet = snippet;
+
+                try {
+                  formattedSnippet = prettier.format(snippet, {
+                    parser: PARSERS_LANG_MAP[lang],
+                    plugins: prettierPlugins,
+                    ...options
+                  });
+                } catch {}
+
+                return `${openingBackticks}${formattedSnippet}${closingBackticks}`;
+              }
+            );
+
+            // Code Blocks
+          } else {
+            const isCodeBlock = codeBlockRegex.test(firstLine);
+            const isIndentedBlockWithLang = indentedCodeWithLangRegex.test(
+              firstLine
+            );
+            let codeLines;
+
+            if (isCodeBlock) {
+              codeLines = lines.slice(1, -1);
+            } else {
+              const indentedLineCodeBlockStartIdx = 2;
+              codeLines = isIndentedBlockWithLang
+                ? lines.slice(indentedLineCodeBlockStartIdx)
+                : lines;
+            }
+
+            try {
+              formattedText = prettier.format(codeLines.join("\n"), {
+                parser: PARSERS_LANG_MAP[lang],
+                plugins: prettierPlugins,
+                ...options
+              });
+            } catch {
+              return;
+            }
+
+            if (isCodeBlock) {
+              formattedText = `${firstLine}\n${formattedText}\n${
+                lines[lines.length - 1]
+              }`;
+            } else {
+              const langComment = isIndentedBlockWithLang
+                ? `${firstLine}\n${lines[1]}\n`
+                : "";
+              formattedText = `${langComment}    ${
+                formattedText.split("\n").length > 1
+                  ? formattedText.split("\n").join("\n    ")
+                  : formattedText
+              }`;
+            }
+          }
+
+          inputEl.value = inputEl.value.replace(
+            lines.join("\n"),
+            formattedText
+          );
+        });
+      }
+
+      inputEl.value = prettier.format(inputEl.value, {
+        parser: "markdown",
+        plugins: prettierPlugins,
+        ...options
+      });
+      inputEl.focus();
+    });
+  }
+
+  function initStackOverflowButton() {
+    const buttonRow = document.querySelector(".wmd-button-row");
+    if (buttonRow) {
+      renderStackOverflowButton();
+    }
   }
 
   if (
@@ -475,6 +471,18 @@ function init(options) {
     STACKOVERFLOW_VALID_PATHNAMES.test(window.location.pathname)
   ) {
     initStackOverflowButton();
+
+    const pageObserver = new MutationObserver(() => {
+      initStackOverflowButton();
+    });
+
+    const content = document.querySelector("#content");
+    if (content) {
+      pageObserver.observe(content, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 }
 
