@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     window.chrome.storage.sync.get(defaultOptions, setOptions);
-  }, [setOptions]);
+  }, []);
 
   useEffect(() => {
     if (options) {
