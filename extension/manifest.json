@@ -9,7 +9,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_page": "options/build/index.html",
+  "options_page": "options/public/index.html",
   "permissions": ["storage"],
   "content_scripts": [
     {

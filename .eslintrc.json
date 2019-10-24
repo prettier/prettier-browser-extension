@@ -63,7 +63,7 @@
   ],
   "settings": {
     "react": {
-      "version": "16.10.2"
+      "version": "detect"
     }
   }
 }
