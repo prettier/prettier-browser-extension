@@ -14,7 +14,7 @@
   "content_scripts": [
     {
       "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
-      "js": ["dist/main.js"],
+      "js": ["dist/content.js"],
       "run_at": "document_end"
     }
   ]
