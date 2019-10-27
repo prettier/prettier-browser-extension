@@ -17,5 +17,6 @@
       "js": ["dist/content.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "content_security_policy": "script-src 'self' http://localhost:8097"
 }
