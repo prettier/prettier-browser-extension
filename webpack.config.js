@@ -2,6 +2,7 @@ const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 
 module.exports = {
+  devtool: false,
   entry: {
     content: "./extension/src/content/index.js",
     options: "./extension/src/options/index.js"
