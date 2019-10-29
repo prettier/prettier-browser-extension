@@ -10,7 +10,7 @@
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
-    "start": "webpack --mode=development --watch ",
+    "start": "webpack --mode=development --watch",
     "test": "yarn test:other && yarn test:js",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
