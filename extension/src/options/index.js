@@ -17,13 +17,13 @@ function App() {
   const [options, setOptions] = useState();
 
   useEffect(() => {
-    chrome.storage.sync.get(defaultOptions, setOptions);
+    chrome.storage.sync.get(items => {
+      setOptions({ ...defaultOptions, ...items.options });
+    });
   }, []);
 
   useEffect(() => {
-    if (options) {
-      chrome.storage.sync.set(options);
-    }
+    chrome.storage.sync.set({ options });
   }, [options]);
 
   function handleChange({ target: { checked, name, type, value } }) {
