@@ -5,11 +5,10 @@
   "repository": "https://github.com/prettier/prettier-chrome-extension.git",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && yarn zip",
     "fix": "yarn fix:js && yarn fix:other",
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
-    "install": "yarn build && yarn zip",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
     "start": "webpack --mode=development --watch ",
     "test": "yarn test:other && yarn test:js",
