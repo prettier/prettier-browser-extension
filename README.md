@@ -16,13 +16,13 @@ yarn
 
 ### Build
 
-For a one-time build:
+For a one-time build in production:
 
 ```
 yarn build
 ```
 
-To watch files and rebuild when files change:
+To watch files and rebuild when files change in development:
 
 ```
 yarn start
