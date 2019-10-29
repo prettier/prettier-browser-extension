@@ -10,7 +10,7 @@ import parserTypescript from "prettier/parser-typescript";
 import parserYaml from "prettier/parser-yaml";
 import prettier from "prettier/standalone";
 
-function init() {
+function init(options) {
   const prettierPlugins = [
     parserAngular,
     parserBabylon,
@@ -136,7 +136,8 @@ function init() {
         event.preventDefault();
         const formattedText = prettier.format(textArea.value, {
           parser: "markdown",
-          plugins: prettierPlugins
+          plugins: prettierPlugins,
+          ...options
         });
         textArea.focus();
         textArea.select();
@@ -390,7 +391,8 @@ function init() {
                 try {
                   formattedSnippet = prettier.format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
-                    plugins: prettierPlugins
+                    plugins: prettierPlugins,
+                    ...options
                   });
                 } catch {}
 
@@ -418,7 +420,8 @@ function init() {
             try {
               formattedText = prettier.format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
-                plugins: prettierPlugins
+                plugins: prettierPlugins,
+                ...options
               });
             } catch {
               return;
@@ -449,7 +452,8 @@ function init() {
 
       inputEl.value = prettier.format(inputEl.value, {
         parser: "markdown",
-        plugins: prettierPlugins
+        plugins: prettierPlugins,
+        ...options
       });
       inputEl.focus();
     });
@@ -482,4 +486,4 @@ function init() {
   }
 }
 
-init();
+chrome.storage.sync.get(init);
