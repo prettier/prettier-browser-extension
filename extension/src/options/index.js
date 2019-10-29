@@ -17,12 +17,12 @@ function App() {
   const [options, setOptions] = useState();
 
   useEffect(() => {
-    window.chrome.storage.sync.get(defaultOptions, setOptions);
+    chrome.storage.sync.get(defaultOptions, setOptions);
   }, []);
 
   useEffect(() => {
     if (options) {
-      window.chrome.storage.sync.set(options);
+      chrome.storage.sync.set(options);
     }
   }, [options]);
 
