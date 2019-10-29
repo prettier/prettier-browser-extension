@@ -5,7 +5,10 @@ module.exports = (env, argv) => ({
   devtool: false,
   entry: {
     content: "./extension/src/content/index.js",
-    options: "./extension/src/options/index.js"
+    options:
+      argv.mode === "development"
+        ? ["react-devtools", "./extension/src/options/index.js"]
+        : "./extension/src/options/index.js"
   },
   module: {
     rules: [
