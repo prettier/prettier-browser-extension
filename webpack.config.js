@@ -23,5 +23,10 @@ module.exports = {
   },
   performance: {
     hints: false
+  },
+  stats: {
+    warningsFilter:
+      // Remove after upgrading to Prettier 1.19
+      "require.extensions is not supported by webpack. Use a loader instead."
   }
 };
