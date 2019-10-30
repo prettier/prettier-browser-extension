@@ -1,8 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
 import App from ".";
 import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import { render } from "@testing-library/react";
 
 window.chrome = {
   storage: {
@@ -17,10 +16,7 @@ window.chrome = {
 
 describe("Options", () => {
   it("displays title", () => {
-    const container = document.createElement("div");
-    act(() => {
-      ReactDOM.render(<App />, container);
-    });
+    const { container } = render(<App />);
     expect(container).toHaveTextContent("Prettier Options");
   });
 });
