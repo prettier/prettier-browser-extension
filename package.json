@@ -11,7 +11,7 @@
     "fix:js": "yarn test:js --fix",
     "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
     "start": "webpack --mode=development",
-    "test": "yarn test:other && yarn test:js",
+    "test": "yarn test:other && yarn test:js && jest",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
     "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.6.4",
+    "@babel/plugin-transform-modules-commonjs": "7.6.0",
     "@babel/preset-react": "7.6.3",
     "@ffflorian/jszip-cli": "3.0.2",
     "babel-loader": "8.0.6",
@@ -33,6 +34,7 @@
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-react-hooks": "2.2.0",
     "husky": "3.0.9",
+    "jest": "24.9.0",
     "lint-staged": "9.4.2",
     "react-devtools": "4.2.0",
     "webpack": "4.41.2",
@@ -52,5 +54,10 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-transform-modules-commonjs"
+    ]
   }
 }
