@@ -476,4 +476,6 @@ function init() {
   }
 }
 
-init();
+if (process.env.NODE_ENV) {
+  init();
+}
