@@ -55,7 +55,7 @@
     {
       "files": ["src/**/*"],
       "plugins": ["react-hooks"],
-      "extends": ["plugin:react/recommended"],
+      "extends": ["plugin:react/recommended", "plugin:testing-library/react"],
       "env": {
         "browser": true,
         "node": false

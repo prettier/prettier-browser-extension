@@ -1,7 +1,6 @@
 import App from ".";
 import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import { render } from "@testing-library/react";
 
 window.chrome = {
   storage: {
@@ -15,8 +14,5 @@ window.chrome = {
 };
 
 test("Options render", () => {
-  const container = document.createElement("div");
-  act(() => {
-    ReactDOM.render(<App />, container);
-  });
+  render(<App />);
 });
