@@ -2,14 +2,11 @@
   "env": {
     "node": true
   },
-  "plugins": ["prettier"],
-  "extends": ["prettier"],
+  "plugins": ["prettier", "react-hooks"],
+  "extends": ["plugin:react/recommended", "prettier"],
   "parserOptions": {
     "ecmaVersion": 2020,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "sourceType": "module"
   },
   "rules": {
     "curly": "error",
@@ -52,7 +49,9 @@
       }
     ],
     "sort-vars": "error",
-    "strict": ["error", "global"]
+    "strict": ["error", "global"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error"
   },
   "overrides": [
     {
@@ -61,5 +60,10 @@
         "browser": true
       }
     }
-  ]
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

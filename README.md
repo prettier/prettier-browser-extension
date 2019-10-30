@@ -28,6 +28,12 @@ To watch files and rebuild when files change in development:
 yarn start
 ```
 
+To open React devtools for the options page:
+
+```
+yarn react-devtools
+```
+
 #### Test in Chrome locally
 
 - Chrome Settings > More Tools > Extensions...

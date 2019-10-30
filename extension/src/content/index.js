@@ -68,7 +68,7 @@ function renderButton(
   return button;
 }
 
-function seachForGithubButtons() {
+function seachForGithubButtons(options) {
   const COMMENT = "Comment";
   const REPLY = "Reply…";
   const CANCEL = "Cancel";
@@ -104,7 +104,7 @@ function seachForGithubButtons() {
     }
     if (button.innerText === REPLY) {
       const observer = new MutationObserver(() => {
-        createGithubPrettierButtons();
+        createGithubPrettierButtons(options);
       });
       observer.observe(findWithClass(button, "inline-comment-form-container"), {
         attributes: true
@@ -114,7 +114,7 @@ function seachForGithubButtons() {
   return createList;
 }
 
-export function createGithubPrettierButtons() {
+export function createGithubPrettierButtons(options) {
   const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
   const createList = seachForGithubButtons();
 
@@ -134,7 +134,8 @@ export function createGithubPrettierButtons() {
       event.preventDefault();
       const formattedText = prettier.format(textArea.value, {
         parser: "markdown",
-        plugins: prettierPlugins
+        plugins: prettierPlugins,
+        ...options
       });
       textArea.focus();
       textArea.select();
@@ -176,9 +177,9 @@ function findWithClass(buttonElement, classToFind) {
   return null;
 }
 
-function initGitHubButton() {
+function initGitHubButton(options) {
   if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-    createGithubPrettierButtons();
+    createGithubPrettierButtons(options);
   }
 }
 
@@ -210,7 +211,7 @@ function resetGithubCommentObserver(observer) {
   }
 }
 
-function renderStackOverflowButton() {
+function renderStackOverflowButton(options) {
   const inputEl = document.querySelector(".wmd-input");
   const buttonRowEl = document.querySelector(".wmd-button-row");
 
@@ -354,7 +355,8 @@ function renderStackOverflowButton() {
               try {
                 formattedSnippet = prettier.format(snippet, {
                   parser: PARSERS_LANG_MAP[lang],
-                  plugins: prettierPlugins
+                  plugins: prettierPlugins,
+                  ...options
                 });
               } catch {}
 
@@ -382,7 +384,8 @@ function renderStackOverflowButton() {
           try {
             formattedText = prettier.format(codeLines.join("\n"), {
               parser: PARSERS_LANG_MAP[lang],
-              plugins: prettierPlugins
+              plugins: prettierPlugins,
+              ...options
             });
           } catch {
             return;
@@ -410,35 +413,36 @@ function renderStackOverflowButton() {
 
     inputEl.value = prettier.format(inputEl.value, {
       parser: "markdown",
-      plugins: prettierPlugins
+      plugins: prettierPlugins,
+      ...options
     });
     inputEl.focus();
   });
 }
 
-export function initStackOverflowButton() {
+export function initStackOverflowButton(options) {
   const buttonRow = document.querySelector(".wmd-button-row");
   if (buttonRow) {
-    renderStackOverflowButton();
+    renderStackOverflowButton(options);
   }
 }
 
-function init() {
+function init(options) {
   if (window.location.origin === GITHUB_URL) {
     let currentPath = window.location.pathname;
     if (!isGithubListenerAdded) {
       const commentObserver = new MutationObserver(() => {
-        initGitHubButton();
+        initGitHubButton(options);
       });
       const newCommentObserver = new MutationObserver(() => {
         commentObserver.disconnect();
         resetGithubCommentObserver(commentObserver);
-        initGitHubButton();
+        initGitHubButton(options);
       });
       const pageObserver = new MutationObserver(() => {
         if (window.location.pathname !== currentPath) {
           currentPath = window.location.pathname;
-          initGitHubButton();
+          initGitHubButton(options);
 
           commentObserver.disconnect();
           resetGithubCommentObserver(commentObserver);
@@ -453,17 +457,17 @@ function init() {
       resetGithubNewCommentObserver(newCommentObserver);
       isGithubListenerAdded = true;
     }
-    initGitHubButton();
+    initGitHubButton(options);
   }
 
   if (
     window.location.origin === STACKOVERFLOW_URL &&
     STACKOVERFLOW_VALID_PATHNAMES.test(window.location.pathname)
   ) {
-    initStackOverflowButton();
+    initStackOverflowButton(options);
 
     const pageObserver = new MutationObserver(() => {
-      initStackOverflowButton();
+      initStackOverflowButton(options);
     });
 
     const content = document.querySelector("#content");
@@ -477,5 +481,5 @@ function init() {
 }
 
 if (process.env.NODE_ENV) {
-  init();
+  chrome.storage.sync.get(init);
 }

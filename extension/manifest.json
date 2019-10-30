@@ -9,11 +9,12 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_page": "options.html",
+  "options_page": "src/options/index.html",
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
-      "js": ["dist/main.js"],
+      "js": ["dist/content.js"],
       "run_at": "document_end"
     }
   ]

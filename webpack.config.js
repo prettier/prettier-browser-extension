@@ -2,7 +2,28 @@ const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 
 module.exports = (env, argv) => ({
-  entry: "./extension/src/content/index.js",
+  devtool: false,
+  entry: {
+    content: "./extension/src/content/index.js",
+    options:
+      argv.mode === "development"
+        ? ["react-devtools", "./extension/src/options/index.js"]
+        : "./extension/src/options/index.js"
+  },
+  module: {
+    rules: [
+      {
+        exclude: /node_modules/,
+        test: /\.js$/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-react"]
+          }
+        }
+      }
+    ]
+  },
   optimization: {
     minimizer: [
       new TerserPlugin({
@@ -16,7 +37,6 @@ module.exports = (env, argv) => ({
     ]
   },
   output: {
-    filename: "main.js",
     path: path.resolve(__dirname, "extension/dist")
   },
   performance: {
