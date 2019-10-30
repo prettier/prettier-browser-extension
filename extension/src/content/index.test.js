@@ -1,5 +1,16 @@
 import "@testing-library/jest-dom/extend-expect";
-import { createGithubPrettierButtons, initStackOverflowButton } from ".";
+
+window.chrome = {
+  storage: {
+    sync: {
+      get(callback) {
+        callback({});
+      }
+    }
+  }
+};
+
+const { createGithubPrettierButtons, initStackOverflowButton } = require(".");
 
 describe("Prettier format button", () => {
   function expectToHavePrettierButton() {
