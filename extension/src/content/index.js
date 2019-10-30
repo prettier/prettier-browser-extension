@@ -480,6 +480,6 @@ function init(options) {
   }
 }
 
-if (process.env.NODE_ENV) {
+if (process.env.NODE_ENV !== "test") {
   chrome.storage.sync.get(init);
 }
