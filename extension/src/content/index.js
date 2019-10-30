@@ -114,7 +114,7 @@ function seachForGithubButtons() {
   return createList;
 }
 
-function createGithubPrettierButtons() {
+export function createGithubPrettierButtons() {
   const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
   const createList = seachForGithubButtons();
 
@@ -416,7 +416,7 @@ function renderStackOverflowButton() {
   });
 }
 
-function initStackOverflowButton() {
+export function initStackOverflowButton() {
   const buttonRow = document.querySelector(".wmd-button-row");
   if (buttonRow) {
     renderStackOverflowButton();
