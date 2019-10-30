@@ -17,11 +17,10 @@ window.chrome = {
 
 describe("Options", () => {
   it("displays title", () => {
-    const root = document.createElement("div");
-    document.body.appendChild(root);
+    const container = document.createElement("div");
     act(() => {
-      ReactDOM.render(<App />, root);
+      ReactDOM.render(<App />, container);
     });
-    expect(document.body).toHaveTextContent("Prettier Options");
+    expect(container).toHaveTextContent("Prettier Options");
   });
 });
