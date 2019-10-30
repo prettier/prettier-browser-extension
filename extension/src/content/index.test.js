@@ -1,8 +1,5 @@
 import "@testing-library/jest-dom/extend-expect";
-import {
-  createGithubPrettierButtons,
-  initStackOverflowButton
-} from "./extension/src/content/index.js";
+import { createGithubPrettierButtons, initStackOverflowButton } from ".";
 
 describe("Prettier format button", () => {
   function expectToHavePrettierButton() {
