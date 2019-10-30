@@ -13,7 +13,7 @@ const defaultOptions = {
   useTabs: false
 };
 
-function App() {
+export default function App() {
   const [options, setOptions] = useState();
 
   useEffect(() => {
@@ -154,4 +154,6 @@ function App() {
   ) : null;
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+if (process.env.NODE_ENV !== "test") {
+  ReactDOM.render(<App />, document.getElementById("root"));
+}
