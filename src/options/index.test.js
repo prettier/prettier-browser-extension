@@ -15,9 +15,8 @@ window.chrome = {
 };
 
 test("Options render", () => {
-  const root = document.createElement("div");
-  document.body.appendChild(root);
+  const container = document.createElement("div");
   act(() => {
-    ReactDOM.render(<App />, root);
+    ReactDOM.render(<App />, container);
   });
 });
