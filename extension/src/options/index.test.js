@@ -7,7 +7,7 @@ window.chrome = {
   storage: {
     sync: {
       get(callback) {
-        callback({});
+        setTimeout(() => callback({}));
       },
       set() {}
     }
@@ -15,8 +15,8 @@ window.chrome = {
 };
 
 describe("Options", () => {
-  it("displays title", () => {
-    const { container } = render(<App />);
-    expect(container).toHaveTextContent("Prettier Options");
+  it("displays title", async () => {
+    const { findByText } = render(<App />);
+    await findByText("Prettier Options");
   });
 });
