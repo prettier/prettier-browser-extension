@@ -3,7 +3,11 @@
     "node": true
   },
   "plugins": ["prettier", "react-hooks"],
-  "extends": ["plugin:react/recommended", "prettier"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:testing-library/react",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module"
