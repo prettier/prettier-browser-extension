@@ -22,6 +22,19 @@ function App() {
     });
   }, []);
 
+  /*
+   * Chrome throws an error when checking for the height of the popup if there aren't
+   * any elements on the page. We can use requestAnimationFrame() to ensure
+   * that the app's first paint has occurred.
+   */
+  useEffect(() => {
+    const spacerEl = document.querySelector(".chrome-options-spacer");
+
+    if (spacerEl) {
+      window.requestAnimationFrame(() => spacerEl.remove());
+    }
+  }, []);
+
   useEffect(() => {
     chrome.storage.sync.set({ options });
   }, [options]);
