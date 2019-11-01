@@ -10,7 +10,7 @@
     "128": "icons/icon128.png"
   },
   "options_ui": {
-    "page": "src/options/index.html",
+    "page": "dist/options.html",
     "open_in_tab": false
   },
   "permissions": ["storage"],

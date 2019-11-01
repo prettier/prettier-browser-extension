@@ -1,5 +1,6 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env, argv) => ({
   devtool: false,
@@ -42,6 +43,15 @@ module.exports = (env, argv) => ({
   performance: {
     hints: false
   },
+  plugins: [
+    new CopyPlugin([
+      {
+        flatten: true,
+        from: "extension/src/options/index.{html,css}",
+        to: "options.[ext]"
+      }
+    ])
+  ],
   stats: {
     warningsFilter:
       // Remove after upgrading to Prettier 1.19
