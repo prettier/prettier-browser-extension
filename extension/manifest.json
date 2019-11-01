@@ -9,7 +9,10 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_page": "dist/options.html",
+  "options_ui": {
+    "page": "dist/options.html",
+    "open_in_tab": false
+  },
   "permissions": ["storage"],
   "content_scripts": [
     {
