@@ -10,7 +10,22 @@ import parserTypescript from "prettier/parser-typescript";
 import parserYaml from "prettier/parser-yaml";
 import prettier from "prettier/standalone";
 
-function init(options) {
+let storageCache = {};
+
+function updateStorageCache() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(data => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      }
+
+      storageCache = { ...data };
+      resolve();
+    });
+  });
+}
+
+function init() {
   const prettierPlugins = [
     parserAngular,
     parserBabylon,
@@ -137,7 +152,7 @@ function init(options) {
         const formattedText = prettier.format(textArea.value, {
           parser: "markdown",
           plugins: prettierPlugins,
-          ...options
+          ...storageCache.options
         });
         textArea.focus();
         textArea.select();
@@ -392,7 +407,7 @@ function init(options) {
                   formattedSnippet = prettier.format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
                     plugins: prettierPlugins,
-                    ...options
+                    ...storageCache.options
                   });
                 } catch {}
 
@@ -421,7 +436,7 @@ function init(options) {
               formattedText = prettier.format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
                 plugins: prettierPlugins,
-                ...options
+                ...storageCache.options
               });
             } catch {
               return;
@@ -453,7 +468,7 @@ function init(options) {
       inputEl.value = prettier.format(inputEl.value, {
         parser: "markdown",
         plugins: prettierPlugins,
-        ...options
+        ...storageCache.options
       });
       inputEl.focus();
     });
@@ -486,4 +501,5 @@ function init(options) {
   }
 }
 
-chrome.storage.sync.get(init);
+updateStorageCache().then(init);
+chrome.storage.onChanged.addListener(updateStorageCache);
