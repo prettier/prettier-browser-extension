@@ -54,17 +54,5 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-react"
-    ],
-    "env": {
-      "test": {
-        "plugins": [
-          "@babel/plugin-transform-modules-commonjs"
-        ]
-      }
-    }
   }
 }
