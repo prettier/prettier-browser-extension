@@ -38,7 +38,7 @@ yarn react-devtools
 
 - Chrome Settings > More Tools > Extensions...
 - Turn on Developer mode
-- Load unpacked > Select the `dist` directory
+- Load unpacked > Select the `extension` directory
 
 ### Format files
 

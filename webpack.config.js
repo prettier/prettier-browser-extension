@@ -38,7 +38,7 @@ module.exports = (env, argv) => ({
     ]
   },
   output: {
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "extension")
   },
   performance: {
     hints: false
