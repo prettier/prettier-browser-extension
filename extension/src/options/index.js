@@ -22,19 +22,6 @@ function App() {
     });
   }, []);
 
-  /*
-   * Chrome throws an error when checking for the height of the popup if there aren't
-   * any elements on the page. We can use requestAnimationFrame() to ensure
-   * that the app's first paint has occurred.
-   */
-  useEffect(() => {
-    const spacerEl = document.querySelector(".chrome-options-spacer");
-
-    if (spacerEl) {
-      window.requestAnimationFrame(() => spacerEl.remove());
-    }
-  }, []);
-
   useEffect(() => {
     chrome.storage.sync.set({ options });
   }, [options]);
@@ -54,9 +41,6 @@ function App() {
   // Form based on https://github.com/codesandbox/codesandbox-client/blob/master/packages/app/src/app/pages/common/Modals/PreferencesModal/CodeFormatting/Prettier/index.tsx
   return options ? (
     <>
-      <h1>
-        <a href="https://prettier.io/docs/en/options.html">Prettier Options</a>
-      </h1>
       <hr />
       <label>
         Print width
