@@ -1,3 +1,15 @@
+function promisifiedChromeStorageSyncGet() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(data => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      }
+
+      resolve(data);
+    });
+  });
+}
+
 export default class Storage {
   constructor() {
     this._cache = {};
@@ -20,16 +32,8 @@ export default class Storage {
     return this._cache;
   }
 
-  _update() {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(data => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        }
-
-        this._cache = { ...data };
-        resolve();
-      });
-    });
+  async _update() {
+    const data = await promisifiedChromeStorageSyncGet();
+    this._cache = { ...data };
   }
 }
