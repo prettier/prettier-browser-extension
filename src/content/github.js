@@ -113,10 +113,6 @@ export default class GitHub {
     const createList = [];
     const buttons = document.getElementsByTagName("button");
 
-    if (!buttons) {
-      return;
-    }
-
     for (const button of buttons) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
         if (
