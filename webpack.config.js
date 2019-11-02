@@ -5,11 +5,11 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = (env, argv) => ({
   devtool: false,
   entry: {
-    content: "./extension/src/content/index.js",
+    content: "./src/content/index.js",
     options:
       argv.mode === "development"
-        ? ["react-devtools", "./extension/src/options/index.js"]
-        : "./extension/src/options/index.js"
+        ? ["react-devtools", "./src/options/index.js"]
+        : "./src/options/index.js"
   },
   module: {
     rules: [
@@ -38,16 +38,22 @@ module.exports = (env, argv) => ({
     ]
   },
   output: {
-    path: path.resolve(__dirname, "extension/dist")
+    path: path.resolve(__dirname, "dist")
   },
   performance: {
     hints: false
   },
   plugins: [
     new CopyPlugin([
+      "manifest.json",
+      {
+        from: "icons/",
+        to: "icons/",
+        toType: "dir"
+      },
       {
         flatten: true,
-        from: "extension/src/options/index.{html,css}",
+        from: "src/options/index.{html,css}",
         to: "options.[ext]"
       }
     ])

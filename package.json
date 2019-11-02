@@ -14,7 +14,7 @@
     "test": "yarn test:other && yarn test:js",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
-    "zip": "cd extension && jszip-cli add . -i .DS_Store -o ../extension.zip -f"
+    "zip": "jszip-cli add -i .DS_Store -o extension.zip -f dist/*"
   },
   "dependencies": {
     "copy-webpack-plugin": "5.0.4",
@@ -40,7 +40,7 @@
   },
   "lint-staged": {
     "*.{js}": [
-      "eslint --fix",
+      "eslint --ignore-path .gitignore --ignore-path .prettierignore --fix",
       "git add"
     ],
     "*.{md,css,html,json,yml}": [
