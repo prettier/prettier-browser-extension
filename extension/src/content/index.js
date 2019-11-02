@@ -10,6 +10,54 @@ import parserTypescript from "prettier/parser-typescript";
 import parserYaml from "prettier/parser-yaml";
 import prettier from "prettier/standalone";
 
+const GITHUB_URL = "https://github.com";
+const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
+const STACKOVERFLOW_URL = "https://stackoverflow.com";
+const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
+
+const PRETTIER_PLUGINS = [
+  parserAngular,
+  parserBabylon,
+  parserFlow,
+  parserGlimmer,
+  parserGraphql,
+  parserHtml,
+  parserMarkdown,
+  parserPostcss,
+  parserTypescript,
+  parserYaml
+];
+const PARSERS_LANG_MAP = {
+  css: "css",
+  flow: "flow",
+  html: "html",
+  javascript: "babel",
+  js: "babel",
+  json: "babel",
+  less: "postcss",
+  sass: "postcss",
+  scss: "postcss",
+  ts: "typescript",
+  typescript: "typescript",
+  yaml: "yaml"
+};
+const COMMENT = "Comment";
+const REPLY = "Reply…";
+const CANCEL = "Cancel";
+const CLOSE_ISSUE = " Close issue";
+const CLOSE_PULL_REQUEST = " Close pull request";
+const SUBMIT_PULL_REQUEST = "Create pull request";
+const SUBMIT_NEW_ISSUE = "Submit new issue";
+const BUTTONS_TO_SEARCH_FOR = [
+  COMMENT,
+  CANCEL,
+  CLOSE_ISSUE,
+  CLOSE_PULL_REQUEST,
+  SUBMIT_PULL_REQUEST,
+  SUBMIT_NEW_ISSUE
+];
+
+let isGithubListenerAdded = false;
 let storageCache = {};
 
 function updateStorageCache() {
@@ -26,40 +74,6 @@ function updateStorageCache() {
 }
 
 function init() {
-  const prettierPlugins = [
-    parserAngular,
-    parserBabylon,
-    parserFlow,
-    parserGlimmer,
-    parserGraphql,
-    parserHtml,
-    parserMarkdown,
-    parserPostcss,
-    parserTypescript,
-    parserYaml
-  ];
-
-  const GITHUB_URL = "https://github.com";
-  const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
-  let isGithubListenerAdded = false;
-
-  const STACKOVERFLOW_URL = "https://stackoverflow.com";
-  const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
-  const PARSERS_LANG_MAP = {
-    css: "css",
-    flow: "flow",
-    html: "html",
-    javascript: "babel",
-    js: "babel",
-    json: "babel",
-    less: "postcss",
-    sass: "postcss",
-    scss: "postcss",
-    ts: "typescript",
-    typescript: "typescript",
-    yaml: "yaml"
-  };
-
   function renderButton(
     el,
     { classes = [], style = {}, append = true, refNode = null } = {}
@@ -85,22 +99,6 @@ function init() {
   }
 
   function seachForGithubButtons() {
-    const COMMENT = "Comment";
-    const REPLY = "Reply…";
-    const CANCEL = "Cancel";
-    const CLOSE_ISSUE = " Close issue";
-    const CLOSE_PULL_REQUEST = " Close pull request";
-    const SUBMIT_PULL_REQUEST = "Create pull request";
-    const SUBMIT_NEW_ISSUE = "Submit new issue";
-    const BUTTONS_TO_SEARCH_FOR = [
-      COMMENT,
-      CANCEL,
-      CLOSE_ISSUE,
-      CLOSE_PULL_REQUEST,
-      SUBMIT_PULL_REQUEST,
-      SUBMIT_NEW_ISSUE
-    ];
-
     const buttons = document.getElementsByTagName("button");
     const createList = [];
     for (const button of buttons) {
@@ -132,26 +130,27 @@ function init() {
   }
 
   function createGithubPrettierButtons() {
-    const BUTTON_STYLE = { float: "left", "margin-right": "10px" };
     const createList = seachForGithubButtons();
 
     for (const button of createList) {
       let prettierBtn = button.parentNode.querySelector(".prettier-btn");
-      if (prettierBtn === null) {
+
+      if (!prettierBtn) {
         prettierBtn = renderButton(button.parentNode, {
           append: true,
           classes: ["prettier-btn"],
-          refNode: button,
-          style: BUTTON_STYLE
+          refNode: button.innerText === SUBMIT_NEW_ISSUE ? button : null,
+          style: { "margin-right": "4px" }
         });
       }
 
       const textArea = findWithClass(prettierBtn, "comment-form-textarea");
+
       prettierBtn.addEventListener("click", event => {
         event.preventDefault();
         const formattedText = prettier.format(textArea.value, {
           parser: "markdown",
-          plugins: prettierPlugins,
+          plugins: PRETTIER_PLUGINS,
           ...storageCache.options
         });
         textArea.focus();
@@ -406,7 +405,7 @@ function init() {
                 try {
                   formattedSnippet = prettier.format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
-                    plugins: prettierPlugins,
+                    plugins: PRETTIER_PLUGINS,
                     ...storageCache.options
                   });
                 } catch {}
@@ -435,7 +434,7 @@ function init() {
             try {
               formattedText = prettier.format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
-                plugins: prettierPlugins,
+                plugins: PRETTIER_PLUGINS,
                 ...storageCache.options
               });
             } catch {
@@ -467,7 +466,7 @@ function init() {
 
       inputEl.value = prettier.format(inputEl.value, {
         parser: "markdown",
-        plugins: prettierPlugins,
+        plugins: PRETTIER_PLUGINS,
         ...storageCache.options
       });
       inputEl.focus();
