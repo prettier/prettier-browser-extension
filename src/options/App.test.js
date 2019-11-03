@@ -14,6 +14,6 @@ window.chrome = {
   }
 };
 
-test("Options render", () => {
+test("App", () => {
   render(<App />);
 });
