@@ -81,12 +81,29 @@ export default class GitHub {
         continue;
       }
 
-      const prettierButton = renderButton(parentNode, {
+      const options = {
         append: true,
         classes: ["prettier-btn"],
-        refNode: button.innerText === BUTTONS.SUBMIT_NEW_ISSUE ? button : null,
+        refNode: null,
         style: { "margin-right": "4px" }
-      });
+      };
+
+      // These two buttons have a unique DOM structure, so we need
+      // to render the button relative to the left-most button.
+      if (
+        button.innerText === BUTTONS.SUBMIT_NEW_ISSUE ||
+        button.innerText === BUTTONS.CREATE_PULL_REQUEST
+      ) {
+        options.refNode = button;
+      }
+
+      // The Create pull request button has `float: left;`,
+      // causing issues with the flow of the button row.
+      if (button.innerText === BUTTONS.CREATE_PULL_REQUEST) {
+        options.style = { ...options.style, float: "left" };
+      }
+
+      const prettierButton = renderButton(parentNode, options);
       const inputEl = findWithClass(prettierButton, "comment-form-textarea");
 
       prettierButton.addEventListener("click", event => {
