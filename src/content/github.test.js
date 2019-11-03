@@ -6,7 +6,9 @@ test("GitHub", async () => {
   const button = document.createElement("button");
   button.innerText = "Comment";
   document.body.appendChild(button);
+  // Hack around JSDOM's lack of offsetHeight support to fix isElementVisible
+  Object.defineProperty(document.body, "offsetHeight", { value: 1 });
 
-  new GitHub(await createStorage())._createGithubPrettierButtons();
+  new GitHub(await createStorage());
   expectToHavePrettierButton();
 });

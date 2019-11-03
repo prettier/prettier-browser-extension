@@ -29,3 +29,17 @@ export function findWithClass(buttonElement, classToFind) {
 
   return null;
 }
+
+export function isElementVisible(element) {
+  const boundingRect = element.getBoundingClientRect();
+
+  return (
+    // This is 0 if the element is hidden.
+    element.offsetHeight > 0 &&
+    // Check if the element is in the viewport.
+    boundingRect.top >= 0 &&
+    boundingRect.left >= 0 &&
+    boundingRect.bottom <= window.innerHeight &&
+    boundingRect.right <= window.innerWidth
+  );
+}

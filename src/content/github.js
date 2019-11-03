@@ -1,122 +1,130 @@
+import { findWithClass, isElementVisible } from "./utils";
 import renderButton, { BUTTONS, BUTTONS_TO_SEARCH_FOR } from "./button";
 import { PARSERS } from "./parsers";
-import { findWithClass } from "./utils";
 import prettier from "prettier/standalone";
 
-const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commit|compare\/.*|issues\/\d+|issues\/new)/u;
-const { COMMENT, REPLY, SUBMIT_NEW_ISSUE } = BUTTONS;
+const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues\/new)/u;
+const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
+const PR_DIFF_CONTAINER_CLASS = ".js-diff-container";
+const COMMIT_DIFF_CONTAINER_CLASS = ".js-details-container";
+const NEW_ISSUE_CONTAINER_CLASS = ".timeline-comment-wrapper";
+const OBSERVABLE_CONTAINERS = [
+  PR_CONVSERATION_CONTAINER_CLASS,
+  PR_DIFF_CONTAINER_CLASS,
+  COMMIT_DIFF_CONTAINER_CLASS,
+  NEW_ISSUE_CONTAINER_CLASS
+];
 
 export default class GitHub {
   constructor(storage) {
-    this._isGithubListenerAdded = false;
     this._currentUrl = window.location.href;
     this._storage = storage;
+    this._urlObserver = null;
+    this._domObserver = null;
     this._init();
   }
 
   _init() {
-    if (!this._isGithubListenerAdded) {
-      const commentObserver = new MutationObserver(() => {
-        this._initGitHubButton();
-      });
-      const newCommentObserver = new MutationObserver(() => {
-        commentObserver.disconnect();
-        this._resetGithubCommentObserver(commentObserver);
-        this._initGitHubButton();
-      });
-      const pageObserver = new MutationObserver(() => {
-        if (window.location.href !== this._currentUrl) {
-          this._currentUrl = window.location.href;
-          this._initGitHubButton();
+    this._observeURLChanges();
+    this._observeDOMChanges();
+    this._createButtons();
+  }
 
-          commentObserver.disconnect();
-          this._resetGithubCommentObserver(commentObserver);
-          this._resetGithubNewCommentObserver(newCommentObserver);
+  _observeURLChanges() {
+    if (!this._urlObserver) {
+      this._urlObserver = new MutationObserver(() => {
+        if (window.location.href === this._currentUrl) {
+          return;
         }
+
+        this._currentUrl = window.location.href;
+        this._domObserver.disconnect();
+
+        if (!GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
+          return;
+        }
+
+        this._init();
       });
-      pageObserver.observe(document.querySelector("body"), {
-        childList: true
-      });
-      this._resetGithubCommentObserver(commentObserver);
-      this._resetGithubNewCommentObserver(newCommentObserver);
-      this._isGithubListenerAdded = true;
     }
 
-    this._initGitHubButton();
+    this._urlObserver.observe(document.querySelector("body"), {
+      childList: true
+    });
   }
 
-  _initGitHubButton() {
-    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-      this._createGithubPrettierButtons();
+  _observeDOMChanges() {
+    if (!this._domObserver) {
+      // TODO: filter out mutations in the callback to improve performance.
+      this._domObserver = new MutationObserver(() => this._createButtons());
     }
-  }
 
-  _resetGithubNewCommentObserver(observer) {
-    const content = document.querySelector(".js-discussion");
-
-    if (content) {
-      observer.disconnect();
-      observer.observe(content, { childList: true, subtree: true });
-    }
-  }
-
-  _resetGithubCommentObserver(observer) {
-    for (const elem of document.querySelectorAll(".timeline-comment-group")) {
-      observer.observe(elem, {
+    for (const elem of document.querySelectorAll(
+      OBSERVABLE_CONTAINERS.join(",")
+    )) {
+      this._domObserver.observe(elem, {
         attributes: true,
         childList: true,
         subtree: true
       });
     }
-
-    for (const elem of document.querySelectorAll(
-      ".js-diff-progressive-container"
-    )) {
-      observer.observe(elem, {
-        childList: true,
-        subtree: true
-      });
-    }
   }
 
-  _createGithubPrettierButtons() {
+  _createButtons() {
     for (const button of this._seachForGithubButtons()) {
-      let prettierBtn = button.parentNode.querySelector(".prettier-btn");
+      const parentNode = button.parentNode;
 
-      if (!prettierBtn) {
-        prettierBtn = renderButton(button.parentNode, {
-          append: true,
-          classes: ["prettier-btn"],
-          refNode: button.innerText === SUBMIT_NEW_ISSUE ? button : null,
-          style: { "margin-right": "4px" }
-        });
+      if (
+        !isElementVisible(parentNode) ||
+        parentNode.querySelector(".prettier-btn")
+      ) {
+        continue;
       }
 
-      const textArea = findWithClass(prettierBtn, "comment-form-textarea");
+      const options = {
+        append: true,
+        classes: ["prettier-btn"],
+        refNode: null,
+        style: { "margin-right": "4px" }
+      };
 
-      prettierBtn.addEventListener("click", event => {
+      // These two buttons have a unique DOM structure, so we need
+      // to render the button relative to the left-most button.
+      if (
+        button.innerText === BUTTONS.SUBMIT_NEW_ISSUE ||
+        button.innerText === BUTTONS.CREATE_PULL_REQUEST
+      ) {
+        options.refNode = button;
+      }
+
+      // The Create pull request button has `float: left;`,
+      // causing issues with the flow of the button row.
+      if (button.innerText === BUTTONS.CREATE_PULL_REQUEST) {
+        options.style = { ...options.style, float: "left" };
+      }
+
+      const prettierButton = renderButton(parentNode, options);
+      const inputEl = findWithClass(prettierButton, "comment-form-textarea");
+
+      prettierButton.addEventListener("click", event => {
         event.preventDefault();
-        const formattedText = prettier.format(textArea.value, {
+        inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
           plugins: PARSERS,
           ...this._storage.get("options")
         });
-        textArea.focus();
-        textArea.select();
-        document.execCommand("delete", false, null);
-        document.execCommand("insertText", false, formattedText);
+        inputEl.focus();
       });
     }
   }
 
   _seachForGithubButtons() {
     const createList = [];
-    const buttons = document.getElementsByTagName("button");
 
-    for (const button of buttons) {
+    for (const button of document.getElementsByTagName("button")) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
         if (
-          button.innerText === COMMENT &&
+          button.innerText === BUTTONS.COMMENT &&
           (button.parentNode.parentNode.querySelector(
             "button[name=comment_and_close]"
           ) ||
@@ -128,18 +136,6 @@ export default class GitHub {
         }
 
         createList.push(button);
-      }
-
-      if (button.innerText === REPLY) {
-        const observer = new MutationObserver(() => {
-          this._createGithubPrettierButtons();
-        });
-        observer.observe(
-          findWithClass(button, "inline-comment-form-container"),
-          {
-            attributes: true
-          }
-        );
       }
     }
 
