@@ -1,6 +1,6 @@
 {
   "name": "Prettier",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "manifest_version": 2,
   "description": "Prettier all the things.",
   "homepage_url": "https://prettier.io",
@@ -9,12 +9,15 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_page": "src/options/index.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
-      "js": ["dist/content.js"],
+      "js": ["content.js"],
       "run_at": "document_end"
     }
   ]

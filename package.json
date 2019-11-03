@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "prettier-chrome-extension",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "https://github.com/prettier/prettier-chrome-extension.git",
   "license": "MIT",
   "scripts": {
@@ -14,9 +14,10 @@
     "test": "yarn test:other && yarn test:js && jest",
     "test:other": "yarn prettier --list-different",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
-    "zip": "cd extension && jszip-cli add . -i .DS_Store -o ../extension.zip -f"
+    "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
   },
   "dependencies": {
+    "copy-webpack-plugin": "5.0.4",
     "prettier": "1.18.2",
     "react": "16.11.0",
     "react-dom": "16.11.0"
@@ -44,7 +45,7 @@
   },
   "lint-staged": {
     "*.{js}": [
-      "eslint --fix",
+      "eslint --ignore-path .gitignore --ignore-path .prettierignore --fix",
       "git add"
     ],
     "*.{md,css,html,json,yml}": [
