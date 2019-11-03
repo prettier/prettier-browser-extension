@@ -14,7 +14,6 @@ window.chrome = {
   }
 };
 
-test("Options display title", async () => {
-  const { findByText } = render(<App />);
-  await findByText("Prettier Options");
+test("Options render", () => {
+  render(<App />);
 });
