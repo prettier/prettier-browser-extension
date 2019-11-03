@@ -1,4 +1,4 @@
-import App from ".";
+import App from "./App";
 import React from "react";
 import { render } from "@testing-library/react";
 
@@ -13,6 +13,6 @@ window.chrome = {
   }
 };
 
-test("Options render", () => {
+test("App", () => {
   render(<App />);
 });
