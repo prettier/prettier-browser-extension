@@ -14,7 +14,7 @@ export default function App({ options, error, setOption, setJsonError }) {
 
   const {
     prettier: prettierOptions,
-    json: { enable: enableJson, config: jsonConfig }
+    json: { enable: jsonEnable, config: jsonConfig }
   } = options;
 
   return (
@@ -22,9 +22,9 @@ export default function App({ options, error, setOption, setJsonError }) {
       <hr />
       <label>
         Use JSON configuration
-        <input type="checkbox" checked={enableJson} onChange={handleChange} />
+        <input type="checkbox" checked={jsonEnable} onChange={handleChange} />
       </label>
-      {enableJson ? (
+      {jsonEnable ? (
         <JsonConfig
           config={jsonConfig}
           error={error}
