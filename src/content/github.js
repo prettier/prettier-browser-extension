@@ -6,6 +6,7 @@ import renderButton, {
 } from "./button";
 import { PARSERS } from "./parsers";
 import prettier from "prettier/standalone";
+import processOptions from "./options";
 
 const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues\/new)/u;
 const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
@@ -115,7 +116,7 @@ export default class GitHub {
         inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
           plugins: PARSERS,
-          ...this._storage.get("options")
+          ...processOptions(this._storage.get())
         });
         inputEl.focus();
       });
