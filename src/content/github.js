@@ -129,6 +129,9 @@ export default class GitHub {
             "button[name=comment_and_close]"
           ) ||
             button.parentNode.parentNode.querySelector(
+              "button[name=comment_and_open]"
+            ) ||
+            button.parentNode.parentNode.querySelector(
               "button[data-confirm-cancel-text]"
             ))
         ) {
