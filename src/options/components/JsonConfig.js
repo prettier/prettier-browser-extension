@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
+import parserBabylon from "prettier/parser-babylon";
+import prettier from "prettier/standalone";
 
 const PLACEHOLDER_TEXT = `{
   "tabWidth": 2,
@@ -8,7 +10,14 @@ const PLACEHOLDER_TEXT = `{
 }`;
 const SAVED_TIMEOUT = 500;
 
-export default function JsonConfig({ config, error, setJsonError, setOption }) {
+export default function JsonConfig({
+  config,
+  error,
+  prettierOptions,
+  setJsonError,
+  setOption
+}) {
+  const textareaEl = useRef(null);
   const [textAreaVal, setTextAreaVal] = useState(config);
   const [displaySaved, setDisplaySaved] = useState(false);
 
@@ -16,16 +25,37 @@ export default function JsonConfig({ config, error, setJsonError, setOption }) {
     setTextAreaVal(value);
   }
 
+  function displaySavedConfirmation() {
+    setDisplaySaved(true);
+    window.setTimeout(() => {
+      setDisplaySaved(false);
+    }, SAVED_TIMEOUT);
+  }
+
   function handleClick() {
+    textareaEl.current.focus();
+
     try {
       JSON.parse(textAreaVal);
       setJsonError(false);
-      setDisplaySaved(true);
-      window.setTimeout(() => setDisplaySaved(false), SAVED_TIMEOUT);
+      displaySavedConfirmation();
     } catch {
       setJsonError(true);
     } finally {
-      setOption("json", "config", textAreaVal);
+      let formattedVal;
+
+      try {
+        formattedVal = prettier.format(textAreaVal, {
+          parser: "json",
+          plugins: [parserBabylon],
+          ...prettierOptions
+        });
+        setTextAreaVal(formattedVal);
+      } catch {
+        formattedVal = textAreaVal;
+      }
+
+      setOption("json", "config", formattedVal);
     }
   }
 
@@ -39,6 +69,7 @@ export default function JsonConfig({ config, error, setJsonError, setOption }) {
         value={textAreaVal}
         columns={80}
         rows={24}
+        ref={textareaEl}
         placeholder={PLACEHOLDER_TEXT}
         onChange={handleChange}
       />
@@ -50,6 +81,7 @@ export default function JsonConfig({ config, error, setJsonError, setOption }) {
 JsonConfig.propTypes = {
   config: PropTypes.string,
   error: PropTypes.bool,
+  prettierOptions: PropTypes.object,
   setJsonError: PropTypes.func,
   setOption: PropTypes.func
 };

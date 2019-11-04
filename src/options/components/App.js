@@ -28,6 +28,7 @@ export default function App({ options, error, setOption, setJsonError }) {
         <JsonConfig
           config={jsonConfig}
           error={error}
+          prettierOptions={prettierOptions}
           setJsonError={setJsonError}
           setOption={setOption}
         />
