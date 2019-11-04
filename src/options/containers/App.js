@@ -25,12 +25,10 @@ export default function AppContainer() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    async function getChromeStorageData() {
+    (async function initializeStateFromChromeStorage() {
       const data = await promisifiedChromeStorageSyncGet();
       setOptions({ ...defaultOptions, ...data });
-    }
-
-    getChromeStorageData();
+    })();
   }, []);
 
   useEffect(() => {
