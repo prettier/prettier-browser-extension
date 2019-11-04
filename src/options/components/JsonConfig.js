@@ -54,7 +54,7 @@ export default function JsonConfig({
 
 JsonConfig.propTypes = {
   config: PropTypes.string,
-  error: PropTypes.string,
+  error: PropTypes.boolean,
   setJsonConfig: PropTypes.func,
   setJsonParseError: PropTypes.func
 };
