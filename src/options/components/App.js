@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import JsonConfig from "./JsonConfig";
 import VisualConfig from "./VisualConfig";
+import { promisifiedChromeStorageSyncGet } from "../../shared/chrome";
 
 const defaultPrettierOptions = {
   arrowParens: "avoid",
@@ -27,11 +28,12 @@ export default function App() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    chrome.storage.sync.get(items => {
-      setOptions({
-        ...defaultOptions
-      });
-    });
+    async function getChromeStorageData() {
+      const data = await promisifiedChromeStorageSyncGet();
+      setOptions({ ...defaultOptions, ...data });
+    }
+
+    getChromeStorageData();
   }, []);
 
   useEffect(() => {
