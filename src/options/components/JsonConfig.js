@@ -4,9 +4,9 @@ import parserBabylon from "prettier/parser-babylon";
 import prettier from "prettier/standalone";
 
 const PLACEHOLDER_TEXT = `{
-  "tabWidth": 2,
   "semi": true,
-  "singleQuote": true
+  "singleQuote": true,
+  "tabWidth": 2
 }`;
 const SAVED_TIMEOUT = 500;
 
