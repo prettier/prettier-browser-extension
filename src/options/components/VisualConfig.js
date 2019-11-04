@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 
+// Form based on https://github.com/codesandbox/codesandbox-client/blob/master/packages/app/src/app/pages/common/Modals/PreferencesModal/CodeFormatting/Prettier/index.tsx
 export default function VisualConfig({ options, handleOptionsChange }) {
   return (
     <>

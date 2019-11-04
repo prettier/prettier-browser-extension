@@ -67,7 +67,6 @@ export default function App() {
     setError(hasError);
   }
 
-  // Form based on https://github.com/codesandbox/codesandbox-client/blob/master/packages/app/src/app/pages/common/Modals/PreferencesModal/CodeFormatting/Prettier/index.tsx
   if (!options) {
     return null;
   }
