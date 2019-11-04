@@ -1,5 +1,9 @@
 import { findWithClass, isElementVisible } from "./utils";
-import renderButton, { BUTTONS, BUTTONS_TO_SEARCH_FOR } from "./button";
+import renderButton, {
+  BUTTONS,
+  BUTTONS_TO_SEARCH_FOR,
+  COMMENT_SIBLING_SELECTORS_TO_DEFER_TO
+} from "./button";
 import { PARSERS } from "./parsers";
 import prettier from "prettier/standalone";
 
@@ -119,29 +123,24 @@ export default class GitHub {
   }
 
   _seachForGithubButtons() {
-    const createList = [];
+    const buttons = [];
 
     for (const button of document.getElementsByTagName("button")) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
+        // Skip Comment buttons that aren't the leftmost button.
         if (
           button.innerText === BUTTONS.COMMENT &&
-          (button.parentNode.parentNode.querySelector(
-            "button[name=comment_and_close]"
-          ) ||
-            button.parentNode.parentNode.querySelector(
-              "button[name=comment_and_open]"
-            ) ||
-            button.parentNode.parentNode.querySelector(
-              "button[data-confirm-cancel-text]"
-            ))
+          COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
+            sel => !!button.parentNode.parentNode.querySelector(sel)
+          )
         ) {
           continue;
         }
 
-        createList.push(button);
+        buttons.push(button);
       }
     }
 
-    return createList;
+    return buttons;
   }
 }
