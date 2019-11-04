@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-const placeholderText = `{
+const PLACEHOLDER_TEXT = `{
   "tabWidth": 2,
   "semi": true,
   "singleQuote": true
 }`;
+const SAVED_TIMEOUT = 500;
 
 export default function JsonConfig({
   config,
@@ -14,6 +15,7 @@ export default function JsonConfig({
   setJsonParseError
 }) {
   const [textAreaVal, setTextAreaVal] = useState(config);
+  const [displaySaved, setDisplaySaved] = useState(false);
 
   function handleChange({ target: { value } }) {
     setTextAreaVal(value);
@@ -23,6 +25,8 @@ export default function JsonConfig({
     try {
       JSON.parse(textAreaVal);
       setJsonParseError(false);
+      setDisplaySaved(true);
+      window.setTimeout(() => setDisplaySaved(false), SAVED_TIMEOUT);
     } catch {
       setJsonParseError(true);
     } finally {
@@ -33,13 +37,14 @@ export default function JsonConfig({
   return (
     <>
       <hr />
-      {error && <p>Error: invalid JSON</p>}
+      {error && <p>Error: Invalid JSON</p>}
+      {displaySaved && <p>Saved</p>}
       <textarea
         name="config"
         value={textAreaVal}
         columns={80}
         rows={24}
-        placeholder={placeholderText}
+        placeholder={PLACEHOLDER_TEXT}
         onChange={handleChange}
       />
       <button onClick={handleClick}>Save</button>
