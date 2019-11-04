@@ -8,12 +8,7 @@ const PLACEHOLDER_TEXT = `{
 }`;
 const SAVED_TIMEOUT = 500;
 
-export default function JsonConfig({
-  config,
-  error,
-  setJsonConfig,
-  setJsonParseError
-}) {
+export default function JsonConfig({ config, error, setJsonError, setOption }) {
   const [textAreaVal, setTextAreaVal] = useState(config);
   const [displaySaved, setDisplaySaved] = useState(false);
 
@@ -24,13 +19,13 @@ export default function JsonConfig({
   function handleClick() {
     try {
       JSON.parse(textAreaVal);
-      setJsonParseError(false);
+      setJsonError(false);
       setDisplaySaved(true);
       window.setTimeout(() => setDisplaySaved(false), SAVED_TIMEOUT);
     } catch {
-      setJsonParseError(true);
+      setJsonError(true);
     } finally {
-      setJsonConfig(textAreaVal);
+      setOption("json", "config", textAreaVal);
     }
   }
 
@@ -54,7 +49,7 @@ export default function JsonConfig({
 
 JsonConfig.propTypes = {
   config: PropTypes.string,
-  error: PropTypes.boolean,
-  setJsonConfig: PropTypes.func,
-  setJsonParseError: PropTypes.func
+  error: PropTypes.bool,
+  setJsonError: PropTypes.func,
+  setOption: PropTypes.func
 };

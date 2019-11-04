@@ -1,72 +1,11 @@
-import React, { useEffect, useState } from "react";
 import JsonConfig from "./JsonConfig";
+import PropTypes from "prop-types";
+import React from "react";
 import VisualConfig from "./VisualConfig";
-import { promisifiedChromeStorageSyncGet } from "../../shared/chrome";
 
-const defaultPrettierOptions = {
-  arrowParens: "avoid",
-  bracketSpacing: true,
-  jsxBracketSameLine: false,
-  printWidth: 80,
-  semi: true,
-  singleQuote: false,
-  tabWidth: 2,
-  trailingComma: "none",
-  useTabs: false
-};
-
-const defaultOptions = {
-  json: {
-    config: "",
-    enable: false
-  },
-  prettier: defaultPrettierOptions
-};
-
-export default function App() {
-  const [options, setOptions] = useState(defaultOptions);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    async function getChromeStorageData() {
-      const data = await promisifiedChromeStorageSyncGet();
-      setOptions({ ...defaultOptions, ...data });
-    }
-
-    getChromeStorageData();
-  }, []);
-
-  useEffect(() => {
-    chrome.storage.sync.set(options);
-  }, [options]);
-
-  function handleOptionsChange({ target: { checked, name, type, value } }) {
-    setOptions({
-      ...options,
-      prettier: {
-        ...options.prettier,
-        [name]:
-          type === "checkbox"
-            ? checked
-            : type === "number"
-            ? parseInt(value)
-            : value
-      }
-    });
-  }
-
-  function setJsonConfig(key, val) {
-    setOptions({
-      ...options,
-      json: {
-        ...options.json,
-        [key]: val
-      }
-    });
-  }
-
-  function setJsonParseError(hasError) {
-    setError(hasError);
+export default function App({ options, error, setOption, setJsonError }) {
+  function handleChange({ target: { checked } }) {
+    setOption("json", "enable", checked);
   }
 
   if (!options) {
@@ -83,27 +22,25 @@ export default function App() {
       <hr />
       <label>
         Use JSON configuration
-        <input
-          type="checkbox"
-          checked={enableJson}
-          onChange={({ target: { checked } }) =>
-            setJsonConfig("enable", checked)
-          }
-        />
+        <input type="checkbox" checked={enableJson} onChange={handleChange} />
       </label>
       {enableJson ? (
         <JsonConfig
           config={jsonConfig}
           error={error}
-          setJsonParseError={setJsonParseError}
-          setJsonConfig={json => setJsonConfig("config", json)}
+          setJsonError={setJsonError}
+          setOption={setOption}
         />
       ) : (
-        <VisualConfig
-          options={prettierOptions}
-          handleOptionsChange={handleOptionsChange}
-        />
+        <VisualConfig options={prettierOptions} setOption={setOption} />
       )}
     </>
   );
 }
+
+App.propTypes = {
+  error: PropTypes.bool,
+  options: PropTypes.object,
+  setJsonError: PropTypes.func,
+  setOption: PropTypes.func
+};

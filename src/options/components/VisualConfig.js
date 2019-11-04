@@ -2,7 +2,17 @@ import PropTypes from "prop-types";
 import React from "react";
 
 // Form based on https://github.com/codesandbox/codesandbox-client/blob/master/packages/app/src/app/pages/common/Modals/PreferencesModal/CodeFormatting/Prettier/index.tsx
-export default function VisualConfig({ options, handleOptionsChange }) {
+export default function VisualConfig({ options, setOption }) {
+  function handleOptionsChange({ target: { checked, name, type, value } }) {
+    const val =
+      type === "checkbox"
+        ? checked
+        : type === "number"
+        ? parseInt(value)
+        : value;
+    setOption("prettier", name, val);
+  }
+
   return (
     <>
       <hr />
@@ -119,6 +129,6 @@ export default function VisualConfig({ options, handleOptionsChange }) {
 }
 
 VisualConfig.propTypes = {
-  handleOptionsChange: PropTypes.func,
-  options: PropTypes.object
+  options: PropTypes.object,
+  setOption: PropTypes.func
 };
