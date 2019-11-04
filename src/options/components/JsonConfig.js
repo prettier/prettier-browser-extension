@@ -14,7 +14,7 @@ export default function JsonConfig({
   config,
   error,
   prettierOptions,
-  setJsonError,
+  setError,
   setOption
 }) {
   const textareaEl = useRef(null);
@@ -37,10 +37,10 @@ export default function JsonConfig({
 
     try {
       JSON.parse(textAreaVal);
-      setJsonError(false);
+      setError(false);
       displaySavedConfirmation();
     } catch {
-      setJsonError(true);
+      setError(true);
     } finally {
       let formattedVal;
 
@@ -82,6 +82,6 @@ JsonConfig.propTypes = {
   config: PropTypes.string,
   error: PropTypes.bool,
   prettierOptions: PropTypes.object,
-  setJsonError: PropTypes.func,
+  setError: PropTypes.func,
   setOption: PropTypes.func
 };

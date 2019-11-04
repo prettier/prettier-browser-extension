@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import VisualConfig from "./VisualConfig";
 
-export default function App({ options, error, setOption, setJsonError }) {
+export default function App({ options, error, setOption, setError }) {
   function handleChange({ target: { checked } }) {
     setOption("json", "enable", checked);
   }
@@ -29,7 +29,7 @@ export default function App({ options, error, setOption, setJsonError }) {
           config={jsonConfig}
           error={error}
           prettierOptions={prettierOptions}
-          setJsonError={setJsonError}
+          setError={setError}
           setOption={setOption}
         />
       ) : (
@@ -42,6 +42,6 @@ export default function App({ options, error, setOption, setJsonError }) {
 App.propTypes = {
   error: PropTypes.bool,
   options: PropTypes.object,
-  setJsonError: PropTypes.func,
+  setError: PropTypes.func,
   setOption: PropTypes.func
 };

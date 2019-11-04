@@ -47,16 +47,12 @@ export default function AppContainer() {
     });
   }
 
-  function setJsonError(hasError) {
-    setError(hasError);
-  }
-
   return (
     <App
       options={options}
       error={error}
       setOption={setOption}
-      setJsonError={setJsonError}
+      setError={setError}
     />
   );
 }
