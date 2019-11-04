@@ -75,7 +75,7 @@ export default class GitHub {
   }
 
   _createButtons() {
-    for (const button of this._seachForGithubButtons()) {
+    for (const button of this._searchForButtons()) {
       const parentNode = button.parentNode;
 
       if (
@@ -122,7 +122,7 @@ export default class GitHub {
     }
   }
 
-  _seachForGithubButtons() {
+  _searchForButtons() {
     const buttons = [];
 
     for (const button of document.getElementsByTagName("button")) {
