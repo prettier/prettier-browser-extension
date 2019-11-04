@@ -4,9 +4,7 @@ export default function processOptions({ json, prettier: prettierOptions }) {
   if (json.enable) {
     try {
       options = JSON.parse(json.config);
-    } catch {
-      options = {};
-    }
+    } catch {}
   } else {
     options = { ...prettierOptions };
   }
