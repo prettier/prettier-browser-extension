@@ -17,7 +17,7 @@
     "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
   },
   "dependencies": {
-    "copy-webpack-plugin": "5.0.4",
+    "copy-webpack-plugin": "5.0.5",
     "prettier": "1.18.2",
     "react": "16.11.0",
     "react-dom": "16.11.0"
