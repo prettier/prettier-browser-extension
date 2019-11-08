@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import App from "../components/App";
-import { promisifiedChromeStorageSyncGet } from "../../shared/chrome";
+import App from "./App";
+import { promisifiedChromeStorageSyncGet } from "../shared/chrome";
 
 const defaultOptions = {
   json: {
