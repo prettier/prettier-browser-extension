@@ -1,9 +1,9 @@
 {
+  "env": {
+    "es2020": true
+  },
   "plugins": ["prettier"],
   "extends": ["prettier"],
-  "parserOptions": {
-    "ecmaVersion": 2020
-  },
   "rules": {
     "curly": "error",
     "dot-notation": "error",
@@ -20,6 +20,7 @@
       }
     ],
     "no-shadow": "error",
+    "no-undef": "error",
     "no-unneeded-ternary": "error",
     "no-unused-expressions": "error",
     "no-unused-vars": [

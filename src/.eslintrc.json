@@ -1,4 +1,8 @@
 {
+  "env": {
+    "browser": true,
+    "webextensions": true
+  },
   "parserOptions": {
     "sourceType": "module"
   }
