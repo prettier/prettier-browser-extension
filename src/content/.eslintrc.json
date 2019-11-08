@@ -1,0 +1,8 @@
+{
+  "overrides": [
+    {
+      "files": "*test*.js",
+      "extends": ["plugin:jest-dom/recommended"]
+    }
+  ]
+}
