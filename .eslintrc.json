@@ -47,5 +47,13 @@
     ],
     "sort-vars": "error",
     "strict": ["error", "global"]
-  }
+  },
+  "overrides": [
+    {
+      "files": "*test*.js",
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
