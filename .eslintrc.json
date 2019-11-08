@@ -1,13 +1,9 @@
 {
   "env": {
-    "node": true
+    "es2020": true
   },
   "plugins": ["prettier"],
   "extends": ["prettier"],
-  "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
   "rules": {
     "curly": "error",
     "dot-notation": "error",
@@ -24,6 +20,7 @@
       }
     ],
     "no-shadow": "error",
+    "no-undef": "error",
     "no-unneeded-ternary": "error",
     "no-unused-expressions": "error",
     "no-unused-vars": [
@@ -53,21 +50,9 @@
   },
   "overrides": [
     {
-      "files": ["src/**/*"],
-      "plugins": ["react-hooks"],
-      "extends": ["plugin:react/recommended", "plugin:testing-library/react"],
+      "files": "*test*.js",
       "env": {
-        "browser": true,
-        "node": false
-      },
-      "settings": {
-        "react": {
-          "version": "detect"
-        }
-      },
-      "rules": {
-        "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "error"
+        "jest": true
       }
     }
   ]
