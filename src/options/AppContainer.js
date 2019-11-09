@@ -1,28 +1,11 @@
 import React, { useEffect, useState } from "react";
 import App from "./App";
+import defaultOptions from "./defaultOptions";
 import { promisifiedChromeStorageSyncGet } from "../shared/chrome";
-
-const defaultOptions = {
-  json: {
-    config: "",
-    enable: false
-  },
-  prettier: {
-    arrowParens: "avoid",
-    bracketSpacing: true,
-    jsxBracketSameLine: false,
-    printWidth: 80,
-    semi: true,
-    singleQuote: false,
-    tabWidth: 2,
-    trailingComma: "none",
-    useTabs: false
-  }
-};
 
 export default function AppContainer() {
   const [options, setOptions] = useState(defaultOptions);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     (async function initializeStateFromChromeStorage() {
@@ -35,21 +18,11 @@ export default function AppContainer() {
     chrome.storage.sync.set(options);
   }, [options]);
 
-  function setOption(section, key, val) {
-    setOptions({
-      ...options,
-      [section]: {
-        ...options[section],
-        [key]: val
-      }
-    });
-  }
-
   return (
     <App
       options={options}
       error={error}
-      setOption={setOption}
+      setOptions={setOptions}
       setError={setError}
     />
   );

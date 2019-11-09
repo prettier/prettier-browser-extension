@@ -3,45 +3,55 @@ import PropTypes from "prop-types";
 import React from "react";
 import VisualConfig from "./VisualConfig";
 
-export default function App({ options, error, setOption, setError }) {
+export default function App({ options, error, setOptions, setError }) {
   function handleChange({ target: { checked } }) {
-    setOption("json", "enable", checked);
+    setOptions({ ...options, isJsonVisible: checked });
+  }
+
+  function setPrettierOptions(newOptions) {
+    setOptions({
+      ...options,
+      prettierOptions: { ...options.prettierOptions, ...newOptions }
+    });
   }
 
   if (!options) {
     return null;
   }
 
-  const {
-    prettier: prettierOptions,
-    json: { enable: jsonEnable, config: jsonConfig }
-  } = options;
+  const { prettierOptions, isJsonVisible } = options;
 
   return (
     <>
       <hr />
       <label>
         Use JSON configuration
-        <input type="checkbox" checked={jsonEnable} onChange={handleChange} />
+        <input
+          type="checkbox"
+          checked={isJsonVisible}
+          onChange={handleChange}
+        />
       </label>
-      {jsonEnable ? (
+      {isJsonVisible ? (
         <JsonConfig
-          config={jsonConfig}
           error={error}
-          prettierOptions={prettierOptions}
+          options={prettierOptions}
           setError={setError}
-          setOption={setOption}
+          setOptions={setPrettierOptions}
         />
       ) : (
-        <VisualConfig options={prettierOptions} setOption={setOption} />
+        <VisualConfig
+          options={prettierOptions}
+          setOptions={setPrettierOptions}
+        />
       )}
     </>
   );
 }
 
 App.propTypes = {
-  error: PropTypes.bool,
+  error: PropTypes.string,
   options: PropTypes.object,
   setError: PropTypes.func,
-  setOption: PropTypes.func
+  setOptions: PropTypes.func
 };

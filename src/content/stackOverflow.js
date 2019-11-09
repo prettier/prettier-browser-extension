@@ -1,6 +1,5 @@
 import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
 import prettier from "prettier/standalone";
-import processOptions from "./options";
 import renderButton from "./button";
 
 export default class StackOverflow {
@@ -238,6 +237,6 @@ export default class StackOverflow {
   }
 
   _getOptions() {
-    return processOptions(this._storage.get());
+    return this._storage.get().prettierOptions;
   }
 }

@@ -1,24 +1,14 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
+import defaultOptions from "./defaultOptions";
 import parserBabylon from "prettier/parser-babylon";
 import prettier from "prettier/standalone";
 
-const PLACEHOLDER_TEXT = `{
-  "semi": true,
-  "singleQuote": true,
-  "tabWidth": 2
-}`;
 const SAVED_TIMEOUT = 500;
 
-export default function JsonConfig({
-  config,
-  error,
-  prettierOptions,
-  setError,
-  setOption
-}) {
+export default function JsonConfig({ error, options, setError, setOptions }) {
   const textareaEl = useRef(null);
-  const [textAreaVal, setTextAreaVal] = useState(config);
+  const [textAreaVal, setTextAreaVal] = useState(JSON.stringify(options));
   const [displaySaved, setDisplaySaved] = useState(false);
 
   function handleChange({ target: { value } }) {
@@ -36,41 +26,49 @@ export default function JsonConfig({
     textareaEl.current.focus();
 
     try {
-      JSON.parse(textAreaVal);
-      setError(false);
-      displaySavedConfirmation();
-    } catch {
-      setError(true);
-    } finally {
-      let formattedVal;
+      let parsedOptions;
 
       try {
-        formattedVal = prettier.format(textAreaVal, {
-          parser: "json",
-          plugins: [parserBabylon],
-          ...prettierOptions
-        });
-        setTextAreaVal(formattedVal);
+        parsedOptions = JSON.parse(textAreaVal);
       } catch {
-        formattedVal = textAreaVal;
+        throw new Error("Invalid JSON");
       }
 
-      setOption("json", "config", formattedVal);
+      for (const key of Object.keys(parsedOptions)) {
+        if (defaultOptions.prettierOptions[key] !== undefined) {
+          continue;
+        }
+
+        throw new Error(`${key} is an invalid option`);
+      }
+      setOptions(parsedOptions);
+      setError("");
+      displaySavedConfirmation();
+    } catch (err) {
+      setError(err.message);
     }
   }
+
+  let formattedOptions = textAreaVal;
+
+  try {
+    formattedOptions = prettier.format(textAreaVal, {
+      parser: "json",
+      plugins: [parserBabylon],
+      ...options
+    });
+  } catch {}
 
   return (
     <>
       <hr />
-      {error && <p>Error: Invalid JSON</p>}
+      {error.length > 0 && <p>Error: {error}</p>}
       {displaySaved && <p>Saved</p>}
       <textarea
-        name="config"
-        value={textAreaVal}
+        value={formattedOptions}
         columns={80}
         rows={24}
         ref={textareaEl}
-        placeholder={PLACEHOLDER_TEXT}
         onChange={handleChange}
       />
       <button onClick={handleClick}>Save</button>
@@ -79,9 +77,8 @@ export default function JsonConfig({
 }
 
 JsonConfig.propTypes = {
-  config: PropTypes.string,
-  error: PropTypes.bool,
-  prettierOptions: PropTypes.object,
+  error: PropTypes.string,
+  options: PropTypes.object,
   setError: PropTypes.func,
-  setOption: PropTypes.func
+  setOptions: PropTypes.func
 };
