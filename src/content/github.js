@@ -1,4 +1,4 @@
-import { findWithClass, isElementVisible } from "./utils";
+import { findWithClass, isElementVisible } from "./domUtils";
 import renderButton, {
   BUTTONS,
   BUTTONS_TO_SEARCH_FOR,
