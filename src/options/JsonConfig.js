@@ -5,10 +5,15 @@ import prettier from "prettier/standalone";
 import { validateOptions } from "./options";
 
 const SAVED_TIMEOUT = 500;
+const STRINGIFY_SPACING = 2;
 
 export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   const textareaEl = useRef(null);
-  const [textAreaVal, setTextAreaVal] = useState(JSON.stringify(options));
+  const [textAreaVal, setTextAreaVal] = useState(
+    JSON.stringify(options),
+    null,
+    STRINGIFY_SPACING
+  );
   const [displaySaved, setDisplaySaved] = useState(false);
 
   function handleChange({ target: { value } }) {
@@ -18,14 +23,14 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   useEffect(() => {
     try {
       setTextAreaVal(
-        prettier.format(textAreaVal, {
+        prettier.format(JSON.stringify(options), {
           parser: "json",
           plugins: [parserBabylon],
           ...options
         })
       );
     } catch {}
-  }, [options, textAreaVal]);
+  }, [options]);
 
   function handleClick() {
     textareaEl.current.focus();
