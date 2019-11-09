@@ -16,10 +16,6 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   );
   const [displaySaved, setDisplaySaved] = useState(false);
 
-  function handleChange({ target: { value } }) {
-    setTextAreaVal(value);
-  }
-
   useEffect(() => {
     try {
       setTextAreaVal(
@@ -31,6 +27,10 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
       );
     } catch {}
   }, [options]);
+
+  function handleChange({ target: { value } }) {
+    setTextAreaVal(value);
+  }
 
   function handleClick() {
     textareaEl.current.focus();
