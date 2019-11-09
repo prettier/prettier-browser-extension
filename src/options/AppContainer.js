@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import App from "./App";
-import defaultOptions from "./defaultOptions";
+import defaultOptions from "./options";
 import { promisifiedChromeStorageSyncGet } from "../shared/chrome";
 
 export default function AppContainer() {
   const [options, setOptions] = useState(defaultOptions);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     (async function initializeStateFromChromeStorage() {
@@ -21,9 +21,9 @@ export default function AppContainer() {
   return (
     <App
       options={options}
-      error={error}
+      errors={errors}
       setOptions={setOptions}
-      setError={setError}
+      setErrors={setErrors}
     />
   );
 }

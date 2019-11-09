@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import VisualConfig from "./VisualConfig";
 
-export default function App({ options, error, setOptions, setError }) {
+export default function App({ options, errors, setOptions, setErrors }) {
   function handleChange({ target: { checked } }) {
     setOptions({ ...options, isJsonVisible: checked });
   }
@@ -32,11 +32,12 @@ export default function App({ options, error, setOptions, setError }) {
           onChange={handleChange}
         />
       </label>
+      <hr />
       {isJsonVisible ? (
         <JsonConfig
-          error={error}
+          errors={errors}
           options={prettierOptions}
-          setError={setError}
+          setErrors={setErrors}
           setOptions={setPrettierOptions}
         />
       ) : (
@@ -50,8 +51,8 @@ export default function App({ options, error, setOptions, setError }) {
 }
 
 App.propTypes = {
-  error: PropTypes.string,
+  errors: PropTypes.array,
   options: PropTypes.object,
-  setError: PropTypes.func,
+  setErrors: PropTypes.func,
   setOptions: PropTypes.func
 };

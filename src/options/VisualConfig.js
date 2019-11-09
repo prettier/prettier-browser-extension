@@ -16,7 +16,6 @@ export default function VisualConfig({ options, setOptions }) {
 
   return (
     <>
-      <hr />
       <label>
         Print width
         <input
