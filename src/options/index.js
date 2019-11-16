@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import browser from "webextension-polyfill";
 
 const defaultOptions = {
   arrowParens: "avoid",
@@ -17,13 +18,14 @@ function App() {
   const [options, setOptions] = useState();
 
   useEffect(() => {
-    chrome.storage.sync.get(items => {
+    (async () => {
+      const items = await browser.storage.sync.get();
       setOptions({ ...defaultOptions, ...items.options });
-    });
+    })();
   }, []);
 
   useEffect(() => {
-    chrome.storage.sync.set({ options });
+    browser.storage.sync.set({ options });
   }, [options]);
 
   function handleChange({ target: { checked, name, type, value } }) {
