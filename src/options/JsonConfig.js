@@ -10,9 +10,7 @@ const STRINGIFY_SPACING = 2;
 export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   const textareaEl = useRef(null);
   const [textAreaVal, setTextAreaVal] = useState(
-    JSON.stringify(options),
-    null,
-    STRINGIFY_SPACING
+    JSON.stringify(options, null, STRINGIFY_SPACING)
   );
   const [displaySaved, setDisplaySaved] = useState(false);
 
@@ -61,8 +59,8 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
 
   return (
     <>
-      {errors.map((err, idx) => (
-        <p key={idx}>Error: {err}</p>
+      {errors.map(err => (
+        <p key={err}>Error: {err}</p>
       ))}
       {displaySaved && <p>Saved</p>}
       <textarea
