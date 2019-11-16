@@ -1,4 +1,4 @@
-import { findWithClass, isElementVisible } from "./utils";
+import { findWithClass, isElementVisible } from "./domUtils";
 import renderButton, {
   BUTTONS,
   BUTTONS_TO_SEARCH_FOR,
@@ -115,7 +115,7 @@ export default class GitHub {
         inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
           plugins: PARSERS,
-          ...this._storage.get("options")
+          ...this._storage.get().prettierOptions
         });
         inputEl.focus();
       });

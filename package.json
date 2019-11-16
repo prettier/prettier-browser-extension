@@ -17,8 +17,8 @@
     "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
   },
   "dependencies": {
-    "copy-webpack-plugin": "5.0.5",
     "prettier": "1.18.2",
+    "prop-types": "15.7.2",
     "react": "16.12.0",
     "react-dom": "16.12.0"
   },
@@ -28,6 +28,7 @@
     "@babel/preset-react": "7.7.0",
     "@ffflorian/jszip-cli": "3.0.2",
     "babel-loader": "8.0.6",
+    "copy-webpack-plugin": "5.0.5",
     "eslint": "6.6.0",
     "eslint-config-prettier": "6.5.0",
     "eslint-plugin-prettier": "3.1.1",
