@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import App from "./App";
+import browser from "webextension-polyfill";
 import defaultOptions from "./options";
-import { promisifiedChromeStorageSyncGet } from "../shared/chrome";
 
 export default function AppContainer() {
   const [options, setOptions] = useState(defaultOptions);
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
-    (async function initializeStateFromChromeStorage() {
-      const data = await promisifiedChromeStorageSyncGet();
+    (async () => {
+      const data = await browser.storage.sync.get();
       setOptions({ ...defaultOptions, ...data });
     })();
   }, []);
 
   useEffect(() => {
-    chrome.storage.sync.set(options);
+    browser.storage.sync.set(options);
   }, [options]);
 
   return (

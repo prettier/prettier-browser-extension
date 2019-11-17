@@ -1,4 +1,4 @@
-import { promisifiedChromeStorageSyncGet } from "../shared/chrome";
+import browser from "webextension-polyfill";
 
 export default class Storage {
   constructor() {
@@ -6,7 +6,7 @@ export default class Storage {
   }
 
   init() {
-    chrome.storage.onChanged.addListener(() => this._update());
+    browser.storage.onChanged.addListener(() => this._update());
     return this._update();
   }
 
@@ -23,7 +23,7 @@ export default class Storage {
   }
 
   async _update() {
-    const data = await promisifiedChromeStorageSyncGet();
+    const data = await browser.storage.sync.get();
     this._cache = { ...data };
   }
 }
