@@ -30,8 +30,11 @@ export default class GitHub {
 
   _init() {
     this._observeURLChanges();
-    this._observeDOMChanges();
-    this._createButtons();
+
+    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
+      this._observeDOMChanges();
+      this._createButtons();
+    }
   }
 
   _observeURLChanges() {
@@ -43,10 +46,6 @@ export default class GitHub {
 
         this._currentUrl = window.location.href;
         this._domObserver.disconnect();
-
-        if (!GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-          return;
-        }
 
         this._init();
       });
