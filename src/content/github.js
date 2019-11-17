@@ -126,12 +126,14 @@ export default class GitHub {
 
     for (const button of document.getElementsByTagName("button")) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
-        // Skip Comment buttons that aren't the leftmost button.
         if (
-          button.innerText === BUTTONS.COMMENT &&
-          COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
-            sel => !!button.parentNode.parentNode.querySelector(sel)
-          )
+          // Skip Comment buttons that aren't the leftmost button.
+          (button.innerText === BUTTONS.COMMENT &&
+            COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
+              sel => !!button.parentNode.parentNode.querySelector(sel)
+            )) ||
+          // Skip issue title edit buttons
+          button.parentNode.parentNode.classList.contains("js-issue-update")
         ) {
           continue;
         }
