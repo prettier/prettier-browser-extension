@@ -30,8 +30,11 @@ export default class GitHub {
 
   _init() {
     this._observeURLChanges();
-    this._observeDOMChanges();
-    this._createButtons();
+
+    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
+      this._observeDOMChanges();
+      this._createButtons();
+    }
   }
 
   _observeURLChanges() {
@@ -43,10 +46,6 @@ export default class GitHub {
 
         this._currentUrl = window.location.href;
         this._domObserver.disconnect();
-
-        if (!GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-          return;
-        }
 
         this._init();
       });
@@ -127,12 +126,14 @@ export default class GitHub {
 
     for (const button of document.getElementsByTagName("button")) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
-        // Skip Comment buttons that aren't the leftmost button.
         if (
-          button.innerText === BUTTONS.COMMENT &&
-          COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
-            sel => !!button.parentNode.parentNode.querySelector(sel)
-          )
+          // Skip Comment buttons that aren't the leftmost button.
+          (button.innerText === BUTTONS.COMMENT &&
+            COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
+              sel => !!button.parentNode.parentNode.querySelector(sel)
+            )) ||
+          // Skip issue title edit buttons
+          button.parentNode.parentNode.classList.contains("js-issue-update")
         ) {
           continue;
         }
