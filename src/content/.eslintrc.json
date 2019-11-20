@@ -2,7 +2,10 @@
   "overrides": [
     {
       "files": "*test*.js",
-      "extends": ["plugin:jest-dom/recommended"]
+      "extends": ["plugin:jest-dom/recommended"],
+      "rules": {
+        "jest-dom/prefer-to-have-attribute": "error"
+      }
     }
   ]
 }
