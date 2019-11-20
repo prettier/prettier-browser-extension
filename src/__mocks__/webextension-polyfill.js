@@ -6,7 +6,7 @@ export default {
     },
     sync: {
       get() {
-        return new Promise(resolve => setTimeout(() => resolve({})));
+        return Promise.resolve({});
       }
     }
   }
