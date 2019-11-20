@@ -1,7 +1,6 @@
 {
   "env": {
-    "browser": true,
-    "webextensions": true
+    "browser": true
   },
   "parserOptions": {
     "sourceType": "module"
