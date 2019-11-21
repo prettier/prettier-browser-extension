@@ -1,5 +1,5 @@
 import "./testUtils";
-import Extension from "./Extension";
+import Extension from "./extension";
 import { queryByText } from "@testing-library/dom";
 
 test("Extension", async () => {
