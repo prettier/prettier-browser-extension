@@ -8,6 +8,10 @@ test("GitHub", async () => {
   document.body.appendChild(button);
   // Hack around JSDOM's lack of offsetHeight support to fix isElementVisible
   Object.defineProperty(document.body, "offsetHeight", { value: 1 });
+  // Emulate a matching GitHub pathname
+  Object.defineProperty(window, "location", {
+    value: { pathname: "/prettier/prettier-chrome-extension/issues/new" }
+  });
 
   new GitHub(await createStorage());
   expectToHavePrettierButton();
