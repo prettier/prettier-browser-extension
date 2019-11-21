@@ -1,5 +1,6 @@
-import { createStorage, expectToHavePrettierButton } from "./testUtils";
 import GitHub from "./github";
+import { createStorage } from "./testUtils";
+import { getByText } from "@testing-library/dom";
 
 test("GitHub", async () => {
   // Basis: https://github.com/prettier/prettier-chrome-extension/issues/new
@@ -14,5 +15,5 @@ test("GitHub", async () => {
   });
 
   new GitHub(await createStorage());
-  expectToHavePrettierButton();
+  getByText(document, "Prettier");
 });

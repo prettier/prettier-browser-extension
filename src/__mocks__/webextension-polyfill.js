@@ -1,12 +1,27 @@
+const listeners = [];
+let storageItems = {};
+
+function callListeners() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
 export default {
-  runtime: {},
   storage: {
     onChanged: {
-      addListener() {}
+      addListener(listener) {
+        listeners.push(listener);
+      }
     },
     sync: {
-      get() {
-        return Promise.resolve({});
+      async get() {
+        return storageItems;
+      },
+      async set(newItems) {
+        await Promise.resolve();
+        storageItems = { ...storageItems, ...newItems };
+        callListeners();
       }
     }
   }

@@ -1,5 +1,6 @@
-import { createStorage, expectToHavePrettierButton } from "./testUtils";
 import StackOverflow from "./stackOverflow";
+import { createStorage } from "./testUtils";
+import { getByText } from "@testing-library/dom";
 
 test("Stack Overflow", async () => {
   // Basis: https://stackoverflow.com/questions/51875054
@@ -8,5 +9,5 @@ test("Stack Overflow", async () => {
   document.body.appendChild(button);
 
   new StackOverflow(await createStorage());
-  expectToHavePrettierButton();
+  getByText(document, "Prettier");
 });
