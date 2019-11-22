@@ -1,12 +1,14 @@
+import { createStorage, expectToFormat } from "./testUtils";
 import GitHub from "./github";
-import { createStorage } from "./testUtils";
-import { getByText } from "@testing-library/dom";
 
 test("GitHub", async () => {
   // Basis: https://github.com/prettier/prettier-chrome-extension/issues/new
   const button = document.createElement("button");
   button.innerText = "Comment";
   document.body.appendChild(button);
+  const textarea = document.createElement("textarea");
+  textarea.className = "comment-form-textarea";
+  document.body.appendChild(textarea);
   // Hack around JSDOM's lack of offsetHeight support to fix isElementVisible
   Object.defineProperty(document.body, "offsetHeight", { value: 1 });
   // Emulate a matching GitHub pathname
@@ -15,5 +17,5 @@ test("GitHub", async () => {
   });
 
   new GitHub(await createStorage());
-  getByText(document, "Prettier");
+  expectToFormat(textarea);
 });
