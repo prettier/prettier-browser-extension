@@ -2,12 +2,13 @@ import { findWithClass, isElementVisible } from "./domUtils";
 import renderButton from "./button";
 
 test("findWithClass", () => {
+  const prettierButton = renderButton(document.body);
+  expect(findWithClass(prettierButton, "comment-form-textarea")).toBeNull();
+
   // Basis: https://github.com/prettier/prettier-chrome-extension/issues/new
   const textarea = document.createElement("textarea");
   textarea.className = "comment-form-textarea";
   document.body.appendChild(textarea);
-  const prettierButton = renderButton(document.body);
-
   expect(findWithClass(prettierButton, "comment-form-textarea")).toBe(textarea);
 });
 
