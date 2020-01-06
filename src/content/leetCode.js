@@ -1,0 +1,97 @@
+import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
+import prettier from "prettier/standalone";
+import renderButton from "./button";
+
+export default class LeetCode {
+  constructor(storage) {
+    this._storage = storage;
+    this._init();
+  }
+
+  _init() {
+    this._addClientListeners();
+
+    this._createButton();
+    const pageObserver = new MutationObserver(() => this._createButton());
+    pageObserver.observe(document.querySelector("body"), {
+      childList: true,
+      subtree: true
+    });
+
+    this._addExtensionListener();
+  }
+
+  _addClientListeners() {
+    const scriptContent = () => {
+      document.addEventListener("GetEditorContent", () => {
+        const editor = document.querySelector(".CodeMirror");
+        if (editor) {
+          const content = editor.CodeMirror.doc.getValue();
+          document.dispatchEvent(
+            new CustomEvent("FormatEditorContent", { detail: content })
+          );
+        } else {
+          console.error("No editor found");
+        }
+      });
+
+      document.addEventListener("SetEditorContent", event => {
+        const editor = document.querySelector(".CodeMirror");
+        if (editor) {
+          editor.CodeMirror.doc.setValue(event.detail);
+        } else {
+          console.error("No editor found");
+        }
+      });
+    };
+
+    // Executing scriptContent in the page context through an injected script tag
+    const script = document.createElement("script");
+    script.textContent = `(${scriptContent})()`;
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+  }
+
+  _createButton() {
+    const buttonRowEl = document.querySelector('[class^="btns"]');
+    if (!buttonRowEl) {
+      return;
+    }
+
+    for (const childElem of buttonRowEl.childNodes) {
+      if (Array.from(childElem.classList).includes("prettier-btn")) {
+        return;
+      }
+    }
+
+    renderButton(buttonRowEl, {
+      classes: ["prettier-btn", "btn__1eiM", "btn-xs__2rgD"],
+      style: { margin: "0 10px" }
+    }).addEventListener("click", event => {
+      event.preventDefault();
+
+      // Initiating format event chain
+      document.dispatchEvent(new Event("GetEditorContent"));
+    });
+  }
+
+  _addExtensionListener() {
+    document.addEventListener("FormatEditorContent", event => {
+      const snippet = event.detail;
+
+      const formattedSnippet = prettier.format(snippet, {
+        parser: PARSERS_LANG_MAP.js,
+        plugins: PARSERS,
+        ...this._getOptions()
+      });
+
+      document.dispatchEvent(
+        new CustomEvent("SetEditorContent", { detail: formattedSnippet })
+      );
+    });
+  }
+
+  _getOptions() {
+    return this._storage.get().prettierOptions;
+  }
+}
