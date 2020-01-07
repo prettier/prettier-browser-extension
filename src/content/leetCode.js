@@ -11,8 +11,8 @@ export default class LeetCode {
   _init() {
     this._addClientListeners();
 
-    this._createButton();
-    const pageObserver = new MutationObserver(() => this._createButton());
+    this._handleChange();
+    const pageObserver = new MutationObserver(() => this._handleChange());
     pageObserver.observe(document.querySelector("body"), {
       childList: true,
       subtree: true
@@ -52,6 +52,19 @@ export default class LeetCode {
     script.remove();
   }
 
+  _handleChange() {
+    const languageEl = document.querySelector('[data-cy="lang-select"]');
+    if (!languageEl) {
+      return;
+    }
+
+    if (languageEl.innerText !== "JavaScript") {
+      this._removeButton();
+    } else {
+      this._createButton();
+    }
+  }
+
   _createButton() {
     const buttonRowEl = document.querySelector('[class^="btns"]');
     if (!buttonRowEl) {
@@ -82,6 +95,13 @@ export default class LeetCode {
       // Initiating format event chain
       document.dispatchEvent(new Event("GetEditorContent"));
     });
+  }
+
+  _removeButton() {
+    const button = document.querySelector(".prettier-btn");
+    if (button) {
+      button.remove();
+    }
   }
 
   _addExtensionListener() {
