@@ -64,9 +64,18 @@ export default class LeetCode {
       }
     }
 
+    // Using styles from existing language select element
+    const selectEl = document.querySelector('[data-cy="lang-select"]')
+      .parentElement;
+    const selectClasses = [...selectEl.classList];
+
     renderButton(buttonRowEl, {
-      classes: ["prettier-btn", "btn__1eiM", "btn-xs__2rgD"],
-      style: { margin: "0 10px" }
+      classes: ["prettier-btn", ...selectClasses],
+      style: {
+        cursor: "pointer",
+        margin: "0 10px",
+        padding: "0 10px"
+      }
     }).addEventListener("click", event => {
       event.preventDefault();
 
