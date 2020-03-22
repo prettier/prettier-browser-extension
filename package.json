@@ -7,9 +7,9 @@
   "scripts": {
     "build": "webpack --mode=production && yarn zip",
     "fix": "yarn fix:js && yarn fix:other",
-    "fix:other": "yarn prettier --write",
+    "fix:other": "yarn prettier",
     "fix:js": "yarn test:js --fix",
-    "prettier": "prettier \"**/*.{md,css,html,json,yml}\" --write",
+    "prettier": "prettier . --write",
     "start": "webpack --mode=development",
     "test": "yarn test:other && yarn test:js && jest --passWithNoTests",
     "test:other": "yarn prettier --list-different",
