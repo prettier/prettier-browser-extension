@@ -12,7 +12,7 @@
     "prettier": "prettier . --write",
     "start": "webpack --mode=development",
     "test": "yarn test:other && yarn test:js && jest --passWithNoTests",
-    "test:other": "yarn prettier --list-different",
+    "test:other": "prettier . --check",
     "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\"",
     "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
   },
