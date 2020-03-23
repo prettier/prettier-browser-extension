@@ -1,5 +1,5 @@
 import parserAngular from "prettier/parser-angular";
-import parserBabylon from "prettier/parser-babylon";
+import parserBabel from "prettier/parser-babel";
 import parserFlow from "prettier/parser-flow";
 import parserGlimmer from "prettier/parser-glimmer";
 import parserGraphql from "prettier/parser-graphql";
@@ -11,7 +11,7 @@ import parserYaml from "prettier/parser-yaml";
 
 export const PARSERS = [
   parserAngular,
-  parserBabylon,
+  parserBabel,
   parserFlow,
   parserGlimmer,
   parserGraphql,
