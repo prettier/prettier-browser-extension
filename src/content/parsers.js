@@ -19,7 +19,7 @@ export const PARSERS = [
   parserMarkdown,
   parserPostcss,
   parserTypescript,
-  parserYaml
+  parserYaml,
 ];
 
 export const PARSERS_LANG_MAP = {
@@ -34,5 +34,5 @@ export const PARSERS_LANG_MAP = {
   scss: "postcss",
   ts: "typescript",
   typescript: "typescript",
-  yaml: "yaml"
+  yaml: "yaml",
 };

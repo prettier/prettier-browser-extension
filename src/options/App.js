@@ -11,7 +11,7 @@ export default function App({ options, errors, setOptions, setErrors }) {
   function setPrettierOptions(newOptions) {
     setOptions({
       ...options,
-      prettierOptions: { ...options.prettierOptions, ...newOptions }
+      prettierOptions: { ...options.prettierOptions, ...newOptions },
     });
   }
 
@@ -54,5 +54,5 @@ App.propTypes = {
   errors: PropTypes.array,
   options: PropTypes.object,
   setErrors: PropTypes.func,
-  setOptions: PropTypes.func
+  setOptions: PropTypes.func,
 };

@@ -20,7 +20,7 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
         prettier.format(JSON.stringify(options), {
           parser: "json",
           plugins: [parserBabel],
-          ...options
+          ...options,
         })
       );
     } catch {}
@@ -59,7 +59,7 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
 
   return (
     <>
-      {errors.map(err => (
+      {errors.map((err) => (
         <p key={err}>Error: {err}</p>
       ))}
       {displaySaved && <p>Saved</p>}
@@ -79,5 +79,5 @@ JsonConfig.propTypes = {
   errors: PropTypes.array,
   options: PropTypes.object,
   setErrors: PropTypes.func,
-  setOptions: PropTypes.func
+  setOptions: PropTypes.func,
 };
