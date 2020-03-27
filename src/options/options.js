@@ -1,16 +1,16 @@
 const defaultOptions = {
   isJsonVisible: false,
   prettierOptions: {
-    arrowParens: "avoid",
+    arrowParens: "always",
     bracketSpacing: true,
     jsxBracketSameLine: false,
     printWidth: 80,
     semi: true,
     singleQuote: false,
     tabWidth: 2,
-    trailingComma: "none",
-    useTabs: false
-  }
+    trailingComma: "es5",
+    useTabs: false,
+  },
 };
 
 export default defaultOptions;
