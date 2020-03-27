@@ -1,4 +1,4 @@
-# Prettier Chrome Extension [![Build Status](https://travis-ci.com/prettier/prettier-chrome-extension.svg?branch=master)](https://travis-ci.com/prettier/prettier-chrome-extension)
+# Prettier Chrome Extension
 
 > Extension that adds support for prettifying input boxes that support Markdown or Code.
 
