@@ -15,7 +15,7 @@ export default class LeetCode {
     const pageObserver = new MutationObserver(() => this._handleChange());
     pageObserver.observe(document.querySelector("body"), {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
     this._addExtensionListener();
@@ -35,7 +35,7 @@ export default class LeetCode {
         }
       });
 
-      document.addEventListener("SetEditorContent", event => {
+      document.addEventListener("SetEditorContent", (event) => {
         const editor = document.querySelector(".CodeMirror");
         if (editor) {
           editor.CodeMirror.doc.setValue(event.detail);
@@ -87,9 +87,9 @@ export default class LeetCode {
       style: {
         cursor: "pointer",
         margin: "0 10px",
-        padding: "0 10px"
-      }
-    }).addEventListener("click", event => {
+        padding: "0 10px",
+      },
+    }).addEventListener("click", (event) => {
       event.preventDefault();
 
       // Initiating format event chain
@@ -105,13 +105,13 @@ export default class LeetCode {
   }
 
   _addExtensionListener() {
-    document.addEventListener("FormatEditorContent", event => {
+    document.addEventListener("FormatEditorContent", (event) => {
       const snippet = event.detail;
 
       const formattedSnippet = prettier.format(snippet, {
         parser: PARSERS_LANG_MAP.js,
         plugins: PARSERS,
-        ...this._getOptions()
+        ...this._getOptions(),
       });
 
       document.dispatchEvent(
