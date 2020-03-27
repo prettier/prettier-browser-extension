@@ -11,16 +11,16 @@ module.exports = (env, argv) => ({
     options:
       argv.mode === "development"
         ? ["react-devtools", "./src/options/index.js"]
-        : "./src/options/index.js"
+        : "./src/options/index.js",
   },
   module: {
     rules: [
       {
         exclude: /node_modules/,
         test: /\.js$/,
-        use: "babel-loader"
-      }
-    ]
+        use: "babel-loader",
+      },
+    ],
   },
   optimization: {
     minimizer: [
@@ -29,16 +29,16 @@ module.exports = (env, argv) => ({
           extractComments: false,
 
           // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
-          output: { ascii_only: true }
-        }
-      })
-    ]
+          output: { ascii_only: true },
+        },
+      }),
+    ],
   },
   output: {
-    path: path.resolve(__dirname, "extension")
+    path: path.resolve(__dirname, "extension"),
   },
   performance: {
-    hints: false
+    hints: false,
   },
   plugins: [
     new CopyPlugin([
@@ -46,19 +46,19 @@ module.exports = (env, argv) => ({
       {
         from: "icons/",
         to: "icons/",
-        toType: "dir"
+        toType: "dir",
       },
       {
         flatten: true,
         from: "src/options/index.{html,css}",
-        to: "options.[ext]"
-      }
-    ])
+        to: "options.[ext]",
+      },
+    ]),
   ],
   stats: {
     warningsFilter:
       // Remove after upgrading to Prettier 1.19
-      "require.extensions is not supported by webpack. Use a loader instead."
+      "require.extensions is not supported by webpack. Use a loader instead.",
   },
-  watch: argv.mode === "development"
+  watch: argv.mode === "development",
 });

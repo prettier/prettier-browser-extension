@@ -2,7 +2,7 @@ import { findWithClass, isElementVisible } from "./domUtils";
 import renderButton, {
   BUTTONS,
   BUTTONS_TO_SEARCH_FOR,
-  COMMENT_SIBLING_SELECTORS_TO_DEFER_TO
+  COMMENT_SIBLING_SELECTORS_TO_DEFER_TO,
 } from "./button";
 import { PARSERS } from "./parsers";
 import prettier from "prettier/standalone";
@@ -16,7 +16,7 @@ const OBSERVABLE_CONTAINERS = [
   PR_CONVSERATION_CONTAINER_CLASS,
   PR_DIFF_CONTAINER_CLASS,
   COMMIT_DIFF_CONTAINER_CLASS,
-  NEW_ISSUE_CONTAINER_CLASS
+  NEW_ISSUE_CONTAINER_CLASS,
 ];
 
 export default class GitHub {
@@ -52,7 +52,7 @@ export default class GitHub {
     }
 
     this._urlObserver.observe(document.querySelector("body"), {
-      childList: true
+      childList: true,
     });
   }
 
@@ -68,7 +68,7 @@ export default class GitHub {
       this._domObserver.observe(elem, {
         attributes: true,
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
   }
@@ -88,7 +88,7 @@ export default class GitHub {
         append: true,
         classes: ["prettier-btn"],
         refNode: null,
-        style: { "margin-right": "4px" }
+        style: { "margin-right": "4px" },
       };
 
       // These two buttons have a unique DOM structure, so we need
@@ -109,12 +109,12 @@ export default class GitHub {
       const prettierButton = renderButton(parentNode, options);
       const inputEl = findWithClass(prettierButton, "comment-form-textarea");
 
-      prettierButton.addEventListener("click", event => {
+      prettierButton.addEventListener("click", (event) => {
         event.preventDefault();
         inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
           plugins: PARSERS,
-          ...this._storage.get().prettierOptions
+          ...this._storage.get().prettierOptions,
         });
         inputEl.focus();
       });
@@ -130,7 +130,7 @@ export default class GitHub {
           // Skip Comment buttons that aren't the leftmost button.
           (button.innerText === BUTTONS.COMMENT &&
             COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
-              sel => !!button.parentNode.parentNode.querySelector(sel)
+              (sel) => !!button.parentNode.parentNode.querySelector(sel)
             )) ||
           // Skip issue title edit buttons
           button.parentNode.parentNode.classList.contains("js-issue-update")

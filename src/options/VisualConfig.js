@@ -10,7 +10,7 @@ export default function VisualConfig({ options, setOptions }) {
           ? checked
           : type === "number"
           ? parseInt(value)
-          : value
+          : value,
     });
   }
 
@@ -130,5 +130,5 @@ export default function VisualConfig({ options, setOptions }) {
 
 VisualConfig.propTypes = {
   options: PropTypes.object,
-  setOptions: PropTypes.func
+  setOptions: PropTypes.func,
 };

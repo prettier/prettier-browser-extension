@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import parserBabylon from "prettier/parser-babylon";
+import parserBabel from "prettier/parser-babel";
 import prettier from "prettier/standalone";
 import { validateOptions } from "./options";
 
@@ -19,8 +19,8 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
       setTextAreaVal(
         prettier.format(JSON.stringify(options), {
           parser: "json",
-          plugins: [parserBabylon],
-          ...options
+          plugins: [parserBabel],
+          ...options,
         })
       );
     } catch {}
@@ -59,7 +59,7 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
 
   return (
     <>
-      {errors.map(err => (
+      {errors.map((err) => (
         <p key={err}>Error: {err}</p>
       ))}
       {displaySaved && <p>Saved</p>}
@@ -79,5 +79,5 @@ JsonConfig.propTypes = {
   errors: PropTypes.array,
   options: PropTypes.object,
   setErrors: PropTypes.func,
-  setOptions: PropTypes.func
+  setOptions: PropTypes.func,
 };

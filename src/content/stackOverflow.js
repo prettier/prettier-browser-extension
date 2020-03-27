@@ -16,7 +16,7 @@ export default class StackOverflow {
     if (content) {
       pageObserver.observe(content, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
   }
@@ -37,8 +37,8 @@ export default class StackOverflow {
 
     renderButton(buttonRowEl, {
       classes: ["s-btn", "s-btn__primary", "prettier-btn"],
-      style: { margin: "6px" }
-    }).addEventListener("click", event => {
+      style: { margin: "6px" },
+    }).addEventListener("click", (event) => {
       event.preventDefault();
 
       // https://stackoverflow.com/editing-help#code
@@ -135,7 +135,7 @@ export default class StackOverflow {
         let langAll = null;
 
         // https://stackoverflow.com/editing-help#syntax-highlighting
-        codeBlocks.forEach(lines => {
+        codeBlocks.forEach((lines) => {
           const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*(?:lang-(.+))?/u;
           const indentedCodeWithLangRegex = /^\s*<!-- language: lang-(.+) -->/u;
           const langAllRegex = /^\s*<!-- language-all: lang-(.+) -->/u;
@@ -169,7 +169,7 @@ export default class StackOverflow {
                   formattedSnippet = prettier.format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
                     plugins: PARSERS,
-                    ...this._getOptions()
+                    ...this._getOptions(),
                   });
                 } catch {}
 
@@ -198,7 +198,7 @@ export default class StackOverflow {
               formattedText = prettier.format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
                 plugins: PARSERS,
-                ...this._getOptions()
+                ...this._getOptions(),
               });
             } catch {
               return;
@@ -230,7 +230,7 @@ export default class StackOverflow {
       inputEl.value = prettier.format(inputEl.value, {
         parser: "markdown",
         plugins: PARSERS,
-        ...this._getOptions()
+        ...this._getOptions(),
       });
       inputEl.focus();
     });
