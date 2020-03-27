@@ -16,7 +16,11 @@
   "permissions": ["storage"],
   "content_scripts": [
     {
-      "matches": ["https://stackoverflow.com/*", "https://github.com/*"],
+      "matches": [
+        "https://stackoverflow.com/*",
+        "https://github.com/*",
+        "https://leetcode.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_end"
     }
