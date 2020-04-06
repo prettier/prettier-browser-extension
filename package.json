@@ -17,7 +17,7 @@
     "zip": "jszip-cli add -i .DS_Store -o extension.zip -f extension/*"
   },
   "dependencies": {
-    "prettier": "2.0.2",
+    "prettier": "2.0.3",
     "prop-types": "15.7.2",
     "react": "16.12.0",
     "react-dom": "16.13.0"
