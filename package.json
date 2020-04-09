@@ -35,7 +35,7 @@
     "eslint-plugin-react": "7.19.0",
     "eslint-plugin-react-hooks": "3.0.0",
     "husky": "4.2.3",
-    "jest": "25.2.7",
+    "jest": "25.3.0",
     "lint-staged": "10.1.2",
     "react-devtools": "4.6.0",
     "webextension-polyfill": "0.6.0",
