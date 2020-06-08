@@ -41,19 +41,21 @@ module.exports = (env, argv) => ({
     hints: false,
   },
   plugins: [
-    new CopyPlugin([
-      "manifest.json",
-      {
-        from: "icons/",
-        to: "icons/",
-        toType: "dir",
-      },
-      {
-        flatten: true,
-        from: "src/options/index.{html,css}",
-        to: "options.[ext]",
-      },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        "manifest.json",
+        {
+          from: "icons/",
+          to: "icons/",
+          toType: "dir",
+        },
+        {
+          flatten: true,
+          from: "src/options/index.{html,css}",
+          to: "options.[ext]",
+        },
+      ],
+    }),
   ],
   watch: argv.mode === "development",
 });
