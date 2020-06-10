@@ -1,0 +1,100 @@
+html,
+body {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 0 1rem;
+  font-size: 13px;
+  min-height: 500px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 4rem;
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .tabs {
+    margin-left: auto;
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .tab {
+      display: flex;
+      padding: 0.2rem;
+
+      & + .tab {
+        border-left: 1px solid #ccc;
+      }
+
+      &.active {
+        background-color: #f1f1f1;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: #ddd;
+      }
+    }
+  }
+}
+
+.form {
+  .form-group {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #ccc;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+}
+
+.json-editor {
+  .textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 300px;
+  }
+
+  .saved {
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: green;
+  }
+}
