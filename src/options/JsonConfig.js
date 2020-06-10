@@ -4,7 +4,7 @@ import parserBabel from "prettier/parser-babel";
 import prettier from "prettier/standalone";
 import { validateOptions } from "./options";
 
-const SAVED_TIMEOUT = 500;
+const SAVED_TIMEOUT = 2000;
 const STRINGIFY_SPACING = 2;
 
 export default function JsonConfig({ errors, options, setErrors, setOptions }) {
@@ -58,20 +58,19 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   }
 
   return (
-    <>
+    <div className="json-editor">
       {errors.map((err) => (
         <p key={err}>Error: {err}</p>
       ))}
-      {displaySaved && <p>Saved</p>}
       <textarea
+        className="textarea"
         value={textAreaVal}
-        columns={80}
-        rows={24}
         ref={textareaEl}
         onChange={handleChange}
       />
       <button onClick={handleClick}>Save</button>
-    </>
+      {displaySaved && <span className="saved">Saved</span>}
+    </div>
   );
 }
 

@@ -1,19 +1,20 @@
-import JsonConfig from "./JsonConfig";
+import React, { useCallback } from "react";
 import PropTypes from "prop-types";
-import React from "react";
+
+import JsonConfig from "./JsonConfig";
 import VisualConfig from "./VisualConfig";
+import TabSwitcher from "./TabSwitcher";
 
 export default function App({ options, errors, setOptions, setErrors }) {
-  function handleChange({ target: { checked } }) {
-    setOptions({ ...options, isJsonVisible: checked });
-  }
-
-  function setPrettierOptions(newOptions) {
-    setOptions({
-      ...options,
-      prettierOptions: { ...options.prettierOptions, ...newOptions },
-    });
-  }
+  const setPrettierOptions = useCallback(
+    (newOptions) => {
+      setOptions({
+        ...options,
+        prettierOptions: { ...options.prettierOptions, ...newOptions },
+      });
+    },
+    [options, setOptions]
+  );
 
   if (!options) {
     return null;
@@ -23,16 +24,12 @@ export default function App({ options, errors, setOptions, setErrors }) {
 
   return (
     <>
-      <hr />
-      <label>
-        Use JSON configuration
-        <input
-          type="checkbox"
-          checked={isJsonVisible}
-          onChange={handleChange}
-        />
-      </label>
-      <hr />
+      <div className="header">
+        <a className="title" href="https://prettier.io/docs/en/options.html">
+          Options
+        </a>
+        <TabSwitcher options={options} setOptions={setOptions} />
+      </div>
       {isJsonVisible ? (
         <JsonConfig
           errors={errors}

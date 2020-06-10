@@ -3,6 +3,7 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
+const HTMLPlugin = require("html-webpack-plugin");
 
 module.exports = (env, argv) => ({
   devtool: false,
@@ -19,6 +20,21 @@ module.exports = (env, argv) => ({
         exclude: /node_modules/,
         test: /\.js$/,
         use: "babel-loader",
+      },
+      {
+        test: /\.svg$/,
+        use: "@svgr/webpack",
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          "style-loader",
+          // Translates CSS into CommonJS
+          "css-loader",
+          // Compiles Sass to CSS
+          "sass-loader",
+        ],
       },
     ],
   },
@@ -41,6 +57,11 @@ module.exports = (env, argv) => ({
     hints: false,
   },
   plugins: [
+    new HTMLPlugin({
+      chunks: ["options"],
+      filename: "options.html",
+      template: "src/options/index.html",
+    }),
     new CopyPlugin({
       patterns: [
         "manifest.json",
@@ -48,11 +69,6 @@ module.exports = (env, argv) => ({
           from: "icons/",
           to: "icons/",
           toType: "dir",
-        },
-        {
-          flatten: true,
-          from: "src/options/index.{html,css}",
-          to: "options.[ext]",
         },
       ],
     }),
