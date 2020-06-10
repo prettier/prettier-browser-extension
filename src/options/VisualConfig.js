@@ -94,8 +94,8 @@ export default function VisualConfig(props) {
         type === "checkbox"
           ? checked
           : type === "number"
-            ? parseInt(value)
-            : value,
+          ? parseInt(value)
+          : value,
     });
   }
 
@@ -104,7 +104,7 @@ export default function VisualConfig(props) {
   }, [options, reset]);
 
   return (
-    <form className='form'>
+    <form className="form">
       {fields.map((field) => {
         const inputProps = {
           description: field.description,

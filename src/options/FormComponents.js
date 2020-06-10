@@ -33,7 +33,9 @@ export const Select = (props) => {
       <span className="description">{description}</span>
       <select name={name} ref={inputRef} onChange={onChange}>
         {options.map((option) => (
-          <option value={option.value} key={option.value}>{option.label}</option>
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
         ))}
       </select>
     </>
@@ -64,9 +66,11 @@ Select.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })),
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    })
+  ),
   type: PropTypes.string.isRequired,
 };

@@ -6,12 +6,15 @@ import VisualConfig from "./VisualConfig";
 import TabSwitcher from "./TabSwitcher";
 
 export default function App({ options, errors, setOptions, setErrors }) {
-  const setPrettierOptions = useCallback((newOptions) => {
-    setOptions({
-      ...options,
-      prettierOptions: { ...options.prettierOptions, ...newOptions },
-    });
-  }, [options, setOptions])
+  const setPrettierOptions = useCallback(
+    (newOptions) => {
+      setOptions({
+        ...options,
+        prettierOptions: { ...options.prettierOptions, ...newOptions },
+      });
+    },
+    [options, setOptions]
+  );
 
   if (!options) {
     return null;
@@ -21,8 +24,10 @@ export default function App({ options, errors, setOptions, setErrors }) {
 
   return (
     <>
-      <div className='header'>
-        <a className='title' href="https://prettier.io/docs/en/options.html">Options</a>
+      <div className="header">
+        <a className="title" href="https://prettier.io/docs/en/options.html">
+          Options
+        </a>
         <TabSwitcher options={options} setOptions={setOptions} />
       </div>
       {isJsonVisible ? (
@@ -33,11 +38,11 @@ export default function App({ options, errors, setOptions, setErrors }) {
           setOptions={setPrettierOptions}
         />
       ) : (
-          <VisualConfig
-            options={prettierOptions}
-            setOptions={setPrettierOptions}
-          />
-        )}
+        <VisualConfig
+          options={prettierOptions}
+          setOptions={setPrettierOptions}
+        />
+      )}
     </>
   );
 }

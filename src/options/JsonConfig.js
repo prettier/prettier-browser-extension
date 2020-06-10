@@ -23,7 +23,7 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
           ...options,
         })
       );
-    } catch { }
+    } catch {}
   }, [options]);
 
   function handleChange({ target: { value } }) {
@@ -58,18 +58,18 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   }
 
   return (
-    <div className='json-editor'>
+    <div className="json-editor">
       {errors.map((err) => (
         <p key={err}>Error: {err}</p>
       ))}
       <textarea
-        className='textarea'
+        className="textarea"
         value={textAreaVal}
         ref={textareaEl}
         onChange={handleChange}
       />
       <button onClick={handleClick}>Save</button>
-      {displaySaved && <span className='saved'>Saved</span>}
+      {displaySaved && <span className="saved">Saved</span>}
     </div>
   );
 }
