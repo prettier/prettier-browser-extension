@@ -36,7 +36,6 @@
     "prefer-const": "error",
     "prefer-promise-reject-errors": "error",
     "prettier/prettier": "error",
-    "sort-imports": "error",
     "sort-keys": [
       "error",
       "asc",
