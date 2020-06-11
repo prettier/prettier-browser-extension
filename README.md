@@ -22,10 +22,12 @@ For a one-time build in production:
 yarn build
 ```
 
+#### Test in Chrome locally
+
 To watch files and rebuild when files change in development:
 
 ```
-yarn start
+yarn build:chrome:dev
 ```
 
 To open React devtools for the options page:
@@ -34,11 +36,24 @@ To open React devtools for the options page:
 yarn react-devtools
 ```
 
-#### Test in Chrome locally
-
 - Chrome Settings > More Tools > Extensions...
 - Turn on Developer mode
-- Load unpacked > Select the `extension` directory
+- Load unpacked > Select the `extension/chrome` directory
+
+#### Test in Chrome locally
+
+To watch files and rebuild when files change in development:
+
+```
+yarn build:firefox:dev
+yarn launch:firefox
+```
+
+To open React devtools for the options page:
+
+```
+yarn react-devtools
+```
 
 ### Format files
 

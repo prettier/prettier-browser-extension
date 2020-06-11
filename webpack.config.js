@@ -1,15 +1,11 @@
-/* eslint-env node */
-"use strict";
-const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
-module.exports = (env, argv) => {
-  const isDevMode = argv.mode === "development";
-  const target = env.platform;
+module.exports = ({ outDir, env, manifestPath }) => {
+  const isDevMode = env === "development";
 
   return {
     devtool: false,
@@ -19,6 +15,7 @@ module.exports = (env, argv) => {
         ? ["react-devtools", "./src/options/index.js"]
         : "./src/options/index.js",
     },
+    mode: env,
     module: {
       rules: [
         {
@@ -56,7 +53,7 @@ module.exports = (env, argv) => {
       ],
     },
     output: {
-      path: path.resolve(__dirname, "extension", target),
+      path: outDir,
     },
     performance: {
       hints: false,
@@ -69,7 +66,7 @@ module.exports = (env, argv) => {
       }),
       new CopyPlugin({
         patterns: [
-          `${target}/manifest.json`,
+          manifestPath,
           {
             from: "icons/",
             to: "icons/",

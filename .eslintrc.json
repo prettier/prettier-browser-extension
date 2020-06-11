@@ -44,14 +44,19 @@
         "natural": true
       }
     ],
-    "sort-vars": "error",
-    "strict": ["error", "global"]
+    "sort-vars": "error"
   },
   "overrides": [
     {
       "files": "*test*.js",
       "env": {
         "jest": true
+      }
+    },
+    {
+      "files": ["scripts/**/*.js", "webpack.config.js"],
+      "env": {
+        "node": true
       }
     }
   ]
