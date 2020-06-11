@@ -1,3 +1,5 @@
+"use strict";
+
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");

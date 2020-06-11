@@ -44,7 +44,8 @@
         "natural": true
       }
     ],
-    "sort-vars": "error"
+    "sort-vars": "error",
+    "strict": ["error", "global"]
   },
   "overrides": [
     {
