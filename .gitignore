@@ -1,4 +1,4 @@
 node_modules
 extension
-DS_Store
+.DS_Store
 artifacts/
