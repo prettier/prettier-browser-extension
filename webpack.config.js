@@ -76,9 +76,9 @@ module.exports = ({ outDir, env, manifestPath }) => {
           },
         ],
       }),
-      new CleanWebpackPlugin(),
+      !isDevMode && new CleanWebpackPlugin(),
       new webpack.ProgressPlugin(),
-    ],
+    ].filter(Boolean),
     watch: isDevMode,
   };
 };
