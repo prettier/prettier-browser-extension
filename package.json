@@ -41,7 +41,7 @@
     "eslint-plugin-react-hooks": "4.0.4",
     "html-webpack-plugin": "4.3.0",
     "husky": "4.2.5",
-    "jest": "26.0.1",
+    "jest": "26.1.0",
     "lint-staged": "10.2.11",
     "react-devtools": "4.7.0",
     "sass": "1.26.8",
