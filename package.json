@@ -45,7 +45,7 @@
     "lint-staged": "10.2.11",
     "react-devtools": "4.7.0",
     "sass": "1.26.9",
-    "sass-loader": "8.0.2",
+    "sass-loader": "9.0.0",
     "style-loader": "1.2.1",
     "webextension-polyfill": "0.6.0",
     "webpack": "4.43.0",
