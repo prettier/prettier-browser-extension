@@ -6,6 +6,7 @@ const CREATE_PULL_REQUEST = "Create pull request";
 const REOPEN_ISSUE = "Reopen issue";
 const REOPEN_PULL_REQUEST = "Reopen pull request";
 const SUBMIT_NEW_ISSUE = "Submit new issue";
+const WIKI_SAVE_PAGE = "Save Page";
 
 export const BUTTONS = {
   CANCEL,
@@ -27,6 +28,7 @@ export const BUTTONS_TO_SEARCH_FOR = [
   REOPEN_ISSUE,
   REOPEN_PULL_REQUEST,
   SUBMIT_NEW_ISSUE,
+  WIKI_SAVE_PAGE,
 ];
 
 const CLOSE_PR_ISSUE_BUTTON = "button[name=comment_and_close]";

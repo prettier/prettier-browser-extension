@@ -7,16 +7,18 @@ import renderButton, {
 import { PARSERS } from "./parsers";
 import prettier from "prettier/standalone";
 
-const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues\/new)/u;
+const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues|wiki|wiki\/\d+\/(_?new|_edit))/u;
 const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
 const PR_DIFF_CONTAINER_CLASS = ".js-diff-container";
 const COMMIT_DIFF_CONTAINER_CLASS = ".js-details-container";
 const NEW_ISSUE_CONTAINER_CLASS = ".timeline-comment-wrapper";
+const WIKI_EDITOR_CONTAINER_CLASS = ".gollum-editor .form-actions";
 const OBSERVABLE_CONTAINERS = [
   PR_CONVSERATION_CONTAINER_CLASS,
   PR_DIFF_CONTAINER_CLASS,
   COMMIT_DIFF_CONTAINER_CLASS,
   NEW_ISSUE_CONTAINER_CLASS,
+  WIKI_EDITOR_CONTAINER_CLASS,
 ];
 
 export default class GitHub {
