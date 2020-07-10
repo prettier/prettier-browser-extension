@@ -43,7 +43,7 @@
     "husky": "4.2.5",
     "jest": "26.1.0",
     "lint-staged": "10.2.11",
-    "react-devtools": "4.7.0",
+    "react-devtools": "4.8.0",
     "sass": "1.26.9",
     "sass-loader": "9.0.1",
     "style-loader": "1.2.1",
