@@ -25,7 +25,12 @@ export default function App({ options, errors, setOptions, setErrors }) {
   return (
     <>
       <div className="header">
-        <a className="title" href="https://prettier.io/docs/en/options.html">
+        <a
+          className="title"
+          href="https://prettier.io/docs/en/options.html"
+          target="_blank"
+          rel="noreferrer"
+        >
           Options
         </a>
         <TabSwitcher options={options} setOptions={setOptions} />
