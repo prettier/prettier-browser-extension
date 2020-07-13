@@ -13,11 +13,9 @@ if (!platform) {
 
 const rootDir = process.cwd();
 const outDir = path.resolve(rootDir, "extension", platform);
-const manifestPath = path.resolve(rootDir, platform, "manifest.json");
 
 const config = webpackConfig({
   env: "development",
-  manifestPath,
   outDir,
 });
 

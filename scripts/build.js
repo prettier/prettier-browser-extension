@@ -19,7 +19,6 @@ if (!platform) {
 const rootDir = process.cwd();
 
 const outDir = path.resolve(rootDir, "extension", platform);
-const manifestPath = path.resolve(rootDir, platform, "manifest.json");
 
 const artifactsDir = path.resolve(rootDir, "artifacts");
 const zipPath = path.join(
@@ -36,7 +35,6 @@ const preprocess = async () => {
 const build = async () => {
   const config = webpackConfig({
     env: "production",
-    manifestPath,
     outDir,
   });
 
