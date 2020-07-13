@@ -53,6 +53,12 @@
       "env": {
         "jest": true
       }
+    },
+    {
+      "files": ["scripts/**/*.js", "webpack.config.js"],
+      "env": {
+        "node": true
+      }
     }
   ]
 }

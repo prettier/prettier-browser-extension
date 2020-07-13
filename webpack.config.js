@@ -1,77 +1,97 @@
-/* eslint-env node */
 "use strict";
-const path = require("path");
+
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+const MergeJsonPlugin = require("merge-json-webpack-plugin");
 
-module.exports = (env, argv) => ({
-  devtool: false,
-  entry: {
-    content: "./src/content/index.js",
-    options:
-      argv.mode === "development"
+const isFirefox = process.env.PLATFORM === "firefox";
+
+module.exports = ({ outDir, env }) => {
+  const isDevMode = env === "development";
+
+  return {
+    devtool: false,
+    entry: {
+      content: "./src/content/index.js",
+      options: isDevMode
         ? ["react-devtools", "./src/options/index.js"]
         : "./src/options/index.js",
-  },
-  module: {
-    rules: [
-      {
-        exclude: /node_modules/,
-        test: /\.js$/,
-        use: "babel-loader",
-      },
-      {
-        test: /\.svg$/,
-        use: "@svgr/webpack",
-      },
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          "style-loader",
-          // Translates CSS into CommonJS
-          "css-loader",
-          // Compiles Sass to CSS
-          "sass-loader",
-        ],
-      },
-    ],
-  },
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          extractComments: false,
-
-          // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
-          output: { ascii_only: true },
-        },
-      }),
-    ],
-  },
-  output: {
-    path: path.resolve(__dirname, "extension"),
-  },
-  performance: {
-    hints: false,
-  },
-  plugins: [
-    new HTMLPlugin({
-      chunks: ["options"],
-      filename: "options.html",
-      template: "src/options/index.html",
-    }),
-    new CopyPlugin({
-      patterns: [
-        "manifest.json",
+    },
+    mode: env,
+    module: {
+      rules: [
         {
-          from: "icons/",
-          to: "icons/",
-          toType: "dir",
+          exclude: /node_modules/,
+          test: /\.js$/,
+          use: "babel-loader",
+        },
+        {
+          test: /\.svg$/,
+          use: "@svgr/webpack",
+        },
+        {
+          test: /\.s[ac]ss$/i,
+          use: [
+            // Creates `style` nodes from JS strings
+            "style-loader",
+            // Translates CSS into CommonJS
+            "css-loader",
+            // Compiles Sass to CSS
+            "sass-loader",
+          ],
         },
       ],
-    }),
-  ],
-  watch: argv.mode === "development",
-});
+    },
+    optimization: {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            extractComments: false,
+
+            // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
+            output: { ascii_only: true },
+          },
+        }),
+      ],
+    },
+    output: {
+      path: outDir,
+    },
+    performance: {
+      hints: false,
+    },
+    plugins: [
+      new HTMLPlugin({
+        chunks: ["options"],
+        filename: "options.html",
+        template: "src/options/index.html",
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: "icons/",
+            to: "icons/",
+            toType: "dir",
+          },
+        ],
+      }),
+      new MergeJsonPlugin({
+        group: [
+          {
+            files: [
+              "src/manifest.json",
+              isFirefox && "src/firefox-manifest.json",
+            ].filter(Boolean),
+            to: "manifest.json",
+          },
+        ],
+      }),
+      !isDevMode && new CleanWebpackPlugin(),
+      new webpack.ProgressPlugin(),
+    ].filter(Boolean),
+    watch: isDevMode,
+  };
+};
