@@ -31,7 +31,7 @@
     "react-hook-form": "6.0.5"
   },
   "devDependencies": {
-    "@babel/core": "7.10.4",
+    "@babel/core": "7.10.5",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/preset-react": "7.10.1",
     "@svgr/webpack": "5.4.0",
