@@ -54,7 +54,7 @@
     "merge-json-webpack-plugin": "1.0.0",
     "react-devtools": "4.7.0",
     "sass": "1.26.10",
-    "sass-loader": "9.0.1",
+    "sass-loader": "9.0.2",
     "style-loader": "1.2.1",
     "webextension-polyfill": "0.6.0",
     "webpack": "4.43.0",
