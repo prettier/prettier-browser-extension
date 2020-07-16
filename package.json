@@ -52,7 +52,7 @@
     "jest": "26.1.0",
     "lint-staged": "10.2.11",
     "merge-json-webpack-plugin": "1.1.1",
-    "react-devtools": "4.7.0",
+    "react-devtools": "4.8.2",
     "sass": "1.26.10",
     "sass-loader": "9.0.2",
     "style-loader": "1.2.1",
