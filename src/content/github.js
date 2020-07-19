@@ -4,8 +4,7 @@ import renderButton, {
   BUTTONS_TO_SEARCH_FOR,
   COMMENT_SIBLING_SELECTORS_TO_DEFER_TO,
 } from "./button";
-import { PARSERS } from "./parsers";
-import prettier from "prettier/standalone";
+import format from "../utils/format";
 
 const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues|wiki|wiki\/\d+\/(_?new|_edit))/u;
 const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
@@ -113,9 +112,8 @@ export default class GitHub {
 
       prettierButton.addEventListener("click", (event) => {
         event.preventDefault();
-        inputEl.value = prettier.format(inputEl.value, {
+        inputEl.value = format(inputEl.value, {
           parser: "markdown",
-          plugins: PARSERS,
           ...this._storage.get().prettierOptions,
         });
         inputEl.focus();

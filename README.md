@@ -67,6 +67,11 @@ yarn fix
 yarn test
 ```
 
+### Known Issues
+
+- Formatting via context menu is supported in firefox only
+- Elements present inside iframe can't be formatted
+
 ## Help
 
 We need your [help](https://github.com/prettier/prettier-chrome-extension/issues) :)

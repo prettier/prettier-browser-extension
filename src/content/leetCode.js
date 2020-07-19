@@ -1,5 +1,5 @@
-import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
-import prettier from "prettier/standalone";
+import { PARSERS_LANG_MAP } from "../utils/parsers";
+import format from "../utils/format";
 import renderButton from "./button";
 
 export default class LeetCode {
@@ -108,9 +108,8 @@ export default class LeetCode {
     document.addEventListener("FormatEditorContent", (event) => {
       const snippet = event.detail;
 
-      const formattedSnippet = prettier.format(snippet, {
+      const formattedSnippet = format(snippet, {
         parser: PARSERS_LANG_MAP.js,
-        plugins: PARSERS,
         ...this._getOptions(),
       });
 

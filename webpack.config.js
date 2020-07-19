@@ -15,10 +15,12 @@ module.exports = ({ outDir, env }) => {
   return {
     devtool: false,
     entry: {
-      content: "./src/content/index.js",
+      background: "./src/background",
+      content: "./src/content",
+      "context-menu": "./src/content/context-menu",
       options: isDevMode
-        ? ["react-devtools", "./src/options/index.js"]
-        : "./src/options/index.js",
+        ? ["react-devtools", "./src/options"]
+        : "./src/options",
     },
     mode: env,
     module: {
@@ -84,6 +86,7 @@ module.exports = ({ outDir, env }) => {
             files: [
               "src/manifest.json",
               isFirefox && "src/firefox-manifest.json",
+              `src/${isDevMode ? "dev" : "prod"}-manifest.json`,
             ].filter(Boolean),
             to: "manifest.json",
           },

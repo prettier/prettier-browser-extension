@@ -1,5 +1,5 @@
-import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
-import prettier from "prettier/standalone";
+import { PARSERS_LANG_MAP } from "../utils/parsers";
+import format from "../utils/format";
 import renderButton from "./button";
 
 export default class StackOverflow {
@@ -166,9 +166,8 @@ export default class StackOverflow {
                 let formattedSnippet = snippet;
 
                 try {
-                  formattedSnippet = prettier.format(snippet, {
+                  formattedSnippet = format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
-                    plugins: PARSERS,
                     ...this._getOptions(),
                   });
                 } catch {}
@@ -195,9 +194,8 @@ export default class StackOverflow {
             }
 
             try {
-              formattedText = prettier.format(codeLines.join("\n"), {
+              formattedText = format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
-                plugins: PARSERS,
                 ...this._getOptions(),
               });
             } catch {
@@ -227,9 +225,8 @@ export default class StackOverflow {
         });
       }
 
-      inputEl.value = prettier.format(inputEl.value, {
+      inputEl.value = format(inputEl.value, {
         parser: "markdown",
-        plugins: PARSERS,
         ...this._getOptions(),
       });
       inputEl.focus();
