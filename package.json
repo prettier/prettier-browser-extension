@@ -35,7 +35,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/preset-react": "7.10.1",
     "@svgr/webpack": "5.4.0",
-    "archiver": "4.0.2",
+    "archiver": "5.0.0",
     "babel-loader": "8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
