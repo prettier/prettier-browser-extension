@@ -33,7 +33,7 @@
   "devDependencies": {
     "@babel/core": "7.10.5",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
-    "@babel/preset-react": "7.10.1",
+    "@babel/preset-react": "7.10.4",
     "@svgr/webpack": "5.4.0",
     "archiver": "4.0.2",
     "babel-loader": "8.1.0",
