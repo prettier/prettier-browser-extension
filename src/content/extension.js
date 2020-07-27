@@ -5,7 +5,7 @@ import Storage from "./storage";
 
 const GITHUB_URL = "https://github.com";
 const STACKOVERFLOW_URL = "https://stackoverflow.com";
-const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
+const STACKOVERFLOW_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
 const LEETCODE_URL = "https://leetcode.com";
 const LEETCODE_VALID_PATHNAMES = /(^\/problems)/u;
 
