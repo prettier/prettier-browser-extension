@@ -16,7 +16,7 @@
     "fix:js": "yarn test:js --fix",
     "prettier": "prettier . --write",
     "build:chrome:dev": "PLATFORM=chrome node scripts/start.js",
-    "build:firefox:dev": "PLATFORM=chrome node scripts/start.js",
+    "build:firefox:dev": "PLATFORM=firefox node scripts/start.js",
     "launch:firefox": "web-ext run",
     "test": "yarn test:other && yarn test:js && jest --passWithNoTests",
     "test:other": "prettier . --check",

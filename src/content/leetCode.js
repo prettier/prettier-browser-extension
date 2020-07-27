@@ -2,10 +2,20 @@ import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
 import prettier from "prettier/standalone";
 import renderButton from "./button";
 
+const LEETCODE_URL = "https://leetcode.com";
+const LEETCODE_VALID_PATHNAMES = /(^\/problems)/u;
+
 export default class LeetCode {
   constructor(storage) {
     this._storage = storage;
     this._init();
+  }
+
+  static test() {
+    return (
+      window.location.origin === LEETCODE_URL &&
+      LEETCODE_VALID_PATHNAMES.test(window.location.pathname)
+    );
   }
 
   _init() {
