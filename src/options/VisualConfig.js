@@ -108,11 +108,11 @@ export default function VisualConfig(props) {
       {fields.map((field) => {
         const inputProps = {
           description: field.description,
-          inputRef: register,
           label: field.label,
           name: field.name,
           onChange: handleOptionsChange,
           options: field.options,
+          register,
           type: field.type,
         };
 
