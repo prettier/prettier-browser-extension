@@ -72,7 +72,7 @@ module.exports = ({ outDir, env }) => {
       new CopyPlugin({
         patterns: [
           {
-            from: "icons/",
+            from: "assets/icons/",
             to: "icons/",
             toType: "dir",
           },
