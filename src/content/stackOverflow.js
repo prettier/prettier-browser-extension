@@ -11,7 +11,7 @@ const STACKEXCHANGE_SITES = [
   "https://superuser.com",
 ];
 const STACKEXCHANGE_URL_REGEX = /^https:\/\/([a-z]+).stackexchange.com/;
-const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit)/u;
+const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
 
 export default class StackOverflow {
   constructor(storage) {
