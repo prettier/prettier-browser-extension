@@ -15,7 +15,7 @@ export default class {
     await this._storage.init();
 
     for (const Extension of extensions) {
-      if (typeof Extension.test === "function" && Extension.test()) {
+      if (Extension.test()) {
         new Extension(this._storage);
         break;
       }
