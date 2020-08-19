@@ -66,6 +66,14 @@ yarn fix
 ```
 yarn test
 ```
+### Setting up
+To configure "Prettier options" via chrome:
+
+- click on the prettier chrome extention,
+
+- You will see a Popup menu among which is **"Options"**.
+
+- Click on **options** and then make your setups.
 
 ## Help
 
