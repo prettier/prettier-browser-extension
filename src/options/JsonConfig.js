@@ -67,6 +67,7 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
         value={textAreaVal}
         ref={textareaEl}
         onChange={handleChange}
+        spellCheck="false"
       />
       <button onClick={handleClick}>Save</button>
       {displaySaved && <span className="saved">Saved</span>}
