@@ -1,6 +1,5 @@
 {
   "name": "Prettier",
-  "version": "0.0.5",
   "manifest_version": 2,
   "description": "Prettier all the things.",
   "homepage_url": "https://prettier.io",
@@ -11,13 +10,20 @@
   },
   "options_ui": {
     "page": "options.html",
-    "open_in_tab": false
+    "open_in_tab": false,
+    "chrome_style": true
   },
   "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": [
         "https://stackoverflow.com/*",
+        "https://askubuntu.com/*",
+        "https://mathoverflow.com/*",
+        "https://serverfault.com/*",
+        "https://stackapps.com/*",
+        "https://superuser.com/*",
+        "https://*.stackexchange.com/*",
         "https://github.com/*",
         "https://leetcode.com/*"
       ],

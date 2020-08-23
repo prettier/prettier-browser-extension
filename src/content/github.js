@@ -6,6 +6,7 @@ import renderButton, {
 } from "./button";
 import format from "../utils/format";
 
+const GITHUB_URL = "https://github.com";
 const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues|wiki|wiki\/\d+\/(_?new|_edit))/u;
 const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
 const PR_DIFF_CONTAINER_CLASS = ".js-diff-container";
@@ -29,13 +30,18 @@ export default class GitHub {
     this._init();
   }
 
+  static test() {
+    return (
+      window.location.origin === GITHUB_URL &&
+      GITHUB_VALID_PATHNAMES.test(window.location.pathname)
+    );
+  }
+
   _init() {
     this._observeURLChanges();
 
-    if (GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-      this._observeDOMChanges();
-      this._createButtons();
-    }
+    this._observeDOMChanges();
+    this._createButtons();
   }
 
   _observeURLChanges() {

@@ -7,6 +7,8 @@ const HTMLPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const MergeJsonPlugin = require("merge-json-webpack-plugin");
 
+const { version } = require("./package.json");
+
 const isFirefox = process.env.PLATFORM === "firefox";
 
 module.exports = ({ outDir, env }) => {
@@ -74,7 +76,7 @@ module.exports = ({ outDir, env }) => {
       new CopyPlugin({
         patterns: [
           {
-            from: "icons/",
+            from: "assets/icons/",
             to: "icons/",
             toType: "dir",
           },
@@ -83,6 +85,7 @@ module.exports = ({ outDir, env }) => {
       new MergeJsonPlugin({
         group: [
           {
+            beforeEmit: (manifest) => ({ version, ...manifest }),
             files: [
               "src/manifest.json",
               isFirefox && "src/firefox-manifest.json",

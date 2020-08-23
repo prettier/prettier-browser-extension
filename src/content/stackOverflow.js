@@ -2,10 +2,31 @@ import { PARSERS_LANG_MAP } from "../utils/parsers";
 import format from "../utils/format";
 import renderButton from "./button";
 
+const STACKEXCHANGE_SITES = [
+  "https://stackoverflow.com",
+  "https://askubuntu.com",
+  "https://mathoverflow.com",
+  "https://serverfault.com",
+  "https://stackapps.com",
+  "https://superuser.com",
+];
+const STACKEXCHANGE_URL_REGEX = /^https:\/\/([a-z]+).stackexchange.com/;
+const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
+
 export default class StackOverflow {
   constructor(storage) {
     this._storage = storage;
     this._init();
+  }
+
+  static test() {
+    const origin = window.location.origin;
+
+    return (
+      (STACKEXCHANGE_SITES.some((url) => url === origin) ||
+        STACKEXCHANGE_URL_REGEX.test(origin)) &&
+      STACKEXCHANGE_VALID_PATHNAMES.test(window.location.pathname)
+    );
   }
 
   _init() {
