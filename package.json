@@ -12,13 +12,13 @@
     "build:firefox": "PLATFORM=firefox node scripts/build.js",
     "build": "yarn build:chrome && yarn build:firefox",
     "dev:chrome": "PLATFORM=chrome node scripts/start.js",
-    "dev:firefox": "PLATFORM=chrome firefox scripts/start.js",
+    "dev:firefox": "PLATFORM=firefox node scripts/start.js",
     "launch:firefox": "web-ext run",
     "lint": "eslint --ignore-path .gitignore \"**/*.js\"",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "test": "jest --passWithNoTests",
-    "ci": "yarn format:check && yarn test"
+    "test-only": "jest --passWithNoTests",
+    "test": "yarn format:check && yarn lint && yarn test-only"
   },
   "dependencies": {
     "classnames": "2.2.6",
