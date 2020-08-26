@@ -1,1 +1,1 @@
-import "./contex-menu";
+import "./context-menu";
