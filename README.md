@@ -74,6 +74,12 @@ yarn format
 ### Run tests (to be added in the future)
 
 ```
+yarn test-only
+```
+
+### Run all of the above
+
+```
 yarn test
 ```
 
