@@ -1,6 +1,6 @@
-# Prettier Chrome Extension
+# Prettier Browser Extension
 
-> Extension that adds support for prettifying input boxes that support Markdown or Code.
+> Extension that adds support for prettifying input boxes that support Markdown or Code. Currently supports Chrome and Firefox.
 
 ## Chrome Web Store
 
@@ -69,4 +69,4 @@ yarn test
 
 ## Help
 
-We need your [help](https://github.com/prettier/prettier-chrome-extension/issues) :)
+We need your [help](https://github.com/prettier/prettier-browser-extension/issues) :)
