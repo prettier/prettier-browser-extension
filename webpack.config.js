@@ -1,64 +1,100 @@
-/* eslint-env node */
 "use strict";
-const path = require("path");
+
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HTMLPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+const MergeJsonPlugin = require("merge-json-webpack-plugin");
 
-module.exports = (env, argv) => ({
-  devtool: false,
-  entry: {
-    content: "./src/content/index.js",
-    options:
-      argv.mode === "development"
+const { version } = require("./package.json");
+
+const isFirefox = process.env.PLATFORM === "firefox";
+
+module.exports = ({ outDir, env }) => {
+  const isDevMode = env === "development";
+
+  return {
+    devtool: false,
+    entry: {
+      content: "./src/content/index.js",
+      options: isDevMode
         ? ["react-devtools", "./src/options/index.js"]
-        : "./src/options/index.js"
-  },
-  module: {
-    rules: [
-      {
-        exclude: /node_modules/,
-        test: /\.js$/,
-        use: "babel-loader"
-      }
-    ]
-  },
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          extractComments: false,
+        : "./src/options/index.js",
+    },
+    mode: env,
+    module: {
+      rules: [
+        {
+          exclude: /node_modules/,
+          test: /\.js$/,
+          use: "babel-loader",
+        },
+        {
+          test: /\.svg$/,
+          use: "@svgr/webpack",
+        },
+        {
+          test: /\.s[ac]ss$/i,
+          use: [
+            // Creates `style` nodes from JS strings
+            "style-loader",
+            // Translates CSS into CommonJS
+            "css-loader",
+            // Compiles Sass to CSS
+            "sass-loader",
+          ],
+        },
+      ],
+    },
+    optimization: {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            extractComments: false,
 
-          // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
-          output: { ascii_only: true }
-        }
-      })
-    ]
-  },
-  output: {
-    path: path.resolve(__dirname, "extension")
-  },
-  performance: {
-    hints: false
-  },
-  plugins: [
-    new CopyPlugin([
-      "manifest.json",
-      {
-        from: "icons/",
-        to: "icons/",
-        toType: "dir"
-      },
-      {
-        flatten: true,
-        from: "src/options/index.{html,css}",
-        to: "options.[ext]"
-      }
-    ])
-  ],
-  stats: {
-    warningsFilter:
-      // Remove after upgrading to Prettier 1.19
-      "require.extensions is not supported by webpack. Use a loader instead."
-  },
-  watch: argv.mode === "development"
-});
+            // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
+            output: { ascii_only: true },
+          },
+        }),
+      ],
+    },
+    output: {
+      path: outDir,
+    },
+    performance: {
+      hints: false,
+    },
+    plugins: [
+      new HTMLPlugin({
+        chunks: ["options"],
+        filename: "options.html",
+        template: "src/options/index.html",
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: "assets/icons/",
+            to: "icons/",
+            toType: "dir",
+          },
+        ],
+      }),
+      new MergeJsonPlugin({
+        group: [
+          {
+            beforeEmit: (manifest) => ({ version, ...manifest }),
+            files: [
+              "src/manifest.json",
+              isFirefox && "src/firefox-manifest.json",
+            ].filter(Boolean),
+            to: "manifest.json",
+          },
+        ],
+      }),
+      !isDevMode && new CleanWebpackPlugin(),
+      new webpack.ProgressPlugin(),
+    ].filter(Boolean),
+    watch: isDevMode,
+  };
+};

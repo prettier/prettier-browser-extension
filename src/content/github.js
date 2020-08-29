@@ -1,22 +1,25 @@
-import { findWithClass, isElementVisible } from "./utils";
+import { findWithClass, isElementVisible } from "./domUtils";
 import renderButton, {
   BUTTONS,
   BUTTONS_TO_SEARCH_FOR,
-  COMMENT_SIBLING_SELECTORS_TO_DEFER_TO
+  COMMENT_SIBLING_SELECTORS_TO_DEFER_TO,
 } from "./button";
 import { PARSERS } from "./parsers";
 import prettier from "prettier/standalone";
 
-const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues\/new)/u;
+const GITHUB_URL = "https://github.com";
+const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues|wiki|wiki\/\d+\/(_?new|_edit))/u;
 const PR_CONVSERATION_CONTAINER_CLASS = ".js-discussion";
 const PR_DIFF_CONTAINER_CLASS = ".js-diff-container";
 const COMMIT_DIFF_CONTAINER_CLASS = ".js-details-container";
 const NEW_ISSUE_CONTAINER_CLASS = ".timeline-comment-wrapper";
+const WIKI_EDITOR_CONTAINER_CLASS = ".gollum-editor .form-actions";
 const OBSERVABLE_CONTAINERS = [
   PR_CONVSERATION_CONTAINER_CLASS,
   PR_DIFF_CONTAINER_CLASS,
   COMMIT_DIFF_CONTAINER_CLASS,
-  NEW_ISSUE_CONTAINER_CLASS
+  NEW_ISSUE_CONTAINER_CLASS,
+  WIKI_EDITOR_CONTAINER_CLASS,
 ];
 
 export default class GitHub {
@@ -28,8 +31,16 @@ export default class GitHub {
     this._init();
   }
 
+  static test() {
+    return (
+      window.location.origin === GITHUB_URL &&
+      GITHUB_VALID_PATHNAMES.test(window.location.pathname)
+    );
+  }
+
   _init() {
     this._observeURLChanges();
+
     this._observeDOMChanges();
     this._createButtons();
   }
@@ -44,16 +55,12 @@ export default class GitHub {
         this._currentUrl = window.location.href;
         this._domObserver.disconnect();
 
-        if (!GITHUB_VALID_PATHNAMES.test(window.location.pathname)) {
-          return;
-        }
-
         this._init();
       });
     }
 
     this._urlObserver.observe(document.querySelector("body"), {
-      childList: true
+      childList: true,
     });
   }
 
@@ -69,7 +76,7 @@ export default class GitHub {
       this._domObserver.observe(elem, {
         attributes: true,
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
   }
@@ -89,7 +96,7 @@ export default class GitHub {
         append: true,
         classes: ["prettier-btn"],
         refNode: null,
-        style: { "margin-right": "4px" }
+        style: { "margin-right": "4px" },
       };
 
       // These two buttons have a unique DOM structure, so we need
@@ -110,12 +117,12 @@ export default class GitHub {
       const prettierButton = renderButton(parentNode, options);
       const inputEl = findWithClass(prettierButton, "comment-form-textarea");
 
-      prettierButton.addEventListener("click", event => {
+      prettierButton.addEventListener("click", (event) => {
         event.preventDefault();
         inputEl.value = prettier.format(inputEl.value, {
           parser: "markdown",
           plugins: PARSERS,
-          ...this._storage.get("options")
+          ...this._storage.get().prettierOptions,
         });
         inputEl.focus();
       });
@@ -127,12 +134,14 @@ export default class GitHub {
 
     for (const button of document.getElementsByTagName("button")) {
       if (BUTTONS_TO_SEARCH_FOR.includes(button.innerText)) {
-        // Skip Comment buttons that aren't the leftmost button.
         if (
-          button.innerText === BUTTONS.COMMENT &&
-          COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
-            sel => !!button.parentNode.parentNode.querySelector(sel)
-          )
+          // Skip Comment buttons that aren't the leftmost button.
+          (button.innerText === BUTTONS.COMMENT &&
+            COMMENT_SIBLING_SELECTORS_TO_DEFER_TO.some(
+              (sel) => !!button.parentNode.parentNode.querySelector(sel)
+            )) ||
+          // Skip issue title edit buttons
+          button.parentNode.parentNode.classList.contains("js-issue-update")
         ) {
           continue;
         }
