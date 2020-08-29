@@ -12,7 +12,7 @@ export default {
     onChanged: {
       addListener(listener) {
         listeners.push(listener);
-      }
+      },
     },
     sync: {
       async get() {
@@ -22,7 +22,7 @@ export default {
         await Promise.resolve();
         storageItems = { ...storageItems, ...newItems };
         callListeners();
-      }
-    }
-  }
+      },
+    },
+  },
 };

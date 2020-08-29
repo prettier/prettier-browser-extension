@@ -13,7 +13,7 @@ test("GitHub", async () => {
   Object.defineProperty(document.body, "offsetHeight", { value: 1 });
   // Emulate a matching GitHub pathname
   Object.defineProperty(window, "location", {
-    value: { pathname: "/prettier/prettier-chrome-extension/issues/new" }
+    value: { pathname: "/prettier/prettier-chrome-extension/issues/new" },
   });
 
   new GitHub(await createStorage());

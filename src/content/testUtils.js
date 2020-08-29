@@ -15,7 +15,7 @@ export async function createStorage() {
 
 export function expectToFormat(textarea) {
   fireEvent.change(textarea, {
-    target: { value: "```js\nconst variable=value\n```" }
+    target: { value: "```js\nconst variable=value\n```" },
   });
   fireEvent.click(getByText(document, "Prettier"));
   expect(textarea).toHaveValue("```js\nconst variable = value;\n```\n");

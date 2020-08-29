@@ -9,17 +9,17 @@ beforeEach(() => (document.body.innerHTML = ""));
 test.each([
   [{}, [element, buttonRef]],
   [{ append: false }, [buttonRef, element]],
-  [{ refNode: element }, [buttonRef, element]]
+  [{ refNode: element }, [buttonRef, element]],
 ])("renderButton with %p", (positionOptions, expectedOrder) => {
   document.body.appendChild(element);
   buttonRef.current = renderButton(document.body, {
     classes: ["btn2"],
     style: { color: "blue" },
-    ...positionOptions
+    ...positionOptions,
   });
 
   expect(Array.from(document.body.childNodes)).toEqual(
-    expectedOrder.map(thing => thing.current || thing)
+    expectedOrder.map((thing) => thing.current || thing)
   );
   expect(buttonRef.current).toBeInstanceOf(HTMLButtonElement);
   expect(buttonRef.current).toHaveTextContent("Prettier");
