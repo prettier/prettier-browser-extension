@@ -8,9 +8,9 @@ window.chrome = {
       get(callback) {
         setTimeout(() => callback({}));
       },
-      set() {}
-    }
-  }
+      set() {},
+    },
+  },
 };
 
 test("App", () => {
