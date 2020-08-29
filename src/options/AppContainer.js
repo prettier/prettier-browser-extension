@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import App from "./App";
 import browser from "webextension-polyfill";
+import React, { useEffect, useState } from "react";
+
+import App from "./App";
 import defaultOptions from "./options";
 
 export default function AppContainer() {

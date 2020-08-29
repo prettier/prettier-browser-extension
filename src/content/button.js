@@ -6,6 +6,7 @@ const CREATE_PULL_REQUEST = "Create pull request";
 const REOPEN_ISSUE = "Reopen issue";
 const REOPEN_PULL_REQUEST = "Reopen pull request";
 const SUBMIT_NEW_ISSUE = "Submit new issue";
+const WIKI_SAVE_PAGE = "Save Page";
 
 export const BUTTONS = {
   CANCEL,
@@ -15,7 +16,7 @@ export const BUTTONS = {
   CREATE_PULL_REQUEST,
   REOPEN_ISSUE,
   REOPEN_PULL_REQUEST,
-  SUBMIT_NEW_ISSUE
+  SUBMIT_NEW_ISSUE,
 };
 
 export const BUTTONS_TO_SEARCH_FOR = [
@@ -26,7 +27,8 @@ export const BUTTONS_TO_SEARCH_FOR = [
   CREATE_PULL_REQUEST,
   REOPEN_ISSUE,
   REOPEN_PULL_REQUEST,
-  SUBMIT_NEW_ISSUE
+  SUBMIT_NEW_ISSUE,
+  WIKI_SAVE_PAGE,
 ];
 
 const CLOSE_PR_ISSUE_BUTTON = "button[name=comment_and_close]";
@@ -36,7 +38,7 @@ const CANCEL_COMMENT_BUTTON = "button[name=comment_and_open]";
 export const COMMENT_SIBLING_SELECTORS_TO_DEFER_TO = [
   CLOSE_PR_ISSUE_BUTTON,
   REOPEN_PR_ISSUE_BUTTON,
-  CANCEL_COMMENT_BUTTON
+  CANCEL_COMMENT_BUTTON,
 ];
 
 export default function renderButton(

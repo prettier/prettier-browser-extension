@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import parserBabylon from "prettier/parser-babylon";
+import parserBabel from "prettier/parser-babel";
 import prettier from "prettier/standalone";
 import { validateOptions } from "./options";
 
-const SAVED_TIMEOUT = 500;
+const SAVED_TIMEOUT = 2000;
 const STRINGIFY_SPACING = 2;
 
 export default function JsonConfig({ errors, options, setErrors, setOptions }) {
@@ -19,8 +19,8 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
       setTextAreaVal(
         prettier.format(JSON.stringify(options), {
           parser: "json",
-          plugins: [parserBabylon],
-          ...options
+          plugins: [parserBabel],
+          ...options,
         })
       );
     } catch {}
@@ -58,20 +58,20 @@ export default function JsonConfig({ errors, options, setErrors, setOptions }) {
   }
 
   return (
-    <>
-      {errors.map(err => (
+    <div className="json-editor">
+      {errors.map((err) => (
         <p key={err}>Error: {err}</p>
       ))}
-      {displaySaved && <p>Saved</p>}
       <textarea
+        className="textarea"
         value={textAreaVal}
-        columns={80}
-        rows={24}
         ref={textareaEl}
         onChange={handleChange}
+        spellCheck="false"
       />
       <button onClick={handleClick}>Save</button>
-    </>
+      {displaySaved && <span className="saved">Saved</span>}
+    </div>
   );
 }
 
@@ -79,5 +79,5 @@ JsonConfig.propTypes = {
   errors: PropTypes.array,
   options: PropTypes.object,
   setErrors: PropTypes.func,
-  setOptions: PropTypes.func
+  setOptions: PropTypes.func,
 };

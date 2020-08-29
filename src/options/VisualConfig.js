@@ -1,134 +1,134 @@
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import React from "react";
+
+import { Input, CheckBox, Select } from "./FormComponents";
+
+const fields = [
+  {
+    description: "Specify the line length that the printer will wrap on.",
+    label: "Print Width",
+    name: "printWidth",
+    type: "number",
+  },
+  {
+    description: "Specify the number of spaces per indentation-level.",
+    label: "Tab width",
+    name: "tabWidth",
+    type: "number",
+  },
+  {
+    description: "Indent lines with tabs instead of spaces.",
+    label: "Use tabs",
+    name: "useTabs",
+    type: "checkbox",
+  },
+  {
+    description: "Print semicolons at the ends of statements.",
+    label: "Semicolons",
+    name: "semi",
+    type: "checkbox",
+  },
+  {
+    description: `Use 'single' quotes instead of "double" quotes.`,
+    label: "Use single quotes",
+    name: "singleQuote",
+    type: "checkbox",
+  },
+  {
+    description: "Print trailing commas wherever possible.",
+    label: "Trailing commas",
+    name: "trailingComma",
+    options: [
+      { label: "none", value: "none" },
+      { label: "es5", value: "es5" },
+      { label: "all", value: "all" },
+    ],
+    type: "select",
+  },
+  {
+    description: "Print spaces between brackets in object literals.",
+    label: "Bracket spacing",
+    name: "bracketSpacing",
+    type: "checkbox",
+  },
+  {
+    description: `Put the ">" of a multi-line JSX element at the end of the last line
+                  instead of being alone on the next line.`,
+    label: "JSX Brackets",
+    name: "jsxBracketSameLine",
+    type: "checkbox",
+  },
+  {
+    description: "Include parentheses around a sole arrow function parameter.",
+    label: "Arrow Function Parentheses",
+    name: "arrowParens",
+    options: [
+      { label: "avoid", value: "avoid" },
+      { label: "always", value: "always" },
+    ],
+    type: "select",
+  },
+];
+
+const componentMap = {
+  checkbox: CheckBox,
+  default: () => null,
+  number: Input,
+  select: Select,
+  text: Input,
+};
 
 // Form based on https://github.com/codesandbox/codesandbox-client/blob/master/packages/app/src/app/pages/common/Modals/PreferencesModal/CodeFormatting/Prettier/index.tsx
-export default function VisualConfig({ options, setOptions }) {
-  function handleOptionsChange({ target: { checked, name, type, value } }) {
+export default function VisualConfig(props) {
+  const { options, setOptions } = props;
+  const { register, reset } = useForm({ defaultValues: options });
+
+  function handleOptionsChange(event) {
+    const {
+      target: { checked, name, type, value },
+    } = event;
+
     setOptions({
       [name]:
         type === "checkbox"
           ? checked
           : type === "number"
           ? parseInt(value)
-          : value
+          : value,
     });
   }
 
+  useEffect(() => {
+    reset(options);
+  }, [options, reset]);
+
   return (
-    <>
-      <label>
-        Print width
-        <input
-          type="number"
-          name="printWidth"
-          value={options.printWidth}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>Specify the line length that the printer will wrap on.</p>
-      <hr />
-      <label>
-        Tab width
-        <input
-          type="number"
-          name="tabWidth"
-          value={options.tabWidth}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>Specify the number of spaces per indentation-level.</p>
-      <hr />
-      <label>
-        Use tabs
-        <input
-          type="checkbox"
-          name="useTabs"
-          checked={options.useTabs}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>Indent lines with tabs instead of spaces.</p>
-      <hr />
-      <label>
-        Semicolons
-        <input
-          type="checkbox"
-          name="semi"
-          checked={options.semi}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>Print semicolons at the ends of statements.</p>
-      <hr />
-      <label>
-        Use single quotes
-        <input
-          type="checkbox"
-          name="singleQuote"
-          checked={options.singleQuote}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>
-        Use {"'"}single{"'"} quotes instead of {'"'}double{'"'} quotes.
-      </p>
-      <hr />
-      <label>
-        Trailing commas
-        <select
-          name="trailingComma"
-          value={options.trailingComma}
-          onChange={handleOptionsChange}
-        >
-          <option>none</option>
-          <option>es5</option>
-          <option>all</option>
-        </select>
-      </label>
-      <p>Print trailing commas wherever possible.</p>
-      <hr />
-      <label>
-        Bracket spacing
-        <input
-          type="checkbox"
-          name="bracketSpacing"
-          checked={options.bracketSpacing}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>Print spaces between brackets in object literals.</p>
-      <hr />
-      <label>
-        JSX Brackets
-        <input
-          type="checkbox"
-          name="jsxBracketSameLine"
-          checked={options.jsxBracketSameLine}
-          onChange={handleOptionsChange}
-        />
-      </label>
-      <p>
-        Put the `{">"}` of a multi-line JSX element at the end of the last line
-        instead of being alone on the next line.
-      </p>
-      <hr />
-      <label>
-        Arrow Function Parentheses
-        <select
-          name="arrowParens"
-          value={options.arrowParens}
-          onChange={handleOptionsChange}
-        >
-          <option>avoid</option>
-          <option>always</option>
-        </select>
-      </label>
-      <p>Include parentheses around a sole arrow function parameter.</p>
-    </>
+    <form className="form">
+      {fields.map((field) => {
+        const inputProps = {
+          description: field.description,
+          label: field.label,
+          name: field.name,
+          onChange: handleOptionsChange,
+          options: field.options,
+          register,
+          type: field.type,
+        };
+
+        const FormComponent = componentMap[field.type] || componentMap.default;
+
+        return (
+          <div className="form-group" key={field.name}>
+            <FormComponent {...inputProps} />
+          </div>
+        );
+      })}
+    </form>
   );
 }
 
 VisualConfig.propTypes = {
-  options: PropTypes.object,
-  setOptions: PropTypes.func
+  options: PropTypes.object.isRequired,
+  setOptions: PropTypes.func.isRequired,
 };

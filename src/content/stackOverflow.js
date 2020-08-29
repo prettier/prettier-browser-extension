@@ -2,10 +2,31 @@ import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
 import prettier from "prettier/standalone";
 import renderButton from "./button";
 
+const STACKEXCHANGE_SITES = [
+  "https://stackoverflow.com",
+  "https://askubuntu.com",
+  "https://mathoverflow.com",
+  "https://serverfault.com",
+  "https://stackapps.com",
+  "https://superuser.com",
+];
+const STACKEXCHANGE_URL_REGEX = /^https:\/\/([a-z]+).stackexchange.com/;
+const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
+
 export default class StackOverflow {
   constructor(storage) {
     this._storage = storage;
     this._init();
+  }
+
+  static test() {
+    const origin = window.location.origin;
+
+    return (
+      (STACKEXCHANGE_SITES.some((url) => url === origin) ||
+        STACKEXCHANGE_URL_REGEX.test(origin)) &&
+      STACKEXCHANGE_VALID_PATHNAMES.test(window.location.pathname)
+    );
   }
 
   _init() {
@@ -16,7 +37,7 @@ export default class StackOverflow {
     if (content) {
       pageObserver.observe(content, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
   }
@@ -37,8 +58,8 @@ export default class StackOverflow {
 
     renderButton(buttonRowEl, {
       classes: ["s-btn", "s-btn__primary", "prettier-btn"],
-      style: { margin: "6px" }
-    }).addEventListener("click", event => {
+      style: { margin: "6px" },
+    }).addEventListener("click", (event) => {
       event.preventDefault();
 
       // https://stackoverflow.com/editing-help#code
@@ -135,7 +156,7 @@ export default class StackOverflow {
         let langAll = null;
 
         // https://stackoverflow.com/editing-help#syntax-highlighting
-        codeBlocks.forEach(lines => {
+        codeBlocks.forEach((lines) => {
           const codeBlockRegex = /^\s{0,3}(?:```|~~~)\s*(?:lang-(.+))?/u;
           const indentedCodeWithLangRegex = /^\s*<!-- language: lang-(.+) -->/u;
           const langAllRegex = /^\s*<!-- language-all: lang-(.+) -->/u;
@@ -169,7 +190,7 @@ export default class StackOverflow {
                   formattedSnippet = prettier.format(snippet, {
                     parser: PARSERS_LANG_MAP[lang],
                     plugins: PARSERS,
-                    ...this._getOptions()
+                    ...this._getOptions(),
                   });
                 } catch {}
 
@@ -198,7 +219,7 @@ export default class StackOverflow {
               formattedText = prettier.format(codeLines.join("\n"), {
                 parser: PARSERS_LANG_MAP[lang],
                 plugins: PARSERS,
-                ...this._getOptions()
+                ...this._getOptions(),
               });
             } catch {
               return;
@@ -230,7 +251,7 @@ export default class StackOverflow {
       inputEl.value = prettier.format(inputEl.value, {
         parser: "markdown",
         plugins: PARSERS,
-        ...this._getOptions()
+        ...this._getOptions(),
       });
       inputEl.focus();
     });
