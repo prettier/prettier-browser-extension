@@ -74,5 +74,10 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.svg$": "<rootDir>/src/options/fileMock.js"
+    }
   }
 }
