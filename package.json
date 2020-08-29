@@ -77,8 +77,7 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "\\.svg": "<rootDir>/src/options/svgrMock.js",
-      "^webextension-polyfill$": "<rootDir>/src/options/webextension-polyfill.js"
+      "\\.svg": "<rootDir>/__mocks__/svgrMock.js"
     }
   }
 }
