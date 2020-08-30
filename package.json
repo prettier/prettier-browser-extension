@@ -57,6 +57,7 @@
     "react-devtools": "4.8.2",
     "sass": "1.26.10",
     "sass-loader": "9.0.3",
+    "sinon-chrome": "3.0.1",
     "style-loader": "1.2.1",
     "webextension-polyfill": "0.6.0",
     "webpack": "4.44.1",
@@ -78,6 +79,9 @@
   "jest": {
     "moduleNameMapper": {
       "\\.svg": "<rootDir>/__mocks__/svgrMock.js"
-    }
+    },
+    "setupFiles": [
+      "<rootDir>/src/setupTests.js"
+    ]
   }
 }
