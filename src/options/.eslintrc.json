@@ -9,5 +9,11 @@
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": "*test*.js",
+      "extends": ["plugin:testing-library/react"]
+    }
+  ]
 }
