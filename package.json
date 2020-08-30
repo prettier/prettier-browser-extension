@@ -78,7 +78,7 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "\\.svg": "<rootDir>/__mocks__/svgrMock.js"
+      "\\.svg": "<rootDir>/src/options/svgrMock.js"
     },
     "setupFiles": [
       "<rootDir>/src/setupTests.js"
