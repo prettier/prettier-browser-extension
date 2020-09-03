@@ -48,7 +48,7 @@
     "html-webpack-plugin": "4.3.0",
     "husky": "4.2.5",
     "jest": "26.4.2",
-    "lint-staged": "10.2.11",
+    "lint-staged": "10.3.0",
     "merge-json-webpack-plugin": "1.2.0",
     "react-devtools": "4.8.2",
     "sass": "1.26.10",
