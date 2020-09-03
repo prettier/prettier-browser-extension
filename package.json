@@ -11,24 +11,22 @@
     "build:chrome": "PLATFORM=chrome node scripts/build.js",
     "build:firefox": "PLATFORM=firefox node scripts/build.js",
     "build": "yarn build:chrome && yarn build:firefox",
-    "fix": "yarn fix:js && yarn fix:other",
-    "fix:other": "yarn prettier",
-    "fix:js": "yarn test:js --fix",
-    "prettier": "prettier . --write",
-    "build:chrome:dev": "PLATFORM=chrome node scripts/start.js",
-    "build:firefox:dev": "PLATFORM=firefox node scripts/start.js",
+    "dev:chrome": "PLATFORM=chrome node scripts/start.js",
+    "dev:firefox": "PLATFORM=firefox node scripts/start.js",
     "launch:firefox": "web-ext run",
-    "test": "yarn test:other && yarn test:js && jest --passWithNoTests",
-    "test:other": "prettier . --check",
-    "test:js": "eslint --ignore-path .gitignore --ignore-path .prettierignore \"**/*.js\""
+    "lint": "eslint --ignore-path .gitignore \"**/*.js\"",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test-only": "jest --passWithNoTests",
+    "test": "yarn format:check && yarn lint && yarn test-only"
   },
   "dependencies": {
     "classnames": "2.2.6",
-    "prettier": "2.0.5",
+    "prettier": "2.1.1",
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "6.5.0"
+    "react-hook-form": "6.7.0"
   },
   "devDependencies": {
     "@babel/core": "7.11.4",
@@ -39,8 +37,8 @@
     "babel-loader": "8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
-    "copy-webpack-plugin": "6.0.3",
-    "css-loader": "4.2.1",
+    "copy-webpack-plugin": "6.0.4",
+    "css-loader": "4.2.2",
     "eslint": "7.7.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.4",
@@ -50,22 +48,20 @@
     "html-webpack-plugin": "4.3.0",
     "husky": "4.2.5",
     "jest": "26.4.2",
-    "lint-staged": "10.2.11",
+    "lint-staged": "10.3.0",
     "merge-json-webpack-plugin": "1.2.0",
     "react-devtools": "4.8.2",
     "sass": "1.26.10",
-    "sass-loader": "9.0.3",
+    "sass-loader": "10.0.1",
     "style-loader": "1.2.1",
+    "web-ext": "5.0.0",
     "webextension-polyfill": "0.6.0",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12"
   },
   "lint-staged": {
-    "*.{js}": [
-      "eslint --ignore-path .gitignore --ignore-path .prettierignore --fix"
-    ],
-    "*.{md,css,scss,html,json,yml}": [
-      "prettier --write"
+    "*.{js,md,css,scss,html,json,yml}": [
+      "yarn format"
     ]
   },
   "husky": {
