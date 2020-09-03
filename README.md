@@ -27,7 +27,11 @@ yarn build
 To watch files and rebuild when files change in development:
 
 ```
-yarn build:chrome:dev
+yarn dev:chrome
+
+# or
+
+yan dev:firefox
 ```
 
 To open React devtools for the options page:
@@ -55,13 +59,25 @@ To open React devtools for the options page:
 yarn react-devtools
 ```
 
+### Lint files
+
+```
+yarn lint
+```
+
 ### Format files
 
 ```
-yarn fix
+yarn format
 ```
 
-### Test if everything is fine
+### Run tests (to be added in the future)
+
+```
+yarn test-only
+```
+
+### Run all of the above
 
 ```
 yarn test
@@ -74,4 +90,4 @@ yarn test
 
 ## Help
 
-We need your [help](https://github.com/prettier/prettier-chrome-extension/issues) :)
+We would love your [help](https://github.com/prettier/prettier-chrome-extension/issues) :)

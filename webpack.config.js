@@ -1,6 +1,5 @@
 "use strict";
 
-const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
@@ -47,18 +46,6 @@ module.exports = ({ outDir, env }) => {
             "sass-loader",
           ],
         },
-      ],
-    },
-    optimization: {
-      minimizer: [
-        new TerserPlugin({
-          terserOptions: {
-            extractComments: false,
-
-            // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
-            output: { ascii_only: true },
-          },
-        }),
       ],
     },
     output: {
