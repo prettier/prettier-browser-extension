@@ -17,7 +17,7 @@ const CLASS_NAME = "__PRETTIER_EXTENSION_FORMAT_ELEMENET__";
 const menuItem = {
   contexts: ["editable"],
   id: menuItemId,
-  title: "Format with prettier",
+  title: "Format with Prettier",
 };
 
 const init = async () => {
