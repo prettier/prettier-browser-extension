@@ -72,7 +72,4 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "main": "index.js",
-  "author": "anita-ihuman <charlesanita403@gmail.com>"
-}
+  }
