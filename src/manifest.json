@@ -1,16 +1,21 @@
 {
   "name": "Prettier",
   "manifest_version": 2,
-  "description": "Prettier all the things.",
+  "description": "Run Prettier in your browser!",
   "homepage_url": "https://prettier.io",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": false
+  "commands": {
+    "run-prettier-format": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Comma",
+        "mac": "Command+Shift+Comma"
+      },
+      "description": "Format using Prettier"
+    }
   },
   "permissions": ["storage"],
   "content_scripts": [
@@ -29,5 +34,13 @@
       "js": ["content.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
 }
