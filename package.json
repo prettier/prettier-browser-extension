@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "prettier-chrome-extension",
+  "name": "prettier-browser-extension",
   "version": "0.0.5",
-  "repository": "https://github.com/prettier/prettier-chrome-extension.git",
+  "repository": "https://github.com/prettier/prettier-browser-extension.git",
   "license": "MIT",
   "webExt": {
     "sourceDir": "extension/firefox/"
