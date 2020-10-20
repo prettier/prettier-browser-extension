@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import App from "./App";
 import defaultOptions from "./options";

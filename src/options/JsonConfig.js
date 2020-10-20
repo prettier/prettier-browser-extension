@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import parserBabel from "prettier/parser-babel";
 import prettier from "prettier/standalone";
