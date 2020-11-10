@@ -83,12 +83,12 @@ module.exports = ({ outDir, env }) => {
       new MergeJsonPlugin({
         group: [
           {
-            beforeEmit: (manifest) => ({ version, ...manifest }),
             files: [
               "src/manifest.json",
               isFirefox && "src/firefox-manifest.json",
             ].filter(Boolean),
             to: "manifest.json",
+            transform: (manifest) => ({ version, ...manifest }),
           },
         ],
       }),

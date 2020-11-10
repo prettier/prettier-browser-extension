@@ -6738,10 +6738,10 @@ merge-deep@^3.0.2:
     clone-deep "^0.2.4"
     kind-of "^3.0.2"
 
-merge-json-webpack-plugin@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/merge-json-webpack-plugin/-/merge-json-webpack-plugin-4.1.0.tgz#ea451817b53ecc3c57675e22e410835c816b7fdd"
-  integrity sha512-fViQz7zKNfsVIPD3fPAcqJDq0ZWbtNsuVy37begQxUZhsTnxf6ve5eqm37TFlXfSfxeFyJOAo5BTPbulME0LrQ==
+merge-json-webpack-plugin@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/merge-json-webpack-plugin/-/merge-json-webpack-plugin-5.0.1.tgz#e1f3f1c83336e119ea312e23fcb64752074f3add"
+  integrity sha512-zpBJX9tCXBRyrhezDnwXJyR2nkwpCx7YBOauQmVGwvs03cmJhdCki9RXqjG6WVf8hFy5trNhwl1FpuBdR4BgBQ==
   dependencies:
     fast-glob "^3.2.4"
     loader-utils "^2.0.0"
