@@ -1,5 +1,5 @@
 import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
-import prettier from "prettier/standalone";
+import prettier from "prettier/esm/standalone";
 import renderButton from "./button";
 
 const LEETCODE_URL = "https://leetcode.com";

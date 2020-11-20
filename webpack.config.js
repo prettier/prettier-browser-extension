@@ -95,6 +95,9 @@ module.exports = ({ outDir, env }) => {
       !isDevMode && new CleanWebpackPlugin(),
       new webpack.ProgressPlugin(),
     ].filter(Boolean),
+    resolve: {
+      extensions: [".mjs", ".js"],
+    },
     watch: isDevMode,
   };
 };

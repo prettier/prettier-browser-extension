@@ -5,7 +5,7 @@ import renderButton, {
   COMMENT_SIBLING_SELECTORS_TO_DEFER_TO,
 } from "./button";
 import { PARSERS } from "./parsers";
-import prettier from "prettier/standalone";
+import prettier from "prettier/esm/standalone";
 
 const GITHUB_URL = "https://github.com";
 const GITHUB_VALID_PATHNAMES = /^\/.*\/.*\/(?:pull\/\d+(?:\/?|\/files\/?)$|commits?\/.*|compare\/.*|issues\/\d+|issues|wiki|wiki\/\d+\/(_?new|_edit))/u;
