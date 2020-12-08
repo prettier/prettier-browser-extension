@@ -1,13 +1,13 @@
-import parserAngular from "prettier/parser-angular";
-import parserBabel from "prettier/parser-babel";
-import parserFlow from "prettier/parser-flow";
-import parserGlimmer from "prettier/parser-glimmer";
-import parserGraphql from "prettier/parser-graphql";
-import parserHtml from "prettier/parser-html";
-import parserMarkdown from "prettier/parser-markdown";
-import parserPostcss from "prettier/parser-postcss";
-import parserTypescript from "prettier/parser-typescript";
-import parserYaml from "prettier/parser-yaml";
+import parserAngular from "prettier/esm/parser-angular";
+import parserBabel from "prettier/esm/parser-babel";
+import parserFlow from "prettier/esm/parser-flow";
+import parserGlimmer from "prettier/esm/parser-glimmer";
+import parserGraphql from "prettier/esm/parser-graphql";
+import parserHtml from "prettier/esm/parser-html";
+import parserMarkdown from "prettier/esm/parser-markdown";
+import parserPostcss from "prettier/esm/parser-postcss";
+import parserTypescript from "prettier/esm/parser-typescript";
+import parserYaml from "prettier/esm/parser-yaml";
 
 export const PARSERS = [
   parserAngular,
