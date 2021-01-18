@@ -51,7 +51,7 @@
     "lint-staged": "10.3.0",
     "merge-json-webpack-plugin": "4.1.0",
     "react-devtools": "4.9.0",
-    "sass": "1.26.10",
+    "sass": "1.32.4",
     "sass-loader": "10.0.3",
     "style-loader": "2.0.0",
     "web-ext": "5.0.0",
