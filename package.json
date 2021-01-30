@@ -46,7 +46,7 @@
     "eslint-plugin-react-hooks": "4.1.0",
     "fs-extra": "9.0.1",
     "html-webpack-plugin": "4.5.0",
-    "husky": "4.2.5",
+    "husky": "4.3.8",
     "jest": "26.4.2",
     "lint-staged": "10.3.0",
     "merge-json-webpack-plugin": "5.0.1",
