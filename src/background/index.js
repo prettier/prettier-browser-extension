@@ -1,5 +1,3 @@
-/* globals chrome */
-
 chrome.commands.onCommand.addListener((command) => {
   if (command !== "run-prettier-format") {
     return;

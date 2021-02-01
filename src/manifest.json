@@ -20,17 +20,7 @@
   "permissions": ["storage"],
   "content_scripts": [
     {
-      "matches": [
-        "https://stackoverflow.com/*",
-        "https://askubuntu.com/*",
-        "https://mathoverflow.com/*",
-        "https://serverfault.com/*",
-        "https://stackapps.com/*",
-        "https://superuser.com/*",
-        "https://*.stackexchange.com/*",
-        "https://github.com/*",
-        "https://leetcode.com/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["content.js"],
       "run_at": "document_end"
     }
