@@ -53,8 +53,8 @@ export default class Extension {
   }
 
   _format(inputEl) {
-   const options = this._storage.get().prettierOptions;
-  
+    const options = this._storage.get().prettierOptions;
+
     if (this._isStackOverflow()) {
       this._formatStackOverflow(inputEl, options);
     }

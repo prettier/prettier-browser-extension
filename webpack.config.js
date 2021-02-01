@@ -52,8 +52,6 @@ module.exports = ({ outDir, env }) => {
       minimizer: [
         new TerserPlugin({
           terserOptions: {
-            extractComments: false,
-
             // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
             output: { ascii_only: true },
           },
