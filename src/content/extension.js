@@ -33,7 +33,7 @@ export default class Extension {
 
       const inputEl = document.activeElement;
 
-      if (!inputEl?.tagName === 'TEXTAREA') {
+      if (!inputEl?.tagName === "TEXTAREA") {
         return;
       }
 
