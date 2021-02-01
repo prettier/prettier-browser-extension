@@ -8,11 +8,11 @@
     "sourceDir": "extension/firefox/"
   },
   "scripts": {
-    "build:chrome": "PLATFORM=chrome node scripts/build.js",
-    "build:firefox": "PLATFORM=firefox node scripts/build.js",
+    "build:chrome": "cross-env PLATFORM=chrome node scripts/build.js",
+    "build:firefox": "cross-env PLATFORM=firefox node scripts/build.js",
     "build": "yarn build:chrome && yarn build:firefox",
-    "dev:chrome": "PLATFORM=chrome node scripts/start.js",
-    "dev:firefox": "PLATFORM=firefox node scripts/start.js",
+    "dev:chrome": "cross-env PLATFORM=chrome node scripts/start.js",
+    "dev:firefox": "cross-env PLATFORM=firefox node scripts/start.js",
     "launch:firefox": "web-ext run",
     "lint": "eslint --ignore-path .gitignore .",
     "format": "prettier . --write",
@@ -38,6 +38,7 @@
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "6.2.1",
+    "cross-env": "^7.0.3",
     "css-loader": "5.0.0",
     "eslint": "7.11.0",
     "eslint-config-prettier": "6.11.0",
@@ -54,7 +55,7 @@
     "sass": "1.26.10",
     "sass-loader": "10.0.3",
     "style-loader": "2.0.0",
-    "web-ext": "5.0.0",
+    "web-ext": "^5.5.0",
     "webextension-polyfill": "0.6.0",
     "webpack": "5.6.0",
     "webpack-cli": "4.1.0"

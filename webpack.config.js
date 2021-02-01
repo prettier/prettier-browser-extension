@@ -17,6 +17,7 @@ module.exports = ({ outDir, env }) => {
   return {
     devtool: false,
     entry: {
+      background: "./src/background/index.js",
       content: "./src/content/index.js",
       options: isDevMode
         ? ["react-devtools", "./src/options/index.js"]
@@ -51,8 +52,6 @@ module.exports = ({ outDir, env }) => {
       minimizer: [
         new TerserPlugin({
           terserOptions: {
-            extractComments: false,
-
             // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
             output: { ascii_only: true },
           },
