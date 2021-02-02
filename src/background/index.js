@@ -5,7 +5,12 @@ browser.commands.onCommand.addListener((command) => {
     return;
   }
 
-  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    browser.tabs.sendMessage(tabs[0].id, { action: "runPrettierFormat" });
-  });
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id, { action: "runPrettierFormat" });
+    })
+    .catch((err) => {
+      console.error("Error while querying for tabs", err);
+    });
 });
