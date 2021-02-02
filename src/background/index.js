@@ -7,10 +7,14 @@ browser.commands.onCommand.addListener((command) => {
 
   browser.tabs
     .query({ active: true, currentWindow: true })
-    .then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, { action: "runPrettierFormat" });
-    })
+    .then((tabs) =>
+      Promise.all(
+        tabs.map((tab) =>
+          browser.tabs.sendMessage(tab.id, { action: "runPrettierFormat" })
+        )
+      )
+    )
     .catch((err) => {
-      console.error("Error while querying for tabs", err);
+      console.error("Error occurred while sending message to tab.", err);
     });
 });

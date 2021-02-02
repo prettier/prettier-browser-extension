@@ -1,5 +1,4 @@
-/* globals chrome */
-
+import browser from "webextension-polyfill";
 import prettier from "prettier/standalone";
 import Storage from "./storage";
 import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
@@ -26,19 +25,16 @@ export default class Extension {
   }
 
   _bindListeners() {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((message) => {
       if (message.action !== "runPrettierFormat") {
         return;
       }
-
       const inputEl = document.activeElement;
-
       if (!inputEl?.tagName === "TEXTAREA") {
         return;
       }
-
       this._format(inputEl);
-      inputEl.focus();
+      return Promise.resolve("Formatting complete!");
     });
   }
 
@@ -54,16 +50,16 @@ export default class Extension {
 
   _format(inputEl) {
     const options = this._storage.get().prettierOptions;
-
-    if (this._isStackOverflow()) {
-      this._formatStackOverflow(inputEl, options);
-    }
-
-    this._formatDefault(inputEl, options);
+    const inputValue = inputEl.value;
+    const formattedValue = this._isStackOverflow()
+      ? this._formatStackOverflow(inputValue, options)
+      : this._formatDefault(inputValue, options);
+    inputEl.value = formattedValue;
+    inputEl.focus();
   }
 
-  _formatDefault(inputEl) {
-    inputEl.value = prettier.format(inputEl.value, {
+  _formatDefault(inputValue) {
+    return prettier.format(inputValue, {
       parser: "markdown",
       plugins: PARSERS,
       ...this._storage.get().prettierOptions,
@@ -71,9 +67,9 @@ export default class Extension {
   }
 
   // https://stackoverflow.com/editing-help#code
-  _formatStackOverflow(inputEl) {
+  _formatStackOverflow(inputValue) {
     let isInBlock = false;
-    const codeBlocks = inputEl.value.split("\n").reduce((groups, line) => {
+    const codeBlocks = inputValue.split("\n").reduce((groups, line) => {
       const codeBlockRegex = /^\s{0,3}(?:```|~~~)/u;
       const indentedCodeLangRegex = /^\s*<!-- language: lang-.* -->/u;
       const langAllRegex = /^\s*<!-- language-all: lang-.+ -->/u;
@@ -250,11 +246,11 @@ export default class Extension {
           }
         }
 
-        inputEl.value = inputEl.value.replace(lines.join("\n"), formattedText);
+        return inputValue.replace(lines.join("\n"), formattedText);
       });
     }
 
-    inputEl.value = prettier.format(inputEl.value, {
+    return prettier.format(inputValue, {
       parser: "markdown",
       plugins: PARSERS,
       ...this._storage.get().prettierOptions,
