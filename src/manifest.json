@@ -17,7 +17,7 @@
       "description": "Format using Prettier"
     }
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "contextMenus", "activeTab"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

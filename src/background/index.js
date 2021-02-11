@@ -1,11 +1,15 @@
 import browser from "webextension-polyfill";
 
-browser.commands.onCommand.addListener((command) => {
-  if (command !== "run-prettier-format") {
-    return;
-  }
+const menuItemId = "prettier-format";
 
-  browser.tabs
+const menuItem = {
+  contexts: ["editable"],
+  id: menuItemId,
+  title: "Format with Prettier",
+};
+
+const format = () => {
+  return browser.tabs
     .query({ active: true, currentWindow: true })
     .then((tabs) =>
       Promise.all(
@@ -17,4 +21,29 @@ browser.commands.onCommand.addListener((command) => {
     .catch((err) => {
       console.error("Error occurred while sending message to tab.", err);
     });
+};
+
+browser.commands.onCommand.addListener((command) => {
+  if (command !== "run-prettier-format") {
+    return;
+  }
+
+  format();
 });
+
+const createContextMenu = async () => {
+  try {
+    await browser.contextMenus.removeAll();
+    browser.contextMenus.create(menuItem);
+
+    browser.contextMenus.onClicked.addListener((info, tab) => {
+      if (info.menuItemId == menuItemId) {
+        format();
+      }
+    });
+  } catch (err) {
+    console.log("Error while initializing context menu", err);
+  }
+};
+
+createContextMenu();

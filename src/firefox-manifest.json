@@ -4,31 +4,5 @@
       "id": "@prettier",
       "strict_min_version": "54.0"
     }
-  },
-  "permissions": ["storage", "menus", "activeTab"],
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://stackoverflow.com/*",
-        "https://askubuntu.com/*",
-        "https://mathoverflow.com/*",
-        "https://serverfault.com/*",
-        "https://stackapps.com/*",
-        "https://superuser.com/*",
-        "https://*.stackexchange.com/*",
-        "https://github.com/*",
-        "https://leetcode.com/*"
-      ],
-      "js": ["content.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["context-menu.js"],
-      "run_at": "document_end"
-    }
-  ]
+  }
 }
