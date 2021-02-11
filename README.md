@@ -85,7 +85,7 @@ yarn test
 
 ### Known Issues
 
-- Formatting via context menu is supported in firefox only
+- ContextMenu will be shown on all editable fields, but will work only on textarea
 - Elements present inside iframe can't be formatted
 
 ## Help
