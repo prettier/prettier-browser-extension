@@ -1,9 +1,14 @@
 {
-  "env": {
-    "es2020": true
-  },
+  "root": true,
   "plugins": ["prettier"],
   "extends": ["prettier"],
+  "env": {
+    "es2020": true,
+    "node": true
+  },
+  "parserOptions": {
+    "sourceType": "script"
+  },
   "rules": {
     "curly": "error",
     "dot-notation": "error",
@@ -49,15 +54,28 @@
   },
   "overrides": [
     {
-      "files": "*test*.js",
+      "files": ["src/**/*.js"],
       "env": {
-        "jest": true
+        "browser": true,
+        "node": false
+      },
+      "parserOptions": {
+        "sourceType": "module"
       }
     },
     {
-      "files": ["scripts/**/*.js", "webpack.config.js"],
-      "env": {
-        "node": true
+      "files": ["src/options/**/*.js"],
+      "plugins": ["react-hooks"],
+      "extends": ["plugin:react/recommended"],
+      "settings": {
+        "react": {
+          "version": "detect"
+        }
+      },
+      "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "error",
+        "react/react-in-jsx-scope": "off"
       }
     }
   ]

@@ -1,5 +1,6 @@
 "use strict";
 
+const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
@@ -16,9 +17,8 @@ module.exports = ({ outDir, env }) => {
   return {
     devtool: false,
     entry: {
-      background: "./src/background",
-      content: "./src/content",
-      "context-menu": "./src/content/context-menu",
+      background: "./src/background/index.js",
+      content: "./src/content/index.js",
       options: isDevMode
         ? ["react-devtools", "./src/options"]
         : "./src/options",
@@ -48,6 +48,16 @@ module.exports = ({ outDir, env }) => {
         },
       ],
     },
+    optimization: {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            // https://github.com/webpack-contrib/terser-webpack-plugin/issues/107
+            output: { ascii_only: true },
+          },
+        }),
+      ],
+    },
     output: {
       path: outDir,
     },
@@ -72,19 +82,22 @@ module.exports = ({ outDir, env }) => {
       new MergeJsonPlugin({
         group: [
           {
-            beforeEmit: (manifest) => ({ version, ...manifest }),
             files: [
               "src/manifest.json",
               isFirefox && "src/firefox-manifest.json",
               `src/${isDevMode ? "dev" : "prod"}-manifest.json`,
             ].filter(Boolean),
             to: "manifest.json",
+            transform: (manifest) => ({ version, ...manifest }),
           },
         ],
       }),
       !isDevMode && new CleanWebpackPlugin(),
       new webpack.ProgressPlugin(),
     ].filter(Boolean),
+    resolve: {
+      extensions: [".mjs", ".js"],
+    },
     watch: isDevMode,
   };
 };
