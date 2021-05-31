@@ -8,41 +8,34 @@ const menuItem = {
   title: "Format with Prettier",
 };
 
-const format = () => {
-  return browser.tabs
-    .query({ active: true, currentWindow: true })
-    .then((tabs) =>
-      Promise.all(
-        tabs.map((tab) =>
-          browser.tabs.sendMessage(tab.id, { action: "runPrettierFormat" })
-        )
-      )
-    )
-    .catch((err) => {
-      console.error("Error occurred while sending message to tab.", err);
-    });
+const format = async (tab) => {
+  try {
+    await browser.tabs.sendMessage(tab.id, { action: "runPrettierFormat" });
+  } catch (err) {
+    console.error("Error occurred while sending message to tab.", err);
+  }
 };
 
-browser.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener((command, tab) => {
   if (command !== "run-prettier-format") {
     return;
   }
 
-  format();
+  format(tab);
+});
+
+browser.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId == menuItemId) {
+    format(tab);
+  }
 });
 
 const createContextMenu = async () => {
   try {
     await browser.contextMenus.removeAll();
-    browser.contextMenus.create(menuItem);
-
-    browser.contextMenus.onClicked.addListener((info, tab) => {
-      if (info.menuItemId == menuItemId) {
-        format();
-      }
-    });
+    await browser.contextMenus.create(menuItem);
   } catch (err) {
-    console.log("Error while initializing context menu", err);
+    console.log("Error while creating context menu", err);
   }
 };
 

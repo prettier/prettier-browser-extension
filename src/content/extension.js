@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import prettier from "prettier/standalone";
+
 import Storage from "./storage";
 import { PARSERS, PARSERS_LANG_MAP } from "./parsers";
 
@@ -11,6 +12,7 @@ const STACKEXCHANGE_SITES = [
   "https://stackapps.com",
   "https://superuser.com",
 ];
+
 const STACKEXCHANGE_URL_REGEX = /^https:\/\/([a-z]+).stackexchange.com/;
 const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
 
