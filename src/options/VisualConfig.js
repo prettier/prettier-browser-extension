@@ -13,13 +13,13 @@ const fields = [
   },
   {
     description: "Specify the number of spaces per indentation-level.",
-    label: "Tab width",
+    label: "Tab Width",
     name: "tabWidth",
     type: "number",
   },
   {
     description: "Indent lines with tabs instead of spaces.",
-    label: "Use tabs",
+    label: "Tabs",
     name: "useTabs",
     type: "checkbox",
   },
@@ -30,14 +30,32 @@ const fields = [
     type: "checkbox",
   },
   {
-    description: `Use 'single' quotes instead of "double" quotes.`,
-    label: "Use single quotes",
+    description: "Use single quotes instead of double quotes.",
+    label: "Quotes",
     name: "singleQuote",
     type: "checkbox",
   },
   {
-    description: "Print trailing commas wherever possible.",
-    label: "Trailing commas",
+    description: "Change when properties in objects are quoted.",
+    label: "Quote Props",
+    name: "quoteProps",
+    options: [
+      { label: "as-needed", value: "as-needed" },
+      { label: "consistent", value: "consistent" },
+      { label: "preserve", value: "preserve" },
+    ],
+    type: "select",
+  },
+  {
+    description: "Use single quotes instead of double quotes in JSX.",
+    label: "JSX Quotes",
+    name: "jsxSingleQuote",
+    type: "checkbox",
+  },
+  {
+    description:
+      "Print trailing commas wherever possible in multi-line comma-separated syntactic structures. (A single-line array, for example, never gets trailing commas.)",
+    label: "Trailing Commas",
     name: "trailingComma",
     options: [
       { label: "none", value: "none" },
@@ -48,15 +66,14 @@ const fields = [
   },
   {
     description: "Print spaces between brackets in object literals.",
-    label: "Bracket spacing",
+    label: "Bracket Spacing",
     name: "bracketSpacing",
     type: "checkbox",
   },
   {
-    description: `Put the ">" of a multi-line JSX element at the end of the last line
-                  instead of being alone on the next line.`,
-    label: "JSX Brackets",
-    name: "jsxBracketSameLine",
+    description: `Put the ">" of a multi-line HTML (HTML, JSX, Vue, Angular) element at the end of the last line instead of being alone on the next line (does not apply to self closing elements).`,
+    label: "Bracket Line",
+    name: "bracketSameLine",
     type: "checkbox",
   },
   {
@@ -66,6 +83,48 @@ const fields = [
     options: [
       { label: "avoid", value: "avoid" },
       { label: "always", value: "always" },
+    ],
+    type: "select",
+  },
+  {
+    description:
+      'By default, Prettier will wrap markdown text as-is since some services use a linebreak-sensitive renderer, e.g. GitHub comment and BitBucket. In some cases you may want to rely on editor/viewer soft wrapping instead, so this option allows you to opt out with "never".',
+    label: "Prose Wrap",
+    name: "proseWrap",
+    options: [
+      { label: "always", value: "always" },
+      { label: "never", value: "never" },
+      { label: "preserve", value: "preserve" },
+    ],
+    type: "select",
+  },
+  {
+    description:
+      "Specify the global whitespace sensitivity for HTML, Vue, Angular, and Handlebars. See whitespace-sensitive formatting for more info.",
+    label: "HTML Whitespace Sensitivity",
+    name: "htmlWhitespaceSensitivity",
+    options: [
+      { label: "css", value: "css" },
+      { label: "strict", value: "strict" },
+      { label: "ignore", value: "ignore" },
+    ],
+    type: "select",
+  },
+  {
+    description:
+      "Whether or not to indent the code inside <script> and <style> tags in Vue files. Some people (like the creator of Vue) don’t indent to save an indentation level, but this might break code folding in your editor.",
+    label: "Vue files script and style tags indentation",
+    name: "vueIndentScriptAndStyle",
+    type: "boolean",
+  },
+  {
+    description:
+      "Control whether Prettier formats quoted code embedded in the file.",
+    label: "Embedded Language Formatting",
+    name: "embeddedLanguageFormatting",
+    options: [
+      { label: "auto", value: "auto" },
+      { label: "off", value: "off" },
     ],
     type: "select",
   },
