@@ -49,11 +49,11 @@ module.exports = (env, argv) => {
           use: "babel-loader",
         },
         {
-          test: /\.svg$/i,
-          type: "asset/resource",
           generator: {
             filename: "images/[hash][ext]",
           },
+          test: /\.svg$/i,
+          type: "asset/resource",
         },
         {
           test: /\.s[ac]ss$/i,
@@ -119,8 +119,8 @@ module.exports = (env, argv) => {
             onEnd: {
               archive: [
                 {
-                  source: outDir,
                   destination: `artifacts/prettier-${platform}-v${version}.zip`,
+                  source: outDir,
                 },
               ],
             },
