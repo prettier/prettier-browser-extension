@@ -7,7 +7,7 @@ export const Input = (props) => {
     <>
       <label>{label}</label>
       <span className="description">{description}</span>
-      <input type={type} name={name} ref={register()} onChange={onChange} />
+      <input type={type} name={name} {...register(name)} onChange={onChange} />
     </>
   );
 };
@@ -17,7 +17,7 @@ export const CheckBox = (props) => {
   return (
     <>
       <label>{label}</label>
-      <input type="checkbox" name={name} ref={register()} onChange={onChange} />
+      <input type="checkbox" {...register(name)} onChange={onChange} />
       <span className="description">{description}</span>
     </>
   );
@@ -30,7 +30,7 @@ export const Select = (props) => {
     <>
       <label>{label}</label>
       <span className="description">{description}</span>
-      <select name={name} ref={register()} onChange={onChange}>
+      <select {...register(name)} onChange={onChange}>
         {options.map((option) => (
           <option value={option.value} key={option.value}>
             {option.label}

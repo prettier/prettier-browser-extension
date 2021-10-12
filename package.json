@@ -8,66 +8,52 @@
     "sourceDir": "extension/firefox/"
   },
   "scripts": {
-    "build:chrome": "cross-env PLATFORM=chrome node scripts/build.js",
-    "build:firefox": "cross-env PLATFORM=firefox node scripts/build.js",
+    "build:chrome": "webpack --mode=production --env platform=chrome",
+    "build:firefox": "webpack --mode=production --env platform=firefox",
     "build": "yarn build:chrome && yarn build:firefox",
-    "dev:chrome": "cross-env PLATFORM=chrome node scripts/start.js",
-    "dev:firefox": "cross-env PLATFORM=firefox node scripts/start.js",
+    "dev:chrome": "webpack --mode=development --watch --env platform=chrome",
+    "dev:firefox": "webpack --mode=development --watch --env platform=firefox",
     "launch:firefox": "web-ext run",
     "lint": "eslint --ignore-path .gitignore .",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "test-only": "jest --passWithNoTests",
-    "test": "yarn format:check && yarn lint && yarn test-only"
+    "test": "yarn format:check && yarn lint && yarn test-only",
+    "prepare": "husky install"
   },
   "dependencies": {
-    "classnames": "2.2.6",
+    "classnames": "2.3.1",
+    "filemanager-webpack-plugin": "6.1.7",
     "prettier": "2.2.1",
     "prop-types": "15.7.2",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-hook-form": "6.15.1"
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-hook-form": "7.17.2"
   },
   "devDependencies": {
-    "@babel/core": "7.12.10",
-    "@babel/plugin-transform-modules-commonjs": "7.12.1",
-    "@babel/preset-react": "7.12.10",
-    "@svgr/webpack": "5.5.0",
-    "archiver": "5.2.0",
+    "@babel/core": "7.15.8",
+    "@babel/plugin-transform-modules-commonjs": "7.15.4",
+    "@babel/preset-react": "7.14.5",
     "babel-loader": "8.2.2",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
-    "clean-webpack-plugin": "3.0.0",
-    "copy-webpack-plugin": "7.0.0",
-    "cross-env": "^7.0.3",
-    "css-loader": "5.0.1",
-    "eslint": "7.19.0",
+    "copy-webpack-plugin": "9.0.1",
+    "css-loader": "6.4.0",
+    "eslint": "7.32.0",
     "eslint-config-prettier": "7.2.0",
-    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-prettier": "3.4.1",
     "eslint-plugin-react": "7.22.0",
-    "eslint-plugin-react-hooks": "4.2.0",
-    "fs-extra": "9.1.0",
-    "html-webpack-plugin": "4.5.1",
-    "husky": "4.3.8",
-    "jest": "26.6.3",
-    "lint-staged": "10.5.3",
-    "merge-json-webpack-plugin": "5.0.3",
-    "react-devtools": "4.10.1",
-    "sass": "1.32.6",
-    "sass-loader": "10.1.1",
-    "style-loader": "2.0.0",
-    "web-ext": "^5.5.0",
-    "webextension-polyfill": "0.7.0",
-    "webpack": "5.19.0",
-    "webpack-cli": "4.4.0"
-  },
-  "lint-staged": {
-    "*.{js,md,css,scss,html,json,yml}": [
-      "yarn format"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "html-webpack-plugin": "5.3.2",
+    "husky": "7.0.2",
+    "jest": "27.2.5",
+    "lint-staged": "11.2.3",
+    "merge-json-webpack-plugin": "6.0.0",
+    "react-devtools": "4.19.2",
+    "sass": "1.42.1",
+    "sass-loader": "12.1.0",
+    "style-loader": "3.3.0",
+    "web-ext": "^6.4.0",
+    "webextension-polyfill": "0.8.0",
+    "webpack": "5.58.1",
+    "webpack-cli": "4.9.0"
   }
 }

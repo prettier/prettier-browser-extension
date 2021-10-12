@@ -2,8 +2,8 @@ import { useCallback } from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
-import Code from "./icons/code.svg";
-import Description from "./icons/description.svg";
+import CodeIcon from "./icons/code.svg";
+import DescriptionIcon from "./icons/description.svg";
 
 const TabSwitcher = (props) => {
   const { setOptions, options } = props;
@@ -23,14 +23,14 @@ const TabSwitcher = (props) => {
         onClick={() => onTabClick(false)}
         title="Settings (UI)"
       >
-        <Description />
+        <img src={CodeIcon} />
       </div>
       <div
         className={classNames("tab", { active: isJsonVisible })}
         onClick={() => onTabClick(true)}
         title="Settings (JSON)"
       >
-        <Code />
+        <img src={DescriptionIcon} />
       </div>
     </div>
   );

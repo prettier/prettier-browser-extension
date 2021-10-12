@@ -1,18 +1,36 @@
+/** @typedef {import('webpack').Configuration} WebpackConfig * */
+
 "use strict";
+
+const path = require("path");
 
 const TerserPlugin = require("terser-webpack-plugin"); // included as a dependency of webpack
 const CopyPlugin = require("copy-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const MergeJsonPlugin = require("merge-json-webpack-plugin");
+const FileManagerPlugin = require("filemanager-webpack-plugin");
 
 const { version } = require("./package.json");
+const SUPPORTED_PLATFORMS = ["chrome", "firefox"];
 
-const isFirefox = process.env.PLATFORM === "firefox";
+/** @type WebpackConfig */
+module.exports = (env, argv) => {
+  const { platform } = env;
 
-module.exports = ({ outDir, env }) => {
-  const isDevMode = env === "development";
+  if (!SUPPORTED_PLATFORMS.includes(platform)) {
+    throw new Error(
+      `Unsupported platform. Platform should be one of: ${SUPPORTED_PLATFORMS.join(
+        ", "
+      )}`
+    );
+  }
+
+  const isDevMode = argv.mode === "development";
+
+  const rootDir = process.cwd();
+  const outDir = path.resolve(rootDir, "extension", platform);
+  const isFirefox = platform === "firefox";
 
   return {
     devtool: false,
@@ -23,7 +41,6 @@ module.exports = ({ outDir, env }) => {
         ? ["react-devtools", "./src/options/index.js"]
         : "./src/options/index.js",
     },
-    mode: env,
     module: {
       rules: [
         {
@@ -32,8 +49,11 @@ module.exports = ({ outDir, env }) => {
           use: "babel-loader",
         },
         {
-          test: /\.svg$/,
-          use: "@svgr/webpack",
+          test: /\.svg$/i,
+          type: "asset/resource",
+          generator: {
+            filename: "images/[hash][ext]",
+          },
         },
         {
           test: /\.s[ac]ss$/i,
@@ -59,6 +79,7 @@ module.exports = ({ outDir, env }) => {
       ],
     },
     output: {
+      clean: true,
       path: outDir,
     },
     performance: {
@@ -80,7 +101,7 @@ module.exports = ({ outDir, env }) => {
         ],
       }),
       new MergeJsonPlugin({
-        group: [
+        groups: [
           {
             files: [
               "src/manifest.json",
@@ -91,12 +112,23 @@ module.exports = ({ outDir, env }) => {
           },
         ],
       }),
-      !isDevMode && new CleanWebpackPlugin(),
       new webpack.ProgressPlugin(),
+      !isDevMode &&
+        new FileManagerPlugin({
+          events: {
+            onEnd: {
+              archive: [
+                {
+                  source: outDir,
+                  destination: `artifacts/prettier-${platform}-v${version}.zip`,
+                },
+              ],
+            },
+          },
+        }),
     ].filter(Boolean),
     resolve: {
       extensions: [".mjs", ".js"],
     },
-    watch: isDevMode,
   };
 };
