@@ -43,18 +43,18 @@
     "eslint-plugin-react": "7.26.1",
     "eslint-plugin-react-hooks": "4.2.0",
     "filemanager-webpack-plugin": "6.1.7",
-    "html-webpack-plugin": "5.3.2",
+    "html-webpack-plugin": "5.4.0",
     "husky": "7.0.2",
     "jest": "27.2.5",
     "lint-staged": "11.2.3",
     "merge-json-webpack-plugin": "6.0.0",
     "react-devtools": "4.19.2",
-    "sass": "1.42.1",
+    "sass": "1.43.2",
     "sass-loader": "12.2.0",
     "style-loader": "3.3.0",
     "web-ext": "6.5.0",
     "webextension-polyfill": "0.8.0",
-    "webpack": "5.58.1",
+    "webpack": "5.58.2",
     "webpack-cli": "4.9.0"
   }
 }
