@@ -1,7 +1,6 @@
 {
   "root": true,
-  "plugins": ["prettier"],
-  "extends": ["prettier"],
+  "extends": "plugin:prettier/recommended",
   "env": {
     "es2020": true,
     "node": true
@@ -39,7 +38,6 @@
     "one-var": ["error", "never"],
     "prefer-const": "error",
     "prefer-promise-reject-errors": "error",
-    "prettier/prettier": "error",
     "sort-keys": [
       "error",
       "asc",
