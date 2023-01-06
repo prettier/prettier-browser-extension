@@ -12,7 +12,8 @@ const STACKEXCHANGE_SITES = [
   "https://superuser.com",
 ];
 const STACKEXCHANGE_URL_REGEX = /^https:\/\/([a-z]+).stackexchange.com/;
-const STACKEXCHANGE_VALID_PATHNAMES = /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
+const STACKEXCHANGE_VALID_PATHNAMES =
+  /(^\/questions|\/posts\/\d+\/edit|^\/review)/u;
 
 export default class Extension {
   constructor() {
@@ -206,9 +207,8 @@ export default class Extension {
           // Code Blocks
         } else {
           const isCodeBlock = codeBlockRegex.test(firstLine);
-          const isIndentedBlockWithLang = indentedCodeWithLangRegex.test(
-            firstLine
-          );
+          const isIndentedBlockWithLang =
+            indentedCodeWithLangRegex.test(firstLine);
           let codeLines;
 
           if (isCodeBlock) {

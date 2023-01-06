@@ -37,7 +37,6 @@
     "no-useless-return": "error",
     "no-var": "error",
     "one-var": ["error", "never"],
-    "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "prefer-promise-reject-errors": "error",
     "prettier/prettier": "error",
