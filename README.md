@@ -83,6 +83,28 @@ yarn test-only
 yarn test
 ```
 
-## Help
+### Help
+
+To configure "Prettier options" via chrome:
+
+- click on the prettier chrome extention,
+  <img src="./chrome-web-store/first step.PNG"
+     alt="first step"
+     style="float: left; margin-right: 10px;" />
+
+- You will get a Popup menu among which is **"Options"**.
+  <img src="./chrome-web-store/second step.PNG"
+     alt=" step  two"
+     style="float: left; margin-right: 10px;" />
+- Click on **options** and make your setups.
+  <img src="./chrome-web-store/third step.PNG"
+     alt=" step to configure"
+     style="float: left; margin-right: 10px;" />
+- Now Prettier is set up, and ready to be used.
+  <img src="./chrome-web-store/prettier.gif"
+     alt="how it works"
+     style="float: left; margin-right: 10px;" />
+
+  ## Help
 
 We would love your [help](https://github.com/prettier/prettier-browser-extension/issues) :)
