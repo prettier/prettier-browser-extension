@@ -6,11 +6,16 @@
 
 [Install](https://chrome.google.com/webstore/detail/prettier/fbcfnmplppajblbmdehballiekfgdkhp) the extension from the store.
 
+## Usage
+
+<!-- markdownlint-disable-next-line no-inline-html -->
+Press <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>,</kbd> (or <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>,</kbd> on macOS) in a `<textarea>` to format valid [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) that are contained inside.
+
 ## Development
 
 ### Install Dependencies
 
-```
+```sh
 yarn
 ```
 
@@ -18,7 +23,7 @@ yarn
 
 For a one-time build in production:
 
-```
+```sh
 yarn build
 ```
 
@@ -26,60 +31,58 @@ yarn build
 
 To watch files and rebuild when files change in development:
 
-```
+```sh
 yarn dev:chrome
-
-# or
-
-yan dev:firefox
 ```
 
-To open React devtools for the options page:
-
-```
-yarn react-devtools
-```
+To load the extension in Chrome:
 
 - Chrome Settings > More Tools > Extensions...
 - Turn on Developer mode
 - Load unpacked > Select the `extension/chrome` directory
 
-#### Test in Chrome locally
+To open React devtools for the options page:
+
+```sh
+yarn react-devtools
+```
+
+#### Test in Firefox locally
 
 To watch files and rebuild when files change in development:
 
-```
-yarn build:firefox:dev
+```sh
+yarn dev:firefox
 yarn launch:firefox
 ```
 
 To open React devtools for the options page:
 
-```
+```sh
 yarn react-devtools
 ```
 
 ### Lint files
 
-```
+```sh
 yarn lint
 ```
 
 ### Format files
 
-```
+```sh
 yarn format
 ```
 
 ### Run tests (to be added in the future)
 
-```
+```sh
 yarn test-only
 ```
 
 ### Run all of the above
 
-```
+```sh
 yarn test
 ```
 
